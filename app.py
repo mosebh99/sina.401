@@ -8,10 +8,12 @@ app.secret_key = 'sinai_store_401_secret_key_2026'
 
 MY_WHATSAPP_NUMBER = "201065653401" 
 
+# 🔐 رمز الأمان الجديد الخاص بك للدخول إلى الكاشير
+ADMIN_PASSWORD = "010656534"
+
 def init_db():
     conn = sqlite3.connect('/tmp/store_sinai_401.db')
     cursor = conn.cursor()
-    # إضافة عمود الوصف description في قاعدة البيانات لو مش موجود
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS products (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -24,7 +26,6 @@ def init_db():
             description TEXT
         )
     ''')
-    # للتأكد من وجود العمود في حالة تفعيل قاعدة البيانات مسبقاً
     try:
         cursor.execute('ALTER TABLE products ADD COLUMN description TEXT')
     except:
@@ -33,6 +34,45 @@ def init_db():
     conn.close()
 
 init_db()
+
+# --- 🔑 شاشة تسجيل الدخول للمدير ---
+HTML_LOGIN = """
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سينا ستور 401 - تسجيل دخول الإدارة</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #1a1a1a; margin: 0; padding: 0; color: #f3f4f6; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        .login-card { background: #262626; padding: 30px; border-radius: 12px; border: 1px solid #404040; border-top: 5px solid #eab308; width: 100%; max-width: 360px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); box-sizing: border-box; }
+        h2 { margin-top: 0; text-align: center; color: #eab308; font-size: 18px; margin-bottom: 20px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-size: 13px; margin-bottom: 8px; color: #d4d4d4; }
+        .form-group input { width: 100%; padding: 12px; background: #171717; border: 1px solid #525252; border-radius: 6px; box-sizing: border-box; color: white; text-align: center; font-size: 16px; letter-spacing: 2px; }
+        button { width: 100%; padding: 12px; background: #eab308; color: #111827; border: none; border-radius: 6px; font-size: 14px; font-weight: bold; cursor: pointer; }
+        .error-msg { color: #ef4444; font-size: 13px; text-align: center; margin-bottom: 15px; font-weight: bold; }
+        .back-btn { display: block; text-align: center; margin-top: 15px; color: #a3a3a3; text-decoration: none; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <h2>🦅 تسجيل دخول الإدارة والكاشير</h2>
+        {% if error %}
+            <div class="error-msg">{{ error }}</div>
+        {% endif %}
+        <form action="/cashier_login" method="POST">
+            <div class="form-group">
+                <label>أدخل رمز الأمان السري الجديد:</label>
+                <input type="password" name="password" required placeholder="••••••" autofocus>
+            </div>
+            <button type="submit">🔓 دخول إلى اللوحة</button>
+        </form>
+        <a href="/" class="back-btn">⬅️ العودة للمتجر العام</a>
+    </div>
+</body>
+</html>
+"""
 
 # --- 1️⃣ صفحة المتجر الرئيسي للعملاء والزبائن ---
 HTML_INDEX = """
@@ -137,7 +177,8 @@ HTML_INDEX = """
             let phone = document.getElementById('cust-phone').value;
             let addr = document.getElementById('cust-address').value;
             let msg = `🛒 *طلب شراء جديد من المتجر - سينا ستور 401*\\n\\n📦 *المنتج:* ${prod}\\n🔢 *الكمية:* ${qty} قطعة\\n💰 *الحساب:* ${price*qty} ج.م\\n-----------------------------------------\\n👤 *العميل:* ${name}\\n📞 *الهاتف:* ${phone}\\n📍 *العنوان:* ${addr}`;
-            window.open(`https://api.whatsapp.com/send?phone={{ whatsapp }}&text=${encodeURIComponent(msg)}`, '_blank');
+            // 🚀 تحويل مباشر لتطبيق الواتساب على الموبايل
+            window.location.href = `whatsapp://send?phone={{ whatsapp }}&text=${encodeURIComponent(msg)}`;
         }
     </script>
 </body>
@@ -248,14 +289,15 @@ HTML_MARKETERS = """
             let phone = document.getElementById('m-phone').value;
             let addr = document.getElementById('m-address').value;
             let msg = `🔔 *طلب أونلاين جديد - بوابة مسوقين سينا ستور 401*\\n\\n👤 *المسوق:* ${code}\\n📦 *المنتج:* ${prod}\\n🔢 *الكمية:* ${qty} قطعة\\n💰 *إجمالي عمولتك:* ${comm*qty} ج.م\\n-----------------------------------------\\n🤝 *اسم الزبون:* ${cust}\\n📞 *رقم التلفون:* ${phone}\\n📍 *العنوان:* ${addr}`;
-            window.open(`https://api.whatsapp.com/send?phone={{ whatsapp }}&text=${encodeURIComponent(msg)}`, '_blank');
+            // 🚀 تحويل مباشر لتطبيق الواتساب على الموبايل للمسوقين أيضاً
+            window.location.href = `whatsapp://send?phone={{ whatsapp }}&text=${encodeURIComponent(msg)}`;
         }
     </script>
 </body>
 </html>
 """
 
-# --- 3️⃣ شاشة الكاشير والمخزن (مع خانة إضافة الوصف) ---
+# --- 3️⃣ شاشة الكاشير والمخزن المحمية بالرمز ---
 HTML_CASHIER = """
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
@@ -267,7 +309,9 @@ HTML_CASHIER = """
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #1a1a1a; margin: 0; padding: 0; color: #f3f4f6; }
         nav { background: #eab308; color: #111827; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
         nav h1 { margin: 0; font-size: 18px; font-weight: bold; }
+        .nav-left-links { display: flex; gap: 8px; align-items: center; }
         .admin-btn { background: #111827; color: white; padding: 8px 15px; border-radius: 6px; font-size: 13px; font-weight: bold; border: 1px solid #374151; text-decoration:none;}
+        .logout-btn { background: #ef4444; color: white; padding: 8px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; text-decoration:none; }
         .container { max-width: 1100px; margin: 15px auto; padding: 0 10px; display: flex; flex-direction: column; gap: 15px; }
         .card { background: #262626; padding: 15px; border-radius: 10px; border: 1px solid #404040; box-sizing: border-box; }
         .border-yellow { border-top: 5px solid #eab308; }
@@ -276,7 +320,7 @@ HTML_CASHIER = """
         .form-group label { display: block; font-size: 13px; margin-bottom: 5px; color: #d4d4d4; }
         .form-group input, .form-group textarea { width: 100%; padding: 10px; background: #171717; border: 1px solid #525252; border-radius: 6px; box-sizing: border-box; color: white; text-align: right; font-size: 14px; }
         .form-group textarea { height: 70px; resize: none; font-family: inherit; }
-        .file-input-wrapper { background: #171717; border: 1px dashed #eab308; padding: 10px; border-radius: 6px; text-align: center; cursor: pointer; color: #eab308; font-size: 13px; font-weight: bold; position: relative; }
+        .file-input-wrapper { background: #171717; border: 1px dashed #eab308; padding: 12px; border-radius: 6px; text-align: center; cursor: pointer; color: #eab308; font-size: 13px; font-weight: bold; position: relative; }
         .file-input-wrapper input[type="file"] { position: absolute; left: 0; top: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; }
         .triple-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
         button { display: block; width: 100%; padding: 12px; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; background: #eab308; color: #111827; margin-top: 5px; }
@@ -290,8 +334,11 @@ HTML_CASHIER = """
 </head>
 <body>
     <nav>
-        <h1>🖥️ شاشة الكاشير والمخزن المركزية</h1>
-        <div><a href="/" class="admin-btn">⬅️ المتجر العام</a></div>
+        <h1>🖥️ شاشة الكاشير والمخزن المركزية (مؤمنة)</h1>
+        <div class="nav-left-links">
+            <a href="/" class="admin-btn">⬅️ المتجر العام</a>
+            <a href="/cashier_logout" class="logout-btn">🔒 قفل اللوحة</a>
+        </div>
     </nav>
     <div class="container">
         <div class="card border-yellow">
@@ -299,13 +346,13 @@ HTML_CASHIER = """
             <form action="/add_product" method="POST">
                 <div class="form-group"><label>اسم المنتج الفعلي:</label><input type="text" name="name" required placeholder="مثال: تيشرت سينا الفخم"></div>
                 
-                <div class="form-group"><label>وصف وتفاصيل المنتج (الخامة، المقاسات، الألوان):</label><textarea name="description" placeholder="اكتب هنا مواصفات وتفاصيل الحتة عشان تظهر للزبائن والمسوقين..."></textarea></div>
+                <div class="form-group"><label>وصف وتفاصيل المنتج (الخامة، المقاسات، الألوان):</label><textarea name="description" placeholder="اكتب هنا مواصفات وتفاصيل الحتة..."></textarea></div>
 
                 <div class="form-group">
-                    <label>صورة المنتج (من الموبايل مباشرة):</label>
+                    <label>صورة المنتج (من استوديو الموبايل مباشرة):</label>
                     <div class="file-input-wrapper">
                         <span id="file-status">📸 اضغط هنا لاختيار صورة من الاستوديو أو الكاميرا</span>
-                        <input type="file" id="image_file" accept="image/*" onchange="convertImageToBase64()">
+                        <input type="file" id="image_file" accept="image/*" onchange="compressAndConvertImage()">
                     </div>
                     <input type="hidden" id="image_url" name="image_url">
                 </div>
@@ -340,7 +387,7 @@ HTML_CASHIER = """
                             <td style="color: #eab308; font-weight: bold;">{{ p[3] }} ج.م</td>
                             <td style="color: #f97316;">{{ p[2] }} ج.م</td>
                             <td style="font-weight: bold;">{{ p[4] }} قطع</td>
-                            <td><a href="/delete_product/{{ p[0] }}" class="btn-delete">حذف ×</a></td>
+                            <td><a href="/delete_product/{{ p[0] }}" class="btn-delete" onclick="return confirm('هل أنت متأكد من حذف هذا المنتج نهائياً؟')">حذف ×</a></td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -350,20 +397,42 @@ HTML_CASHIER = """
     </div>
 
     <script>
-        function convertImageToBase64() {
+        function compressAndConvertImage() {
             const fileInput = document.getElementById('image_file');
             const hiddenInput = document.getElementById('image_url');
             const statusSpan = document.getElementById('file-status');
             
             if (fileInput.files && fileInput.files[0]) {
                 const file = fileInput.files[0];
-                statusSpan.innerText = "⏳ جاري تجهيز الصورة...";
+                statusSpan.innerText = "⏳ جاري ضغط وتجهيز الصورة...";
+                statusSpan.style.color = "#eab308";
                 
                 const reader = new FileReader();
-                reader.onload = function (e) {
-                    hiddenInput.value = e.target.result;
-                    statusSpan.innerText = `✅ تم اختيار الصورة بنجاح (${(file.size/1024/1024).toFixed(2)} MB)`;
-                    statusSpan.style.color = "#22c55e";
+                reader.onload = function (event) {
+                    const img = new Image();
+                    img.onload = function () {
+                        const canvas = document.createElement('canvas');
+                        const MAX_WIDTH = 600;
+                        let width = img.width;
+                        let height = img.height;
+
+                        if (width > MAX_WIDTH) {
+                            height *= MAX_WIDTH / width;
+                            width = MAX_WIDTH;
+                        }
+                        
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        
+                        const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+                        hiddenInput.value = compressedBase64;
+                        
+                        statusSpan.innerText = "✅ تم ضغط وحفظ الصورة بنجاح وجاهزة للتثبيت!";
+                        statusSpan.style.color = "#22c55e";
+                    };
+                    img.src = event.target.result;
                 };
                 reader.readAsDataURL(file);
             }
@@ -393,6 +462,9 @@ def marketers():
 
 @app.route('/cashier')
 def cashier():
+    if not session.get('admin_logged_in'):
+        return render_template_string(HTML_LOGIN, error=None)
+    
     conn = sqlite3.connect('/tmp/store_sinai_401.db')
     cursor = conn.cursor()
     cursor.execute('SELECT id, name, commission, selling_price, stock_quantity FROM products')
@@ -400,8 +472,25 @@ def cashier():
     conn.close()
     return render_template_string(HTML_CASHIER, products=products)
 
+@app.route('/cashier_login', methods=['POST'])
+def cashier_login():
+    password = request.form.get('password')
+    if password == ADMIN_PASSWORD:
+        session['admin_logged_in'] = True
+        return redirect(url_for('cashier'))
+    else:
+        return render_template_string(HTML_LOGIN, error="❌ رمز الأمان غير صحيح! حاول مرة أخرى.")
+
+@app.route('/cashier_logout')
+def cashier_logout():
+    session.pop('admin_logged_in', None)
+    return redirect(url_for('index'))
+
 @app.route('/add_product', methods=['POST'])
 def add_product():
+    if not session.get('admin_logged_in'):
+        return "غير مسموح بالوصول", 403
+        
     name = request.form['name'].strip()
     image_url = request.form['image_url'].strip()
     description = request.form['description'].strip()
@@ -422,6 +511,9 @@ def add_product():
 
 @app.route('/delete_product/<int:p_id>')
 def delete_product(p_id):
+    if not session.get('admin_logged_in'):
+        return "غير مسموح بالوصول", 403
+        
     conn = sqlite3.connect('/tmp/store_sinai_401.db')
     cursor = conn.cursor()
     cursor.execute('DELETE FROM products WHERE id=?', (p_id,))
