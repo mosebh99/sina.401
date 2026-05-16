@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>سينا ستور 401 - نظام الكاشير والإدارة</title>
+    <title>سينا ستور 401 - شاشة الكاشير والمخزن</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #1a1a1a; margin: 0; padding: 0; color: #f3f4f6; }
         nav { background: #eab308; color: #111827; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
         nav h1 { margin: 0; font-size: 22px; font-weight: bold; }
-        .nav-actions { display: flex; align-items: center; gap: 15px; }
+        .nav-actions { display: flex; align-items: center; gap: 11px; }
         .cash-badge { background: #111827; color: #eab308; padding: 8px 15px; border-radius: 6px; font-size: 14px; font-weight: bold; border: 1px solid #eab308; }
         .admin-btn { background: #111827; color: white; padding: 8px 15px; border-radius: 6px; font-size: 13px; font-weight: bold; border: 1px solid #374151; cursor: pointer; }
         .logout-btn { background: #ef4444; color: white; padding: 8px 15px; border-radius: 6px; border: none; cursor: pointer; font-weight: bold; }
         
-        .container { max-width: 1300px; margin: 25px auto; padding: 0 20px; display: grid; grid-template-columns: 1fr 2fr; gap: 25px; }
-        @media (max-width: 900px) { .container { grid-template-columns: 1fr; } }
+        .container { max-width: 1350px; margin: 25px auto; padding: 0 20px; display: grid; grid-template-columns: 1.12fr 2fr; gap: 25px; }
+        @media (max-width: 1000px) { .container { grid-template-columns: 1fr; } }
         
         .card { background: #262626; padding: 20px; border-radius: 10px; border: 1px solid #404040; margin-bottom: 20px; }
         .border-yellow { border-top: 5px solid #eab308; }
@@ -27,65 +27,74 @@
         .form-group input, .form-group select { width: 100%; padding: 10px; background: #171717; border: 1px solid #525252; border-radius: 6px; box-sizing: border-box; color: white; text-align: right; font-size: 14px; }
         
         .triple-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
-        button { display: block; width: 100%; padding: 12px; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; }
+        button { display: block; width: 100%; padding: 12px; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; text-align: center; }
         .btn-yellow { background: #eab308; color: #111827; }
         .btn-blue { background: #3b82f6; color: white; }
         
-        /* تصميم كروت المنتجات بالصور داخل الكاشير */
-        .cashier-products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; margin-bottom: 20px; max-height: 400px; overflow-y: auto; padding-right: 5px; }
-        .cashier-prod-card { background: #171717; border: 1px solid #404040; border-radius: 8px; overflow: hidden; cursor: pointer; transition: 0.2s; position: relative; display: flex; flex-direction: column; }
-        .cashier-prod-card:hover { border-color: #eab308; transform: translateY(-2px); }
-        .cashier-prod-card.selected { border-color: #eab308; background: #2e2a14; box-shadow: 0 0 8px rgba(234, 179, 8, 0.4); }
-        .cashier-prod-img { width: 100%; height: 120px; object-fit: cover; background: #262626; }
-        .cashier-prod-info { padding: 10px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; font-size: 12px; }
-        .cashier-prod-title { font-weight: bold; color: white; margin: 0 0 5px 0; font-size: 13px; }
-        .cashier-prod-price { color: #eab308; font-weight: bold; }
-        .cashier-prod-comm { color: #f97316; font-weight: bold; }
-        .cashier-prod-stock { color: #a3a3a3; font-size: 11px; margin-top: 4px; }
-        .no-img { height: 120px; background: #262626; display: flex; align-items: center; justify-content: center; font-size: 30px; }
+        .search-box { width: 100%; padding: 10px; background: #171717; border: 1px solid #525252; border-radius: 6px; color: white; box-sizing: border-box; text-align: right; margin-bottom: 15px; }
 
-        table { width: 100%; border-collapse: collapse; text-align: right; font-size: 13px; background: #262626; }
-        th, td { padding: 12px; border: 1px solid #404040; }
+        .cashier-products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; margin-bottom: 15px; max-height: 280px; overflow-y: auto; padding-right: 5px; }
+        .cashier-prod-card { background: #171717; border: 1px solid #404040; border-radius: 8px; overflow: hidden; cursor: pointer; display: flex; flex-direction: column; }
+        .cashier-prod-card:hover { border-color: #eab308; }
+        .cashier-prod-img { width: 100%; height: 90px; object-fit: cover; background: #262626; }
+        .cashier-prod-info { padding: 8px; font-size: 11px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .cashier-prod-title { font-weight: bold; color: white; margin: 0 0 4px 0; font-size: 12px; }
+        .cashier-prod-price { color: #eab308; font-weight: bold; }
+        .no-img { height: 90px; background: #262626; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+
+        .cart-table { width: 100%; margin-bottom: 10px; font-size: 12px; }
+        .cart-total-bar { background: #171717; padding: 12px; border-radius: 6px; font-weight: bold; font-size: 15px; text-align: center; color: #eab308; border: 1px solid #404040; margin-bottom: 10px; }
+
+        table { width: 100%; border-collapse: collapse; text-align: right; font-size: 13px; background: #262626; margin-bottom: 15px; }
+        th, td { padding: 10px; border: 1px solid #404040; }
         th { background: #171717; color: #eab308; }
         
         .admin-lock-box { background: #1c1917; border: 1px solid #44403c; border-right: 5px solid #eab308; color: #f5f5f4; padding: 15px; border-radius: 8px; text-align: center; }
         .summary-box { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-top: 10px; }
         .sum-item { padding: 15px; border-radius: 8px; text-align: center; font-weight: bold; }
+        
+        .backup-section { display: flex; gap: 10px; margin-top: 15px; }
+        .btn-backup { background: #4b5563; color: white; padding: 10px; font-size: 12px; border-radius: 6px; width: 50%; }
     </style>
 </head>
 <body>
 
     <nav>
-        <h1>🖥️ سينا ستور 401 - شاشة الكاشير الجردي</h1>
+        <h1>🖥️ سينا ستور 401 - شاشة الكاشير والمخزن</h1>
         <div class="nav-actions">
             <div id="cash-badge-container" style="display: none;" class="cash-badge">💸 الصندوق: <span id="cash-register">0</span> ج.م</div>
             <button id="admin-btn" onclick="toggleAdmin()" class="admin-btn">⚙️ وضع المدير الخاص</button>
-            <button onclick="goToHome()" class="admin-btn" style="background:#404040;">⬅️ صالة المنتجات</button>
+            <button onclick="goToPage('index.html')" class="admin-btn" style="background:#404040;">⬅️ الخروج للمتجر</button>
         </div>
     </nav>
 
     <div class="container">
         <div>
             <div class="card border-yellow">
-                <h2 class="text-yellow">🛒 واجهة البيع الفوري السريعة بالصور</h2>
-                
-                <div class="cashier-products-grid" id="cashier-gallery">
-                    </div>
+                <h2 class="text-yellow">🛒 سلة مبيعات المحل الفورية</h2>
+                <input type="text" id="cashier-search" class="search-box" placeholder="🔍 ابحث هنا عن المنتج بالاسم لإضافته للسلة..." oninput="renderProducts()">
+                <div class="cashier-products-grid" id="cashier-gallery"></div>
 
-                <form id="pos-form" onsubmit="submitLocalSale(event)">
-                    <div class="form-group">
-                        <label>المنتج المحدد حالياً:</label>
-                        <select id="local-product-select" required onchange="syncSelectionFromDropdown()">
-                            <option value="">-- اضغط على صورة فوق أو اختر من هنا --</option>
-                        </select>
-                    </div>
-                    <div class="form-group"><label>الكمية المبيعة:</label><input type="number" id="local-qty" value="1" min="1" required></div>
-                    <button type="submit" class="btn-yellow">تأكيد ونفاذ البيع الفوري</button>
-                </form>
+                <h4 style="margin: 10px 0 5px 0; font-size: 13px; color: #a3a3a3;">المنتجات المضافة للفاتورة الحالية:</h4>
+                <table class="cart-table">
+                    <thead>
+                        <tr>
+                            <th>المنتج</th>
+                            <th>السعر</th>
+                            <th>الكمية</th>
+                            <th>حذف</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cart-table-body">
+                        <tr><td colspan="4" style="text-align:center; color:#737373;">السلة فارغة. اضغط على المنتجات فوق لإضافتها.</td></tr>
+                    </tbody>
+                </table>
+                <div class="cart-total-bar">إجمالي الحساب المطلوب: <span id="cart-total-view">0</span> ج.م</div>
+                <button onclick="checkoutCart()" class="btn-yellow">🧾 تأكيد الفاتورة ونفاذ البيع المجمع</button>
             </div>
 
             <div class="card border-neutral">
-                <h2>📥 توريد المنتجات وإضافة الصور (للمدير)</h2>
+                <h2>📥 توريد وجرد البضائع (للمدير)</h2>
                 <div id="admin-form-container"></div>
             </div>
         </div>
@@ -94,23 +103,50 @@
             <div class="card border-yellow">
                 <h2>📊 التقارير المالية والربحية اليومية للمحل</h2>
                 <div id="financial-reports-container"></div>
+                
+                <div id="backup-zone" style="display:none;" class="backup-section">
+                    <button onclick="exportData()" class="btn-backup">📥 تحميل نسخة احتياطية</button>
+                    <button onclick="document.getElementById('import-file').click()" class="btn-backup" style="background:#0284c7;">📤 رفع نسخة قديمة</button>
+                    <input type="file" id="import-file" style="display:none;" accept=".json" onchange="importData(event)">
+                </div>
             </div>
 
             <div class="card">
-                <h2>📦 حالة جرد مخزن سينا ستور 401 الحالي</h2>
+                <h2>📦 جرد مخزن المحل الفعلي الحالي</h2>
                 <table>
                     <thead>
                         <tr>
                             <th>اسم المنتج</th>
                             <th class="admin-field" style="display:none;">سعر الشراء</th>
-                            <th>سعر البيع لزبون</th>
-                            <th>العمولة المحفوظة</th>
-                            <th>المخزون الحالي</th>
+                            <th>سعر البيع</th>
+                            <th>العمولة</th>
+                            <th>المخزون</th>
                             <th class="admin-field" style="display:none;">إجراءات</th>
                         </tr>
                     </thead>
                     <tbody id="products-table-body"></tbody>
                 </table>
+            </div>
+
+            <div class="card" style="border-top: 5px solid #3b82f6;">
+                <h2 style="color:#3b82f6; display:flex; justify-content:space-between; align-items:center;">
+                    📜 سجل حركة المبيعات والمشتريات اليومي
+                    <button class="admin-field" onclick="clearLogs()" style="display:none; background:#ef4444; color:white; padding:4px 8px; font-size:11px; width:auto;">تصفير السجل</button>
+                </h2>
+                <div style="max-height: 250px; overflow-y: auto;">
+                    <table style="font-size:12px; margin-bottom:0;">
+                        <thead>
+                            <tr>
+                                <th>الحركة</th>
+                                <th>المنتج</th>
+                                <th>الكمية</th>
+                                <th>السعر</th>
+                                <th>التوقيت</th>
+                            </tr>
+                        </thead>
+                        <tbody id="logs-table-body"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -118,6 +154,7 @@
     <script>
         let products = JSON.parse(localStorage.getItem('sinai_products')) || [];
         let transactions = JSON.parse(localStorage.getItem('sinai_transactions')) || [];
+        let cart = [];
         let isAdmin = false;
 
         function saveToStorage() {
@@ -125,8 +162,8 @@
             localStorage.setItem('sinai_transactions', JSON.stringify(transactions));
         }
 
-        function goToHome() {
-            window.location.href = window.location.origin + window.location.pathname.replace('cashier.html', '') + 'index.html';
+        function goToPage(page) {
+            window.location.href = window.location.origin + window.location.pathname.replace('cashier.html', '') + page;
         }
 
         function toggleAdmin() {
@@ -140,21 +177,26 @@
         function updateUI() {
             const adminBtn = document.getElementById('admin-btn');
             const cashBadge = document.getElementById('cash-badge-container');
+            const backupZone = document.getElementById('backup-zone');
             
             if (isAdmin) {
                 adminBtn.textContent = "قفل وضع المدير";
                 adminBtn.className = "logout-btn";
                 cashBadge.style.display = "block";
+                if(backupZone) backupZone.style.display = 'flex';
             } else {
                 adminBtn.textContent = "⚙️ وضع المدير الخاص";
                 adminBtn.className = "admin-btn";
                 cashBadge.style.display = "none";
+                if(backupZone) backupZone.style.display = 'none';
             }
 
             document.querySelectorAll('.admin-field').forEach(f => f.style.display = isAdmin ? '' : 'none');
             renderAdminForm();
             renderFinancialReports();
             renderProducts();
+            renderCart();
+            renderLogs();
         }
 
         function renderAdminForm() {
@@ -162,19 +204,19 @@
             if (isAdmin) {
                 container.innerHTML = `
                     <form onsubmit="saveProduct(event)">
-                        <div class="form-group"><label>اسم المنتج الفعلي كاشير ومسوقين:</label><input type="text" id="prod-name" required></div>
-                        <div class="form-group"><label>رابط الصورة أونلاين (انسخ رابط أي صورة للمنتج وضعه هنا):</label><input type="url" id="prod-img" placeholder="https://example.com/photo.jpg"></div>
+                        <div class="form-group"><label>اسم المنتج الفعلي:</label><input type="text" id="prod-name" required></div>
+                        <div class="form-group"><label>رابط الصورة أونلاين:</label><input type="url" id="prod-img" placeholder="https://example.com/photo.jpg"></div>
                         <div class="triple-grid">
                             <div class="form-group"><label>سعر الشراء:</label><input type="number" id="prod-pur" required></div>
-                            <div class="form-group"><label>سعر البيع لزبون:</label><input type="number" id="prod-sel" required></div>
-                            <div class="form-group"><label>العمولة (ج.م):</label><input type="number" id="prod-comm" required value="0"></div>
+                            <div class="form-group"><label>سعر البيع:</label><input type="number" id="prod-sel" required></div>
+                            <div class="form-group"><label>العمولة:</label><input type="number" id="prod-comm" required value="0"></div>
                         </div>
-                        <div class="form-group"><label>الالكمية الموردة:</label><input type="number" id="prod-qty" value="1" min="1" required></div>
+                        <div class="form-group"><label>الكمية الموردة:</label><input type="number" id="prod-qty" value="1" min="1" required></div>
                         <button type="submit" class="btn-blue">تثبيت وتوريد للمخزن والصالة</button>
                     </form>
                 `;
             } else {
-                container.innerHTML = `<div class="admin-lock-box">🔒 خاص بالمدير لتعديل المخزون والأسعار والصور.</div>`;
+                container.innerHTML = `<div class="admin-lock-box">🔒 خاص بالمدير لتعديل المخزون والأسعار والصور والنسخ الاحتياطي.</div>`;
             }
         }
 
@@ -185,7 +227,7 @@
                 transactions.forEach(t => {
                     if (t.type === 'بيع') {
                         totalSales += t.quantity * t.price;
-                        totalProfits += (t.price - t.cost_price) * t.quantity;
+                        totalProfits += (t.price - (t.cost_price || 0)) * t.quantity;
                     } else if (t.type === 'شراء') { totalPurchases += t.quantity * t.price; }
                 });
                 document.getElementById('cash-register').textContent = (totalSales - totalPurchases).toFixed(2);
@@ -203,81 +245,154 @@
 
         function renderProducts() {
             const tableBody = document.getElementById('products-table-body');
-            const localSelect = document.getElementById('local-product-select');
             const gallery = document.getElementById('cashier-gallery');
+            const searchQuery = document.getElementById('cashier-search').value.toLowerCase().trim();
 
             tableBody.innerHTML = '';
             gallery.innerHTML = '';
-            localSelect.innerHTML = '<option value="">-- اضغط على صورة فوق أو اختر من هنا --</option>';
 
-            if(products.length === 0) {
-                gallery.innerHTML = '<p style="color:#a3a3a3; font-size:12px; text-align:center; width:100%;">لا توجد منتجات بالمخزن حالياً.</p>';
-            }
+            let filteredProducts = products.filter(p => p.name.toLowerCase().includes(searchQuery));
 
-            products.forEach(p => {
-                // 1. تحديث القائمة المنسدلة للبيع
-                if (p.stock_quantity > 0) {
-                    localSelect.innerHTML += `<option value="${p.id}">${p.name} - السعر: ${p.selling_price} ج.م</option>`;
-                }
-
-                // 2. بناء الواجهة المرئية بالصور داخل الكاشير
+            filteredProducts.forEach(p => {
                 let imgHtml = p.image_url ? `<img src="${p.image_url}" class="cashier-prod-img">` : `<div class="no-img">📦</div>`;
-                let disabledClass = p.stock_quantity <= 0 ? 'style="opacity: 0.5; cursor: not-allowed;"' : '';
+                let outOfStock = p.stock_quantity <= 0;
                 
                 gallery.innerHTML += `
-                    <div class="cashier-prod-card" id="card-${p.id}" ${disabledClass} onclick="selectProductFromGallery(${p.id}, ${p.stock_quantity})">
+                    <div class="cashier-prod-card" style="${outOfStock ? 'opacity:0.4; cursor:not-allowed;' : ''}" onclick="addToCart(${p.id})">
                         ${imgHtml}
                         <div class="cashier-prod-info">
                             <h4 class="cashier-prod-title">${p.name}</h4>
                             <div>
-                                <div class="cashier-prod-price">💰 ${p.selling_price} ج.م</div>
-                                <div class="cashier-prod-comm">🎁 عمولة: ${p.commission} ج.م</div>
-                                <div class="cashier-prod-stock">المخزون: ${p.stock_quantity} ق</div>
+                                <div class="cashier-prod-price">${p.selling_price} ج.م</div>
+                                <div style="color:#a3a3a3; font-size:10px;">المتاح: ${p.stock_quantity} ق</div>
                             </div>
                         </div>
                     </div>
                 `;
+            });
 
-                // 3. تحديث جدول الجرد الشامل أسفل اليسار
+            products.forEach(p => {
                 let row = `<tr>
                     <td style="font-weight: bold; color: white;">${p.name}</td>
                     ${isAdmin ? `<td>${p.purchase_price} ج.م</td>` : ''}
                     <td style="color: #eab308; font-weight: bold;">${p.selling_price} ج.م</td>
                     <td style="color: #f97316;">${p.commission} ج.م</td>
-                    <td style="font-weight:bold; color:${p.stock_quantity === 0 ? '#ef4444' : '#e5e5e5'}">${p.stock_quantity} قطعة</td>
+                    <td style="color:${p.stock_quantity <= 0 ? '#ef4444' : '#e5e5e5'}">${p.stock_quantity} ق</td>
                     ${isAdmin ? `<td><button onclick="deleteProduct(${p.id})" style="background:#ef4444; color:white; padding:4px 8px; font-size:11px; width:auto; display:inline;">حذف</button></td>` : ''}
                 </tr>`;
                 tableBody.innerHTML += row;
             });
         }
 
-        // دالة تحديد المنتج الفوري عند الضغط على الكارت أو الصورة مباشرة
-        function selectProductFromGallery(id, stock) {
-            if(stock <= 0) {
-                alert("⚠️ هذا المنتج نفذت كميته من المخزن تماماً!");
+        function addToCart(id) {
+            let product = products.find(p => p.id === id);
+            if (!product || product.stock_quantity <= 0) {
+                alert("⚠️ هذا المنتج نفذ من المخزن حالياً!");
                 return;
             }
-            // إزالة التحديد القديم
-            document.querySelectorAll('.cashier-prod-card').forEach(c => c.classList.remove('selected'));
-            
-            // إضافة التحديد الجديد للكارت المختار
-            const selectedCard = document.getElementById(`card-${id}`);
-            if(selectedCard) selectedCard.classList.add('selected');
-            
-            // مزامنة القائمة المنسدلة تلقائياً
-            document.getElementById('local-product-select').value = id;
+
+            let cartItem = cart.find(item => item.product_id === id);
+            if (cartItem) {
+                if (cartItem.quantity >= product.stock_quantity) {
+                    alert("⚠️ لا يمكنك إضافة كمية أكبر من المتاحة بالمخزن!");
+                    return;
+                }
+                cartItem.quantity++;
+            } else {
+                cart.push({ product_id: id, name: product.name, price: product.selling_price, cost_price: product.purchase_price, quantity: 1 });
+            }
+            renderCart();
         }
 
-        // دالة المزامنة العكسية في حال تم الاختيار من القائمة بدلاً من الصور
-        function syncSelectionFromDropdown() {
-            const id = document.getElementById('local-product-select').value;
-            document.querySelectorAll('.cashier-prod-card').forEach(c => c.classList.remove('selected'));
-            if(id) {
-                const selectedCard = document.getElementById(`card-${id}`);
-                if(selectedCard) {
-                    selectedCard.classList.add('selected');
-                    selectedCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        function removeFromCart(id) {
+            cart = cart.filter(item => item.product_id !== id);
+            renderCart();
+        }
+
+        function renderCart() {
+            const body = document.getElementById('cart-table-body');
+            const totalView = document.getElementById('cart-total-view');
+            body.innerHTML = '';
+            
+            if (cart.length === 0) {
+                body.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#737373;">السلة فارغة. اضغط على المنتجات فوق لإضافتها.</td></tr>';
+                totalView.textContent = '0';
+                return;
+            }
+
+            let total = 0;
+            cart.forEach(item => {
+                total += item.price * item.quantity;
+                body.innerHTML += `
+                    <tr>
+                        <td>${item.name}</td>
+                        <td>${item.price} ج.م</td>
+                        <td>${item.quantity}</td>
+                        <td><button onclick="removeFromCart(${item.product_id})" style="background:#ef4444; color:white; padding:2px 6px; font-size:11px; width:auto;">❌</button></td>
+                    </tr>
+                `;
+            });
+            totalView.textContent = total;
+        }
+
+        function checkoutCart() {
+            if (cart.length === 0) {
+                alert("سلة المشتريات فارغة!");
+                return;
+            }
+
+            cart.forEach(item => {
+                let product = products.find(p => p.id === item.product_id);
+                if (product) {
+                    product.stock_quantity -= item.quantity;
+                    transactions.push({
+                        type: 'بيع',
+                        product_id: item.product_id,
+                        product_name: item.name,
+                        quantity: item.quantity,
+                        price: item.price,
+                        cost_price: item.cost_price,
+                        date: new Date().toLocaleString('ar-EG')
+                    });
                 }
+            });
+
+            cart = [];
+            saveToStorage();
+            updateUI();
+            alert("✅ تم تسجيل الفاتورة بنجاح وخصم المنتجات مجمعة من الجرد.");
+        }
+
+        function renderLogs() {
+            const body = document.getElementById('logs-table-body');
+            body.innerHTML = '';
+            
+            if (transactions.length === 0) {
+                body.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#737373;">لا توجد عمليات مسجلة اليوم.</td></tr>';
+                return;
+            }
+
+            let reversedTransactions = [...transactions].reverse();
+            reversedTransactions.forEach(t => {
+                let prodName = t.product_name || (products.find(p => p.id === t.product_id)?.name) || "منتج محذوف";
+                let typeStyle = t.type === 'بيع' ? 'color:#22c55e; font-weight:bold;' : 'color:#3b82f6; font-weight:bold;';
+                body.innerHTML += `
+                    <tr>
+                        <td style="${typeStyle}">${t.type}</td>
+                        <td>${prodName}</td>
+                        <td>${t.quantity} ق</td>
+                        <td>${t.price * t.quantity} ج.م</td>
+                        <td style="color:#a3a3a3; font-size:11px;">${t.date}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        function clearLogs() {
+            if(confirm("هل أنت متأكد من مسح سجل المبيعات بالكامل؟")) {
+                transactions = [];
+                saveToStorage();
+                updateUI();
             }
         }
 
@@ -291,6 +406,7 @@
             const quantity = parseInt(document.getElementById('prod-qty').value);
 
             let existingProduct = products.find(p => p.name === name);
+            let p_id;
 
             if (existingProduct) {
                 existingProduct.stock_quantity += quantity;
@@ -298,39 +414,58 @@
                 existingProduct.selling_price = selling_price;
                 existingProduct.commission = commission;
                 if(img) existingProduct.image_url = img;
-                transactions.push({ type: 'شراء', product_id: existingProduct.id, quantity: quantity, price: purchase_price, date: new Date().toLocaleString() });
+                p_id = existingProduct.id;
             } else {
-                let newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
-                products.push({ id: newId, name: name, purchase_price: purchase_price, selling_price: selling_price, commission: commission, stock_quantity: quantity, image_url: img });
-                transactions.push({ type: 'شراء', product_id: newId, quantity: quantity, price: purchase_price, date: new Date().toLocaleString() });
+                p_id = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
+                products.push({ id: p_id, name: name, purchase_price: purchase_price, selling_price: selling_price, commission: commission, stock_quantity: quantity, image_url: img });
             }
-            saveToStorage(); updateUI(); alert("✅ تم التحديث بنجاح ومزامنته مع صالة العرض.");
+
+            transactions.push({
+                type: 'شراء',
+                product_id: p_id,
+                product_name: name,
+                quantity: quantity,
+                price: purchase_price,
+                date: new Date().toLocaleString('ar-EG')
+            });
+
+            saveToStorage(); updateUI(); alert("✅ تم تحديث وتوريد المنتج للمخزن.");
         }
 
         function deleteProduct(id) {
-            if (confirm("هل أنت متأكد من حذف هذا المنتج نهائياً؟")) { 
+            if (confirm("هل تريد حذف هذا المنتج تماماً من الجرد؟")) { 
                 products = products.filter(p => p.id !== id); 
                 saveToStorage(); updateUI(); 
             }
         }
 
-        function submitLocalSale(event) {
-            event.preventDefault();
-            const pId = parseInt(document.getElementById('local-product-select').value);
-            const qty = parseInt(document.getElementById('local-qty').value);
-            
-            if(!pId) {
-                alert("الرجاء اختيار منتج أولاً بالضغط على صورته أو من القائمة!");
-                return;
-            }
+        function exportData() {
+            let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ products, transactions }));
+            let downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `نسخة_احتياطية_سينا_ستور_401_${new Date().toLocaleDateString()}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
 
-            let product = products.find(p => p.id === pId);
-            if (product && product.stock_quantity >= qty) {
-                product.stock_quantity -= qty;
-                transactions.push({ type: 'بيع', product_id: pId, quantity: qty, price: product.selling_price, cost_price: product.purchase_price, date: new Date().toLocaleString() });
-                saveToStorage(); updateUI(); alert("✅ تم تسجيل عملية البيع الفوري بنجاح وخصمها من المخزن.");
-                document.getElementById('pos-form').reset();
-            } else { alert("❌ الكمية المطلوبة غير متوفرة جردياً بالمخزن!"); }
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    if(imported.products && imported.transactions) {
+                        products = imported.products;
+                        transactions = imported.transactions;
+                        saveToStorage();
+                        updateUI();
+                        alert("✅ تم استعادة البيانات الجردية بنجاح!");
+                    } else { alert("الملف غير متوافق!"); }
+                } catch(err) { alert("حدث خطأ في قراءة ملف النسخة!"); }
+            };
+            reader.readAsText(file);
         }
 
         updateUI();
