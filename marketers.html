@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سينا ستور 401 - بوابة المسوقين بالأونلاين</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #1a1a1a; margin: 0; padding: 0; color: #f3f4f6; }
+        nav { background: #f97316; color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        nav h1 { margin: 0; font-size: 22px; font-weight: bold; }
+        .nav-links { display: flex; gap: 10px; }
+        .nav-btn { background: #111827; color: white; padding: 8px 15px; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: bold; border: 1px solid #374151; cursor: pointer; }
+        
+        .main-container { max-width: 1300px; margin: 25px auto; padding: 0 20px; display: grid; grid-template-columns: 2fr 1fr; gap: 25px; }
+        @media (max-width: 900px) { .main-container { grid-template-columns: 1fr; } }
+        
+        .search-box { width: 100%; padding: 12px; background: #262626; border: 1px solid #404040; border-radius: 8px; color: white; font-size: 14px; margin-bottom: 20px; box-sizing: border-box; text-align: right; }
+
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
+        .product-card { background: #262626; border: 1px solid #404040; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.3); display: flex; flex-direction: column; }
+        .product-img { width: 100%; height: 200px; object-fit: cover; background: #171717; }
+        .product-info { padding: 15px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .product-title { font-size: 16px; font-weight: bold; margin: 0 0 10px 0; color: white; }
+        .price-badge { background: #171717; border: 1px solid #f97316; color: white; padding: 5px 10px; border-radius: 5px; font-weight: bold; font-size: 14px; text-align: center; margin-bottom: 8px; }
+        .comm-badge { background: #ffedd5; color: #c2410c; padding: 5px 10px; border-radius: 5px; font-weight: bold; font-size: 14px; text-align: center; margin-bottom: 10px; border: 1px solid #f97316; }
+        .stock-count { font-size: 12px; color: #a3a3a3; text-align: center; }
+        
+        .order-card { background: #262626; padding: 20px; border-radius: 10px; border: 1px solid #404040; border-top: 5px solid #f97316; height: fit-content; position: sticky; top: 20px; }
+        h2 { margin-top: 0; font-size: 17px; margin-bottom: 15px; color: #f97316; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 13px; margin-bottom: 6px; color: #d4d4d4; font-weight: 600; }
+        .form-group input, .form-group select { width: 100%; padding: 10px; background: #171717; border: 1px solid #525252; border-radius: 6px; box-sizing: border-box; color: white; font-size: 14px; text-align: right; }
+        .btn-orange { width: 100%; padding: 12px; background: #f97316; color: white; border: none; border-radius: 6px; font-size: 14px; font-weight: bold; cursor: pointer; }
+        
+        .no-img-placeholder { height: 200px; background: #171717; display: flex; align-items: center; justify-content: center; color: #525252; font-size: 40px; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <h1>🦅 سينا ستور 401 - لوحة العمولات والمسوقين</h1>
+        <div class="nav-links">
+            <button onclick="goToPage('index.html')" class="nav-btn">⬅️ المتجر العام</button>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <div>
+            <input type="text" id="marketer-search" class="search-box" placeholder="🔍 ابحث عن منتج لمعرفة عمولته وجرده المتاح...">
+            <h2 style="color: #f97316; margin-top: 0;">📦 قائمة بضائع وعمولات الأونلاين الحالية</h2>
+            <div class="products-grid" id="products-container"></div>
+        </div>
+
+        <div>
+            <div class="order-card">
+                <h2>📣 إرسال وحفظ طلب أونلاين جديد بالعمولة</h2>
+                <form id="online-order-form" onsubmit="submitOnlineOrder(event)">
+                    <div class="form-group">
+                        <label>اختر المنتج المطلوب:</label>
+                        <select id="online-product-select" required></select>
+                    </div>
+                    <div class="form-group"><label>الكمية المطلوبة:</label><input type="number" id="online-qty" value="1" min="1" required></div>
+                    <div class="form-group"><label>اسم أو كود المسوق المعتمد:</label><input type="text" id="marketer-name" required placeholder="لحفظ عمولتك وسجل حسابك"></div>
+                    <div class="form-group"><label>اسم الزبون بالكامل:</label><input type="text" id="customer-name" required></div>
+                    <div class="form-group"><label>رقم هاتف الزبون:</label><input type="text" id="customer-phone" required></div>
+                    <div class="form-group"><label>عنوان التوصيل تفصيلياً:</label><input type="text" id="customer-address" required></div>
+                    <button type="submit" class="btn-orange">تجهيز وإرسال الطلب والعمولة واتساب</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const MY_WHATSAPP_NUMBER = "201065653401";
+        let products = JSON.parse(localStorage.getItem('sinai_products')) || [];
+
+        function goToPage(page) {
+            window.location.href = window.location.origin + window.location.pathname.replace('marketers.html', '') + page;
+        }
+
+        function renderStore() {
+            const container = document.getElementById('products-container');
+            const select = document.getElementById('online-product-select');
+            const searchQuery = document.getElementById('marketer-search').value.toLowerCase().trim();
+            
+            container.innerHTML = '';
+            select.innerHTML = '<option value="">-- اضغط واختر المنتج --</option>';
+
+            let filteredProducts = products.filter(p => p.name.toLowerCase().includes(searchQuery));
+
+            products.forEach(p => {
+                if(p.stock_quantity > 0) {
+                    select.innerHTML += `<option value="${p.id}">${p.name} - العمولة: ${p.commission} ج.م</option>`;
+                }
+            });
+
+            if (filteredProducts.length === 0) {
+                container.innerHTML = '<p style="color: #a3a3a3; text-align: center; grid-column: 1/-1;">لا توجد بضائع تطابق بحثك حالياً.</p>';
+                return;
+            }
+
+            filteredProducts.forEach(p => {
+                let imageHtml = p.image_url ? `<img src="${p.image_url}" class="product-img">` : `<div class="no-img-placeholder">📱</div>`;
+                container.innerHTML += `
+                    <div class="product-card" style="${p.stock_quantity <= 0 ? 'opacity:0.5;' : ''}">
+                        ${imageHtml}
+                        <div class="product-info">
+                            <h3 class="product-title">${p.name}</h3>
+                            <div>
+                                <div class="price-badge">💰 سعر الزبون: ${p.selling_price} ج.م</div>
+                                <div class="comm-badge">🎁 عمولتك الصافية: ${p.commission} ج.م</div>
+                                <div class="stock-count">${p.stock_quantity <= 0 ? '❌ عجز مخزون' : `المتاح جردياً: ${p.stock_quantity} قطعة`}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function submitOnlineOrder(event) {
+            event.preventDefault();
+            const pId = parseInt(document.getElementById('online-product-select').value);
+            const qty = parseInt(document.getElementById('online-qty').value);
+            const marketerName = document.getElementById('marketer-name').value.trim();
+            const customerName = document.getElementById('customer-name').value.trim();
+            const customerPhone = document.getElementById('customer-phone').value.trim();
+            const customerAddress = document.getElementById('customer-address').value.trim();
+
+            let product = products.find(p => p.id === pId);
+            if (!product) return;
+
+            let totalCommission = product.commission * qty;
+
+            let messageText = `🔔 *طلب أونلاين جديد - بوابة مسوقين سينا ستور 401*\n\n` +
+                               `👤 *اسم المسوق:* ${marketerName}\n` +
+                               `📦 *المنتج المطلوب:* ${product.name}\n` +
+                               `🔢 *الكمية:* ${qty} قطعة\n` +
+                               `💰 *إجمالي عمولة المسوق المخصومة:* ${totalCommission} ج.م\n` +
+                               `-----------------------------------------\n` +
+                               `🤝 *اسم العميل الزبون:* ${customerName}\n` +
+                               `📞 *رقم التلفون:* ${customerPhone}\n` +
+                               `📍 *العنوان:* ${customerAddress}\n` +
+                               `⏰ *التوقيت:* ${new Date().toLocaleString('ar-EG')}`;
+
+            window.open(`https://api.whatsapp.com/send?phone=${MY_WHATSAPP_NUMBER}&text=${encodeURIComponent(messageText)}`, '_blank');
+        }
+
+        document.getElementById('marketer-search').addEventListener('input', renderStore);
+        renderStore();
+    </script>
+</body>
+</html>
