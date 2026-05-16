@@ -1,39 +1,49 @@
 from flask import Flask, render_template_string, request, redirect, url_for, flash, session
-import sqlite3
-import datetime
-import json
+import os
+import psycopg2
+from psycopg2.extras import RealDictCursor
 
 app = Flask(__name__)
 app.secret_key = 'sinai_store_401_secret_key_2026'
 
 MY_WHATSAPP_NUMBER = "201065653401" 
-
-# 🔐 رمز الأمان الجديد الخاص بك للدخول إلى الكاشير
 ADMIN_PASSWORD = "010656534"
 
+# الاتصال بقاعدة البيانات باستخدام الرابط التلقائي من فيرسيل
+def get_db_connection():
+    # فيرسيل بيوفر الرابط في متغير POSTGRES_URL أو DATABASE_URL تلقائياً
+    db_url = os.environ.get('POSTGRES_URL') or os.environ.get('DATABASE_URL')
+    if db_url and db_url.startswith("postgres://"):
+        # تعديل بسيط لضمان توافق المكتبة مع الروابط الحديثة
+        db_url = db_url.replace("postgres://", "postgresql://", 1)
+    
+    conn = psycopg2.connect(db_url)
+    return conn
+
+# إنشاء جدول المنتجات تلقائياً لو مش موجود أول ما الموقع يفتح
 def init_db():
-    conn = sqlite3.connect('/tmp/store_sinai_401.db')
-    cursor = conn.cursor()
-    cursor.execute('''
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("""
         CREATE TABLE IF NOT EXISTS products (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT UNIQUE NOT NULL,
-            purchase_price REAL NOT NULL,
-            selling_price REAL NOT NULL,
-            commission REAL NOT NULL,
-            stock_quantity INTEGER NOT NULL,
-            image_url TEXT,
-            description TEXT
-        )
-    ''')
-    try:
-        cursor.execute('ALTER TABLE products ADD COLUMN description TEXT')
-    except:
-        pass
+            id SERIAL PRIMARY KEY,
+            name VARCHAR(255) UNIQUE NOT NULL,
+            description TEXT,
+            purchase_price NUMERIC DEFAULT 0,
+            selling_price NUMERIC DEFAULT 0,
+            commission NUMERIC DEFAULT 0,
+            stock_quantity INTEGER DEFAULT 1,
+            image_url TEXT
+        );
+    """)
     conn.commit()
+    cur.close()
     conn.close()
 
-init_db()
+try:
+    init_db()
+except Exception as e:
+    print("Database init error:", e)
 
 # --- 🔑 شاشة تسجيل الدخول للمدير ---
 HTML_LOGIN = """
@@ -63,8 +73,8 @@ HTML_LOGIN = """
         {% endif %}
         <form action="/cashier_login" method="POST">
             <div class="form-group">
-                <label>أدخل رمز الأمان السري الجديد:</label>
-                <input type="password" name="password" required placeholder="••••••" autofocus>
+                <label>أدخل رمز الأمان السري:</label>
+                <input type="password" name="password" required placeholder="•••••" autofocus>
             </div>
             <button type="submit">🔓 دخول إلى اللوحة</button>
         </form>
@@ -74,14 +84,17 @@ HTML_LOGIN = """
 </html>
 """
 
-# --- 1️⃣ صفحة المتجر الرئيسي للعملاء والزبائن ---
+# --- 1️⃣ صفحة المتجر الرئيسي (مجهزة بالكامل لمحركات بحث جوجل SEO) ---
 HTML_INDEX = """
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>سينا ستور 401 - المتجر الإلكتروني</title>
+    <title>سينا ستور 401 - المتجر الإلكتروني الرسمي</title>
+    <meta name="description" content="متجر سينا ستور 401 لبيع أفضل المنتجات والملابس أونلاين بأفضل الأسعار. تسوق الآن واستمتع بشحن سريع ودعم فوري عبر الواتساب.">
+    <meta name="keywords" content="سينا ستور, سينا 401, متجر سينا, تسوق أونلاين مصر, ملابس أونلاين, شراء منتجات">
+    <meta name="robots" content="index, follow">
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #1a1a1a; margin: 0; padding: 0; color: #f3f4f6; }
         nav { background: #eab308; color: #111827; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
@@ -122,19 +135,21 @@ HTML_INDEX = """
             <h2>🛒 المنتجات المتاحة حالياً للطلب</h2>
             <div class="products-grid">
                 {% for p in products %}
-                <div class="product-card item-card" data-name="{{ p[1].lower() }}" style="{% if p[4] <= 0 %}opacity:0.4;{% endif %}">
-                    {% if p[5] %}<img src="{{ p[5] }}" class="product-img">{% else %}<div class="no-img-placeholder">📱</div>{% endif %}
+                <div class="product-card item-card" data-name="{{ p.name.lower() }}" style="{% if p.stock_quantity <= 0 %}opacity:0.4;{% endif %}">
+                    {% if p.image_url %}<img src="{{ p.image_url }}" class="product-img" alt="{{ p.name }}">{% else %}<div class="no-img-placeholder">📱</div>{% endif %}
                     <div class="product-info">
                         <div>
-                            <h3 class="product-title">{{ p[1] }}</h3>
-                            <p class="product-desc">{% if p[6] %}{{ p[6] }}{% else %}لا يوجد وصف متاح حالياً لهذا المنتج.{% endif %}</p>
+                            <h3 class="product-title">{{ p.name }}</h3>
+                            <p class="product-desc">{% if p.description %}{{ p.description }}{% else %}لا يوجد وصف متاح حالياً لهذا المنتج.{% endif %}</p>
                         </div>
                         <div>
-                            <div class="price-badge">السعر: {{ p[3] }} ج.م</div>
-                            <div class="stock-count">{% if p[4] <= 0 %}❌ نفذت الكمية مؤقتاً{% else %}متوفر في المخزن: {{ p[4] }} قطعة{% endif %}</div>
+                            <div class="price-badge">السعر: {{ p.selling_price }} ج.م</div>
+                            <div class="stock-count">{% if p.stock_quantity <= 0 %}❌ نفذت الكمية مؤقتاً{% else %}متوفر في المخزن: {{ p.stock_quantity }} قطعة{% endif %}</div>
                         </div>
                     </div>
                 </div>
+                {% else %}
+                <p style="color: #a3a3a3; grid-column: 1/-1; text-align: center; padding: 20px;">لا توجد منتجات معروضة حالياً في المتجر.</p>
                 {% endfor %}
             </div>
         </div>
@@ -146,8 +161,8 @@ HTML_INDEX = """
                         <label>اختر المنتج الذي تريد شراءه:</label>
                         <select id="cust-product-select" required>
                             <option value="">-- اضغط واختر المنتج --</option>
-                            {% for p in products %}{% if p[4] > 0 %}
-                            <option value="{{ p[1] }}" data-price="{{ p[3] }}">{{ p[1] }}</option>
+                            {% for p in products %}{% if p.stock_quantity > 0 %}
+                            <option value="{{ p.name }}" data-price="{{ p.selling_price }}">{{ p.name }}</option>
                             {% endif %}{% endfor %}
                         </select>
                     </div>
@@ -170,6 +185,7 @@ HTML_INDEX = """
         function submitCustomerOrder(e) {
             e.preventDefault();
             let sel = document.getElementById('cust-product-select');
+            if(!sel.value) return alert("من فضلك اختر منتج أولاً");
             let prod = sel.value;
             let price = parseFloat(sel.options[sel.selectedIndex].getAttribute('data-price'));
             let qty = parseInt(document.getElementById('cust-qty').value);
@@ -177,22 +193,21 @@ HTML_INDEX = """
             let phone = document.getElementById('cust-phone').value;
             let addr = document.getElementById('cust-address').value;
             let msg = `🛒 *طلب شراء جديد من المتجر - سينا ستور 401*\\n\\n📦 *المنتج:* ${prod}\\n🔢 *الكمية:* ${qty} قطعة\\n💰 *الحساب:* ${price*qty} ج.م\\n-----------------------------------------\\n👤 *العميل:* ${name}\\n📞 *الهاتف:* ${phone}\\n📍 *العنوان:* ${addr}`;
-            // 🚀 تحويل مباشر لتطبيق الواتساب على الموبايل
-            window.location.href = `whatsapp://send?phone={{ whatsapp }}&text=${encodeURIComponent(msg)}`;
+            window.location.href = `https://api.whatsapp.com/send?phone={{ whatsapp }}&text=${encodeURIComponent(msg)}`;
         }
     </script>
 </body>
 </html>
 """
 
-# --- 2️⃣ صفحة بوابة عاديات المسوقين ---
+# --- 2️⃣ صفحة بوابة المسوقين والعمولات ---
 HTML_MARKETERS = """
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>سينا ستور 401 - بوابة المسوقين</title>
+    <title>سينا ستور 401 - بوابة المسوقين والعمولات</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #1a1a1a; margin: 0; padding: 0; color: #f3f4f6; }
         nav { background: #f97316; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
@@ -231,20 +246,22 @@ HTML_MARKETERS = """
             <h2>📦 قائمة بضائع وعمولات الأونلاين الحالية</h2>
             <div class="products-grid">
                 {% for p in products %}
-                <div class="product-card m-card" data-name="{{ p[1].lower() }}" style="{% if p[4] <= 0 %}opacity:0.4;{% endif %}">
-                    {% if p[5] %}<img src="{{ p[5] }}" class="product-img">{% else %}<div class="no-img-placeholder">📱</div>{% endif %}
+                <div class="product-card m-card" data-name="{{ p.name.lower() }}" style="{% if p.stock_quantity <= 0 %}opacity:0.4;{% endif %}">
+                    {% if p.image_url %}<img src="{{ p.image_url }}" class="product-img" alt="{{ p.name }}">{% else %}<div class="no-img-placeholder">📱</div>{% endif %}
                     <div class="product-info">
                         <div>
-                            <h3 class="product-title">{{ p[1] }}</h3>
-                            <p class="product-desc">{% if p[6] %}{{ p[6] }}{% else %}لا يوجد وصف متاح لهذا المنتج.{% endif %}</p>
+                            <h3 class="product-title">{{ p.name }}</h3>
+                            <p class="product-desc">{% if p.description %}{{ p.description }}{% else %}لا يوجد وصف متاح لهذا المنتج.{% endif %}</p>
                         </div>
                         <div>
-                            <div class="price-badge">💰 سعر الزبون: {{ p[3] }} ج.م</div>
-                            <div class="comm-badge">🎁 عمولتك الصافية: {{ p[2] }} ج.م</div>
-                            <div class="stock-count">{% if p[4] <= 0 %}❌ عجز مخزون{% else %}المتاح جردياً: {{ p[4] }} قطعة{% endif %}</div>
+                            <div class="price-badge">💰 سعر الزبون: {{ p.selling_price }} ج.م</div>
+                            <div class="comm-badge">🎁 عمولتك الصافية: {{ p.commission }} ج.م</div>
+                            <div class="stock-count">{% if p.stock_quantity <= 0 %}❌ عجز مخزون{% else %}المتاح جردياً: {{ p.stock_quantity }} قطعة{% endif %}</div>
                         </div>
                     </div>
                 </div>
+                {% else %}
+                <p style="color: #a3a3a3; grid-column: 1/-1; text-align: center; padding: 20px;">لا توجد بضائع معروضة حالياً.</p>
                 {% endfor %}
             </div>
         </div>
@@ -256,8 +273,8 @@ HTML_MARKETERS = """
                         <label>اختر المنتج المطلوب:</label>
                         <select id="marketer-product-select" required>
                             <option value="">-- اضغط واختر المنتج --</option>
-                            {% for p in products %}{% if p[4] > 0 %}
-                            <option value="{{ p[1] }}" data-comm="{{ p[2] }}">{{ p[1] }}</option>
+                            {% for p in products %}{% if p.stock_quantity > 0 %}
+                            <option value="{{ p.name }}" data-comm="{{ p.commission }}">{{ p.name }}</option>
                             {% endif %}{% endfor %}
                         </select>
                     </div>
@@ -281,6 +298,7 @@ HTML_MARKETERS = """
         function submitMarketerOrder(e) {
             e.preventDefault();
             let sel = document.getElementById('marketer-product-select');
+            if(!sel.value) return alert("من فضلك اختر منتج أولاً");
             let prod = sel.value;
             let comm = parseFloat(sel.options[sel.selectedIndex].getAttribute('data-comm'));
             let qty = parseInt(document.getElementById('m-qty').value);
@@ -289,15 +307,14 @@ HTML_MARKETERS = """
             let phone = document.getElementById('m-phone').value;
             let addr = document.getElementById('m-address').value;
             let msg = `🔔 *طلب أونلاين جديد - بوابة مسوقين سينا ستور 401*\\n\\n👤 *المسوق:* ${code}\\n📦 *المنتج:* ${prod}\\n🔢 *الكمية:* ${qty} قطعة\\n💰 *إجمالي عمولتك:* ${comm*qty} ج.م\\n-----------------------------------------\\n🤝 *اسم الزبون:* ${cust}\\n📞 *رقم التلفون:* ${phone}\\n📍 *العنوان:* ${addr}`;
-            // 🚀 تحويل مباشر لتطبيق الواتساب على الموبايل للمسوقين أيضاً
-            window.location.href = `whatsapp://send?phone={{ whatsapp }}&text=${encodeURIComponent(msg)}`;
+            window.location.href = `https://api.whatsapp.com/send?phone={{ whatsapp }}&text=${encodeURIComponent(msg)}`;
         }
     </script>
 </body>
 </html>
 """
 
-# --- 3️⃣ شاشة الكاشير والمخزن المحمية بالرمز ---
+# --- 3️⃣ شاشة الكاشير والمخزن المركزية ---
 HTML_CASHIER = """
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
@@ -320,7 +337,7 @@ HTML_CASHIER = """
         .form-group label { display: block; font-size: 13px; margin-bottom: 5px; color: #d4d4d4; }
         .form-group input, .form-group textarea { width: 100%; padding: 10px; background: #171717; border: 1px solid #525252; border-radius: 6px; box-sizing: border-box; color: white; text-align: right; font-size: 14px; }
         .form-group textarea { height: 70px; resize: none; font-family: inherit; }
-        .file-input-wrapper { background: #171717; border: 1px dashed #eab308; padding: 12px; border-radius: 6px; text-align: center; cursor: pointer; color: #eab308; font-size: 13px; font-weight: bold; position: relative; }
+        .file-input-wrapper { background: #171717; border: 1px dashed #eab308; padding: 15px; border-radius: 6px; text-align: center; cursor: pointer; color: #eab308; font-size: 13px; font-weight: bold; position: relative; }
         .file-input-wrapper input[type="file"] { position: absolute; left: 0; top: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; }
         .triple-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
         button { display: block; width: 100%; padding: 12px; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; background: #eab308; color: #111827; margin-top: 5px; }
@@ -334,7 +351,7 @@ HTML_CASHIER = """
 </head>
 <body>
     <nav>
-        <h1>🖥️ شاشة الكاشير والمخزن المركزية (مؤمنة)</h1>
+        <h1>🖥️ شاشة الكاشير والمخزن المركزية (PostgreSQL)</h1>
         <div class="nav-left-links">
             <a href="/" class="admin-btn">⬅️ المتجر العام</a>
             <a href="/cashier_logout" class="logout-btn">🔒 قفل اللوحة</a>
@@ -343,13 +360,12 @@ HTML_CASHIER = """
     <div class="container">
         <div class="card border-yellow">
             <h2>📥 إضافة وتوريد البضائع للمخزن الأونلاين</h2>
-            <form action="/add_product" method="POST">
+            <form action="/add_product" method="POST" id="product-form">
                 <div class="form-group"><label>اسم المنتج الفعلي:</label><input type="text" name="name" required placeholder="مثال: تيشرت سينا الفخم"></div>
-                
-                <div class="form-group"><label>وصف وتفاصيل المنتج (الخامة، المقاسات، الألوان):</label><textarea name="description" placeholder="اكتب هنا مواصفات وتفاصيل الحتة..."></textarea></div>
+                <div class="form-group"><label>وصف وتفاصيل المنتج:</label><textarea name="description" placeholder="اكتب هنا مواصفات وتفاصيل الحتة..."></textarea></div>
 
                 <div class="form-group">
-                    <label>صورة المنتج (من استوديو الموبايل مباشرة):</label>
+                    <label>صورة المنتج:</label>
                     <div class="file-input-wrapper">
                         <span id="file-status">📸 اضغط هنا لاختيار صورة من الاستوديو أو الكاميرا</span>
                         <input type="file" id="image_file" accept="image/*" onchange="compressAndConvertImage()">
@@ -362,8 +378,8 @@ HTML_CASHIER = """
                     <div class="form-group"><label>بيع:</label><input type="number" step="any" name="selling_price" required placeholder="0"></div>
                     <div class="form-group"><label>العمولة:</label><input type="number" step="any" name="commission" required value="0"></div>
                 </div>
-                <div class="form-group"><label>الكمية المتوفرة بالمحل:</label><input type="number" name="quantity" value="1" min="1" required></div>
-                <button type="submit">تثبيت وتوريد للمخزن المركزي أونلاين</button>
+                <div class="form-group"><label>الكمية المتوفرة بالمهل:</label><input type="number" name="quantity" value="1" min="1" required></div>
+                <button type="submit" id="submit-btn">تثبيت وتوريد للمخزن المركزي أونلاين</button>
             </form>
         </div>
 
@@ -383,12 +399,14 @@ HTML_CASHIER = """
                     <tbody>
                         {% for p in products %}
                         <tr>
-                            <td style="font-weight: bold; color: white; text-align: right; padding-right: 15px;">{{ p[1] }}</td>
-                            <td style="color: #eab308; font-weight: bold;">{{ p[3] }} ج.م</td>
-                            <td style="color: #f97316;">{{ p[2] }} ج.م</td>
-                            <td style="font-weight: bold;">{{ p[4] }} قطع</td>
-                            <td><a href="/delete_product/{{ p[0] }}" class="btn-delete" onclick="return confirm('هل أنت متأكد من حذف هذا المنتج نهائياً؟')">حذف ×</a></td>
+                            <td style="font-weight: bold; color: white; text-align: right; padding-right: 15px;">{{ p.name }}</td>
+                            <td style="color: #eab308; font-weight: bold;">{{ p.selling_price }} ج.م</td>
+                            <td style="color: #f97316;">{{ p.commission }} ج.م</td>
+                            <td style="font-weight: bold;">{{ p.stock_quantity }} قطع</td>
+                            <td><a href="/delete_product/{{ p.name }}" class="btn-delete" onclick="return confirm('هل أنت متأكد من حذف هذا المنتج؟')">حذف ×</a></td>
                         </tr>
+                        {% else %}
+                        <tr><td colspan="5" style="color: #a3a3a3; padding: 20px;">المخزن فارغ تماماً حالياً.</td></tr>
                         {% endfor %}
                     </tbody>
                 </table>
@@ -401,18 +419,19 @@ HTML_CASHIER = """
             const fileInput = document.getElementById('image_file');
             const hiddenInput = document.getElementById('image_url');
             const statusSpan = document.getElementById('file-status');
+            const submitBtn = document.getElementById('submit-btn');
             
             if (fileInput.files && fileInput.files[0]) {
                 const file = fileInput.files[0];
-                statusSpan.innerText = "⏳ جاري ضغط وتجهيز الصورة...";
-                statusSpan.style.color = "#eab308";
+                statusSpan.innerText = "⏳ جاري كبس وتقليص حجم الصورة فورياً للشبكة...";
+                submitBtn.disabled = true;
                 
                 const reader = new FileReader();
                 reader.onload = function (event) {
                     const img = new Image();
                     img.onload = function () {
                         const canvas = document.createElement('canvas');
-                        const MAX_WIDTH = 600;
+                        const MAX_WIDTH = 450; 
                         let width = img.width;
                         let height = img.height;
 
@@ -426,11 +445,12 @@ HTML_CASHIER = """
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0, width, height);
                         
-                        const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+                        const compressedBase64 = canvas.toDataURL('image/jpeg', 0.55);
                         hiddenInput.value = compressedBase64;
                         
-                        statusSpan.innerText = "✅ تم ضغط وحفظ الصورة بنجاح وجاهزة للتثبيت!";
+                        statusSpan.innerText = "✅ صورة الموبايل جاهزة ومكبوسة للتثبيت!";
                         statusSpan.style.color = "#22c55e";
+                        submitBtn.disabled = false;
                     };
                     img.src = event.target.result;
                 };
@@ -442,34 +462,30 @@ HTML_CASHIER = """
 </html>
 """
 
+def fetch_all_products():
+    conn = get_db_connection()
+    cur = conn.cursor(cursor_factory=RealDictCursor)
+    cur.execute("SELECT name, description, purchase_price, selling_price, commission, stock_quantity, image_url FROM products ORDER BY id DESC;")
+    rows = cur.fetchall()
+    cur.close()
+    conn.close()
+    return rows
+
 @app.route('/')
 def index():
-    conn = sqlite3.connect('/tmp/store_sinai_401.db')
-    cursor = conn.cursor()
-    cursor.execute('SELECT id, name, commission, selling_price, stock_quantity, image_url, description FROM products')
-    products = cursor.fetchall()
-    conn.close()
+    products = fetch_all_products()
     return render_template_string(HTML_INDEX, products=products, whatsapp=MY_WHATSAPP_NUMBER)
 
 @app.route('/marketers')
 def marketers():
-    conn = sqlite3.connect('/tmp/store_sinai_401.db')
-    cursor = conn.cursor()
-    cursor.execute('SELECT id, name, commission, selling_price, stock_quantity, image_url, description FROM products')
-    products = cursor.fetchall()
-    conn.close()
+    products = fetch_all_products()
     return render_template_string(HTML_MARKETERS, products=products, whatsapp=MY_WHATSAPP_NUMBER)
 
 @app.route('/cashier')
 def cashier():
     if not session.get('admin_logged_in'):
         return render_template_string(HTML_LOGIN, error=None)
-    
-    conn = sqlite3.connect('/tmp/store_sinai_401.db')
-    cursor = conn.cursor()
-    cursor.execute('SELECT id, name, commission, selling_price, stock_quantity FROM products')
-    products = cursor.fetchall()
-    conn.close()
+    products = fetch_all_products()
     return render_template_string(HTML_CASHIER, products=products)
 
 @app.route('/cashier_login', methods=['POST'])
@@ -479,7 +495,7 @@ def cashier_login():
         session['admin_logged_in'] = True
         return redirect(url_for('cashier'))
     else:
-        return render_template_string(HTML_LOGIN, error="❌ رمز الأمان غير صحيح! حاول مرة أخرى.")
+        return render_template_string(HTML_LOGIN, error="❌ رمز الأمان غير صحيح!")
 
 @app.route('/cashier_logout')
 def cashier_logout():
@@ -489,34 +505,52 @@ def cashier_logout():
 @app.route('/add_product', methods=['POST'])
 def add_product():
     if not session.get('admin_logged_in'):
-        return "غير مسموح بالوصول", 403
+        return "غير مسموح", 403
         
     name = request.form['name'].strip()
     image_url = request.form['image_url'].strip()
     description = request.form['description'].strip()
-    purchase_price = float(request.form['purchase_price'])
-    selling_price = float(request.form['selling_price'])
-    commission = float(request.form['commission'])
-    quantity = int(request.form['quantity'])
+    purchase_price = float(request.form['purchase_price'] or 0)
+    selling_price = float(request.form['selling_price'] or 0)
+    commission = float(request.form['commission'] or 0)
+    quantity = int(request.form['quantity'] or 1)
     
-    conn = sqlite3.connect('/tmp/store_sinai_401.db')
-    cursor = conn.cursor()
-    try:
-        cursor.execute('INSERT INTO products (name, purchase_price, selling_price, commission, stock_quantity, image_url, description) VALUES (?, ?, ?, ?, ?, ?, ?)', (name, purchase_price, selling_price, commission, quantity, image_url, description))
-    except:
-        cursor.execute('UPDATE products SET stock_quantity = stock_quantity + ?, purchase_price=?, selling_price=?, commission=?, image_url=?, description=? WHERE name=?', (quantity, purchase_price, selling_price, commission, image_url, description, name))
+    conn = get_db_connection()
+    cur = conn.cursor()
+    
+    # التحقق مما إذا كان المنتج موجوداً مسبقاً لتحديث الكمية والبيانات
+    cur.execute("SELECT stock_quantity, image_url, description FROM products WHERE name = %s;", (name,))
+    row = cur.fetchone()
+    
+    if row:
+        new_qty = row[0] + quantity
+        final_img = image_url if image_url else row[1]
+        final_desc = description if description else row[2]
+        cur.execute("""
+            UPDATE products 
+            SET stock_quantity = %s, purchase_price = %s, selling_price = %s, commission = %s, image_url = %s, description = %s
+            WHERE name = %s;
+        """, (new_qty, purchase_price, selling_price, commission, final_img, final_desc, name))
+    else:
+        cur.execute("""
+            INSERT INTO products (name, description, purchase_price, selling_price, commission, stock_quantity, image_url)
+            VALUES (%s, %s, %s, %s, %s, %s, %s);
+        """, (name, description, purchase_price, selling_price, commission, quantity, image_url))
+        
     conn.commit()
+    cur.close()
     conn.close()
     return redirect(url_for('cashier'))
 
-@app.route('/delete_product/<int:p_id>')
-def delete_product(p_id):
+@app.route('/delete_product/<string:p_name>')
+def delete_product(p_name):
     if not session.get('admin_logged_in'):
-        return "غير مسموح بالوصول", 403
+        return "غير مسموح", 403
         
-    conn = sqlite3.connect('/tmp/store_sinai_401.db')
-    cursor = conn.cursor()
-    cursor.execute('DELETE FROM products WHERE id=?', (p_id,))
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("DELETE FROM products WHERE name = %s;", (p_name,))
     conn.commit()
+    cur.close()
     conn.close()
     return redirect(url_for('cashier'))
