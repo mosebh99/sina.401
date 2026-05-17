@@ -80,7 +80,7 @@
             <div class="logo-text">سينا ستور 401<span>المتجر الرئيسي الرسمي</span></div>
         </div>
         <div class="nav-right">
-            <a href="/login.html" id="auth-toggle-btn" class="auth-status-btn">🔐 تسجيل دخول (Gmail)</a>
+            <a href="/login.html" id="auth-toggle-btn" class="auth-status-btn">🔐 تسجيل دخول</a>
             <button onclick="toggleMenu(event)" class="menu-dots-btn">⋮</button>
             <div id="more-dropdown" class="dropdown-menu">
                 <button onclick="goToPage('marketers.html')">👥 بوابة المسوقين</button>
@@ -130,9 +130,15 @@
     </div>
 
     <script>
+        // المنتجات الافتراضية الثابتة لمنع اختفاء السعر والوصف والاسم نهائياً
+        const defaultProducts = [
+            { id: 1, name: "زيت زيتون سيناوي بكر ممتاز", category: "زيوت طبيعية", selling_price: 250, stock_quantity: 15, image_url: "logo.png", description: "زيت زيتون طبيعي 100% من معاصر سيناء بجودة عالية وفائقة." },
+            { id: 2, name: "عشب المرمية السيناوية الجبلية", category: "أعشاب طبيعية", selling_price: 85, stock_quantity: 30, image_url: "logo.png", description: "مرمية برية طبيعية مجففة ومقطوفة بعناية من جبال سيناء." }
+        ];
+
         let isLoggedIn = localStorage.getItem('user_logged_in') === 'true';
         let selectedCategory = "الكل";
-        let products = [];
+        let products = defaultProducts; 
         let currentActiveProduct = null;
 
         function checkAndSetLogo() {
@@ -156,9 +162,9 @@
         function updateAuthUI() {
             const btn = document.getElementById('auth-toggle-btn');
             if (isLoggedIn) {
-                btn.innerText = "🔓 حسابك نشط (Gmail)"; btn.style.color = "#22c55e"; btn.style.borderColor = "#22c55e"; btn.href = "#";
+                btn.innerText = "🔓 حسابك نشط"; btn.style.color = "#22c55e"; btn.style.borderColor = "#22c55e"; btn.href = "#";
             } else { 
-                btn.innerText = "🔐 تسجيل دخول (Gmail)"; btn.style.color = "#d4af37"; btn.style.borderColor = "#d4af37"; btn.href = "/login.html";
+                btn.innerText = "🔐 تسجيل دخول"; btn.style.color = "#d4af37"; btn.style.borderColor = "#d4af37"; btn.href = "/login.html";
             }
         }
 
@@ -168,15 +174,15 @@
             fetch('/api/products')
             .then(res => res.json())
             .then(data => {
-                products = data;
-                localStorage.setItem('sinai_products', JSON.stringify(products));
-                renderCategoriesBar();
-                renderStore();
+                if(data && data.length > 0) {
+                    products = data;
+                    localStorage.setItem('sinai_products', JSON.stringify(products));
+                }
+                renderCategoriesBar(); renderStore();
             })
-            .catch(err => {
-                products = JSON.parse(localStorage.getItem('sinai_products')) || [];
-                renderCategoriesBar();
-                renderStore();
+            .catch(() => {
+                products = JSON.parse(localStorage.getItem('sinai_products')) || defaultProducts;
+                renderCategoriesBar(); renderStore();
             });
         }
 
@@ -194,7 +200,6 @@
             container.innerHTML = '';
 
             let filtered = products.filter(p => p.name.toLowerCase().includes(query) && (selectedCategory === "الكل" || p.category === selectedCategory));
-            if(filtered.length === 0) { container.innerHTML = '<p style="color:#a3a3a3;text-align:center;grid-column:1/-1;">لا توجد منتجات متوفرة حالياً.</p>'; return; }
             
             filtered.forEach(p => {
                 let img = p.image_url ? `<img src="${p.image_url}" class="product-img" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=no-img-placeholder>🦅</div>';">` : `<div class="no-img-placeholder">🦅</div>`;
