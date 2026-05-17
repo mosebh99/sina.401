@@ -7,77 +7,26 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 from flask import Flask, jsonify, request, render_template, redirect, url_for, session
 
-# 🎯 جعل Flask تقرأ الملفات من المجلد الرئيسي للمشروع مباشرة بشكل ديناميكي متوافق مع Vercel
+# ضبط مسار المجلد الرئيسي مباشرة لـ Vercel
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 app = Flask(__name__, template_folder=BASE_DIR, static_folder=BASE_DIR)
 
-# 🛡️ إعدادات الأمان والاتصال بقاعدة البيانات المستقرة بسوبابيس
 app.secret_key = os.environ.get('FLASK_SECRET_KEY') or "SinaaStoreSuperSecretKey2026_JWT"
 DATABASE_URL = os.environ.get('DATABASE_URL') or "postgresql://postgres:MoSebA01065653401@db.ellxxztpfpaqlbqsnyhb.supabase.co:5432/postgres"
+
+# إعدادات رفع الصور محلياً
+UPLOAD_FOLDER = os.path.join(BASE_DIR, 'uploads')
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 def get_db_connection():
     return psycopg2.connect(DATABASE_URL, connect_timeout=10)
 
-def init_db():
-    try:
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        
-        # 1. جدول المنتجات
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS products (
-                id SERIAL PRIMARY KEY,
-                name TEXT NOT NULL,
-                category TEXT DEFAULT 'عام',
-                selling_price REAL NOT NULL,
-                purchasing_price REAL DEFAULT 0,
-                commission REAL DEFAULT 0,
-                stock_quantity INTEGER DEFAULT 0,
-                image_url TEXT, 
-                description TEXT,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        ''')
-        
-        # 2. جدول الطلبات
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS orders (
-                id SERIAL PRIMARY KEY,
-                customer_name TEXT NOT NULL,
-                customer_phone TEXT NOT NULL,
-                customer_address TEXT NOT NULL,
-                total_price REAL NOT NULL,
-                marketer_id TEXT,
-                products_json TEXT NOT NULL,
-                status TEXT DEFAULT 'قيد المراجعة',
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        ''')
-        
-        # 3. جدول حسابات الأدمن
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS admins (
-                id SERIAL PRIMARY KEY,
-                username TEXT UNIQUE NOT NULL,
-                password_hash TEXT NOT NULL
-            )
-        ''')
-        
-        cursor.execute("SELECT * FROM admins WHERE username='admin'")
-        if not cursor.fetchone():
-            hashed = generate_password_hash("SinaaAdmin2026")
-            cursor.execute("INSERT INTO admins (username, password_hash) VALUES ('admin', %s)", (hashed,))
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-        conn.commit()
-        cursor.close()
-        conn.close()
-        print("🚀 Database connected and initialized successfully!")
-    except Exception as e:
-        print("❌ Database Connection/Init Error:", e)
-
-init_db()
-
-# --- 🌐 مسارات العرض (توجيه مباشر لملفات الـ HTML في جذر المشروع) ---
+# --- 🌐 مسارات العرض والتوجيه الفوري لملفاتك ---
 
 @app.route('/')
 def index():
@@ -99,7 +48,54 @@ def cashier():
 def marketers():
     return render_template('marketers.html')
 
-# --- 🛒 واجهات الـ API الخاصة بالمنتجات ---
+# --- 🔑 نظام الحسابات (Auth APIs) ---
+
+@app.route('/api/auth/login', methods=['POST'])
+def api_login():
+    data = request.get_json() or {}
+    username = data.get('username', '').strip().lower()
+    password = data.get('password', '').strip()
+    
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        cursor.execute("SELECT * FROM admins WHERE username=%s", (username,))
+        admin = cursor.fetchone()
+        cursor.close()
+        conn.close()
+        
+        if admin and check_password_hash(admin['password_hash'], password):
+            session['is_admin'] = True
+            session['username'] = username
+            return jsonify({"status": "success", "message": "تم تسجيل الدخول بنجاح"}), 200
+        return jsonify({"status": "error", "message": "بيانات الدخول غير صحيحة"}), 401
+    except Exception as e:
+        return jsonify({"status": "error", "message": "فشل الاتصال بقاعدة البيانات"}), 500
+
+@app.route('/api/auth/logout')
+def api_logout():
+    session.clear()
+    return redirect(url_for('index'))
+
+# --- 📸 نظام رفع الصور ---
+@app.route('/api/upload', methods=['POST'])
+def upload_images():
+    if 'files' not in request.files:
+        return jsonify({"status": "error", "message": "لا توجد ملفات مرفوعة"}), 400
+    
+    files = request.files.getlist('files')
+    uploaded_urls = []
+    
+    for file in files:
+        if file and allowed_file(file.filename):
+            filename = secure_filename(f"{int(datetime.utcnow().timestamp())}_{file.filename}")
+            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(filepath)
+            uploaded_urls.append(f"/uploads/{filename}")
+            
+    return jsonify({"status": "success", "urls": uploaded_urls}), 200
+
+# --- 🛒 واجهات الـ API المحدثة بالكامل للمنتجات ---
 
 @app.route('/api/products', methods=['GET'])
 def get_products():
