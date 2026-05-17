@@ -7,8 +7,8 @@
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0d0d0d; margin: 0; padding: 0; color: #f3f4f6; }
         
-        /* الهيدر والقائمة العلوية متناسقة مع ألوان اللوجو الأسود والذهبي */
-        nav { background: #141414; color: #ffffff; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-b: 2px solid #d4af37; box-shadow: 0 4px 10px rgba(0,0,0,0.5); position: relative; }
+        /* الهيدر والقائمة العلوية - متناسق مع ألوان اللوجو الأسود والذهبي */
+        nav { background: #141414; color: #ffffff; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #d4af37; box-shadow: 0 4px 10px rgba(0,0,0,0.5); position: relative; }
         nav h1 { margin: 0; font-size: 22px; font-weight: bold; color: #d4af37; display: flex; align-items: center; gap: 10px; }
         nav h1 span { font-size: 12px; color: #a3a3a3; font-weight: normal; display: block; margin-top: 2px; }
         .nav-right { display: flex; align-items: center; gap: 15px; position: relative; }
@@ -18,13 +18,13 @@
         .auth-status-btn:hover { background: #d4af37; color: black; }
         .menu-dots-btn { background: none; border: none; font-size: 24px; cursor: pointer; color: #d4af37; padding: 0 10px; font-weight: bold; line-height: 1; }
         
-        /* قائمة الـ 3 نقط الجانبية */
+        /* قائمة الـ 3 نقط الجانبية للكاشير والمسوقين */
         .dropdown-menu { display: none; position: absolute; left: 0; top: 45px; background: #1a1a1a; border: 1px solid #d4af37; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.6); z-index: 100; min-width: 180px; overflow: hidden; }
         .dropdown-menu button { display: block; width: 100%; padding: 12px 15px; color: white; text-decoration: none; background: none; border: none; text-align: right; font-size: 14px; font-family: inherit; cursor: pointer; box-sizing: border-box; border-bottom: 1px solid #2a2a2a; transition: 0.2s; }
         .dropdown-menu button:last-child { border-bottom: none; }
         .dropdown-menu button:hover { background: #d4af37; color: black; }
 
-        /* شريط الأقسام العلوي المتطور */
+        /* شريط الأقسام العلوي */
         .categories-container { max-width: 1300px; margin: 25px auto 0 auto; padding: 0 20px; box-sizing: border-box; }
         .categories-bar { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 8px; scrollbar-width: thin; }
         .categories-bar::-webkit-scrollbar { height: 5px; }
@@ -55,7 +55,7 @@
         /* أزرار الكروت */
         .action-card-btn { width: 100%; padding: 10px; border: none; border-radius: 6px; font-size: 13px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; font-family: inherit; transition: 0.2s; }
         .btn-direct { background: #d4af37; color: black; }
-        .btn-direct:hover { background: #fff; color: black; }
+        .btn-direct:hover { background: white; color: black; }
 
         /* فورم الشراء الجانبي السريع */
         .order-card { background: #1a1a1a; padding: 25px; border-radius: 12px; border: 1px solid #2a2a2a; border-top: 5px solid #d4af37; height: fit-content; position: sticky; top: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
@@ -95,7 +95,7 @@
     <nav>
         <h1>🦅 سينا ستور 401 <span>المتجر الرئيسي</span></h1>
         <div class="nav-right">
-            <button id="auth-toggle-btn" onclick="toggleAuthMock()" class="auth-status-btn">🔐 إنشاء حساب للطلب الأسرع</button>
+            <button id="auth-toggle-btn" onclick="toggleAuthMock()" class="auth-status-btn">🔐 حساب سريع لتذكر بياناتك</button>
             <button onclick="toggleMenu(event)" class="menu-dots-btn">⋮</button>
             
             <div id="more-dropdown" class="dropdown-menu">
@@ -126,7 +126,7 @@
                     </div>
                     <div class="form-group"><label>الكمية:</label><input type="number" id="customer-qty" value="1" min="1" required></div>
                     <div class="form-group"><label>اسمك الكامل:</label><input type="text" id="cust-name" required placeholder="الاسم ثلاثي"></div>
-                    <div class="form-group"><label>رقم التليفون / الواتساب:</label><input type="text" id="cust-phone" required placeholder="رقم موبايل نشط شغال"></div>
+                    <div class="form-group"><label>رقم التليفون:</label><input type="text" id="cust-phone" required placeholder="رقم موبايل نشط شغال"></div>
                     <div class="form-group"><label>عنوان شحن الطلب بالتفصيل:</label><input type="text" id="cust-address" required placeholder="المحافظة / المدينة / اسم الشارع"></div>
                     <button type="submit" id="submit-form-btn" class="btn-yellow-submit">📦 تأكيد طلب الشراء في السيستم</button>
                 </form>
@@ -149,8 +149,6 @@
     </div>
 
     <script>
-        const MY_WHATSAPP_NUMBER = "201065653401";
-        
         let isLoggedIn = localStorage.getItem('user_logged_in') === 'true';
         let selectedCategory = "الكل";
 
@@ -173,18 +171,16 @@
 
         function updateAuthUI() {
             const btn = document.getElementById('auth-toggle-btn');
-            
             if (isLoggedIn) {
-                btn.innerText = "🔓 تم تسجيل الحساب التلقائي ذكي";
+                btn.innerText = "🔓 تم تفعيل الحساب التلقائي الذكي";
                 btn.style.color = "#22c55e";
                 btn.style.borderColor = "#22c55e";
                 
-                // ملء بيانات العميل تلقائياً لجعل الطلب أسرع وأذكى
                 document.getElementById('cust-name').value = localStorage.getItem('cached_cust_name') || '';
                 document.getElementById('cust-phone').value = localStorage.getItem('cached_cust_phone') || '';
                 document.getElementById('cust-address').value = localStorage.getItem('cached_cust_address') || '';
             } else {
-                btn.innerText = "🔐 إنشاء حساب للطلب الأسرع";
+                btn.innerText = "🔐 حساب سريع لتذكر بياناتك";
                 btn.style.color = "#d4af37";
                 btn.style.borderColor = "#d4af37";
             }
@@ -207,7 +203,7 @@
             wrapper.innerHTML = '';
             categories.forEach(cat => {
                 const isActive = selectedCategory === cat ? 'active' : '';
-                wrapper.innerHTML += `<button class="cat-btn ${isActive}" onclick="filterByCategory('${cat}')">${cat}</button>`;
+                wrapper.innerHTML += `<button class="cat-btn ` + isActive + `" onclick="filterByCategory('` + cat + `')">` + cat + `</button>`;
             });
         }
 
@@ -233,7 +229,7 @@
 
             products.forEach(p => {
                 if(p.stock_quantity > 0) {
-                    select.innerHTML += `<option value="${p.id}">${p.name} - السعر: ${p.selling_price} ج.م</option>`;
+                    select.innerHTML += `<option value="` + p.id + `">` + p.name + ` - السعر: ` + p.selling_price + ` ج.م</option>`;
                 }
             });
 
@@ -243,22 +239,23 @@
             }
 
             filteredProducts.forEach(p => {
-                let imageHtml = p.image_url ? `<img src="${p.image_url}" class="product-img">` : `<div class="no-img-placeholder">🌴</div>`;
+                let imageHtml = p.image_url ? `<img src="` + p.image_url + `" class="product-img">` : `<div class="no-img-placeholder">🌴</div>`;
+                let opacityStyle = p.stock_quantity <= 0 ? 'opacity:0.4;' : '';
                 
                 let actionButton = '';
                 if(p.stock_quantity > 0) {
-                    actionButton = `<button class="action-card-btn btn-direct" onclick="selectProductForForm(event, ${p.id})">📦 اطلب الآن فوري</button>`;
+                    actionButton = `<button class="action-card-btn btn-direct" onclick="selectProductForForm(event, ` + p.id + `)">📦 اطلب الآن فوري</button>`;
                 }
 
                 container.innerHTML += `
-                    <div class="product-card" style="${p.stock_quantity <= 0 ? 'opacity:0.4;' : ''}" onclick="openProductDetail(${p.id})">
-                        ${imageHtml}
+                    <div class="product-card" style="` + opacityStyle + `" onclick="openProductDetail(` + p.id + `)">
+                        ` + imageHtml + `
                         <div class="product-info">
-                            <h3 class="product-title">${p.name}</h3>
+                            <h3 class="product-title">` + p.name + `</h3>
                             <div>
-                                <div class="price-badge-mini">${p.selling_price} ج.م</div>
-                                <div class="stock-count">${p.stock_quantity <= 0 ? '❌ نفذت الكمية' : `🟢 متوفر في المخزن`}</div>
-                                ${actionButton}
+                                <div class="price-badge-mini">` + p.selling_price + ` ج.م</div>
+                                <div class="stock-count">` + (p.stock_quantity <= 0 ? '❌ نفذت الكمية' : `🟢 متوفر في المخزن`) + `</div>
+                                ` + actionButton + `
                             </div>
                         </div>
                     </div>
@@ -280,19 +277,16 @@
             const body = document.getElementById('modal-body-content');
             const btnContainer = document.getElementById('modal-order-action-container');
             
-            let img = product.image_url ? `<img src="${product.image_url}" class="modal-img">` : `<div class="no-img-placeholder" style="height:240px;">🌴</div>`;
+            let img = product.image_url ? `<img src="` + product.image_url + `" class="modal-img">` : `<div class="no-img-placeholder" style="height:240px;">🌴</div>`;
             let desc = product.description ? product.description : "لا توجد تفاصيل إضافية لهذا المنتج حالياً وجميع منتجاتنا طبيعية 100%.";
             
-            body.innerHTML = `
-                ${img}
-                <h2 style="margin: 15px 0 5px 0; color:white; font-size:22px;">${product.name}</h2>
-                <div style="color:#d4af37; font-weight:bold; font-size:18px; margin-bottom:15px; background: rgba(212, 175, 55, 0.1); width:fit-content; padding: 5px 12px; border-radius:6px;">السعر الحالى: ${product.selling_price} ج.م</div>
-                <p style="color:#d4d4d4; font-size:14px; line-height:1.6; background:#0d0d0d; padding:15px; border-radius:8px; margin:0; border: 1px solid #2a2a2a;">${desc}</p>
-            `;
+            body.innerHTML = img + 
+                `<h2 style="margin: 15px 0 5px 0; color:white; font-size:22px;">` + product.name + `</h2>` +
+                `<div style="color:#d4af37; font-weight:bold; font-size:18px; margin-bottom:15px; background: rgba(212, 175, 55, 0.1); width:fit-content; padding: 5px 12px; border-radius:6px;">السعر الحالى: ` + product.selling_price + ` ج.م</div>` +
+                `<p style="color:#d4d4d4; font-size:14px; line-height:1.6; background:#0d0d0d; padding:15px; border-radius:8px; margin:0; border: 1px solid #2a2a2a;">` + desc + `</p>`;
 
-            // إضافة زر الشراء المباشر والذكي داخل الـ Modal
             if(product.stock_quantity > 0) {
-                btnContainer.innerHTML = `<button class="modal-order-btn" onclick="orderFromModal(${product.id})">📦 اطلب الآن - الدفع عند الاستلام</button>`;
+                btnContainer.innerHTML = `<button class="modal-order-btn" onclick="orderFromModal(` + product.id + `)">📦 اطلب الآن - الدفع عند الاستلام</button>`;
             } else {
                 btnContainer.innerHTML = '';
             }
@@ -306,12 +300,12 @@
                 similarWrapper.innerHTML = '<p style="color:#a3a3a3; font-size:12px;">لا توجد منتجات مشابهة متوفرة حالياً في المخزن.</p>';
             } else {
                 similar.forEach(sp => {
-                    let sImg = sp.image_url ? `<img src="${sp.image_url}">` : `<div style="height:80px; background:#0d0d0d; display:flex; align-items:center; justify-content:center;">🌴</div>`;
+                    let sImg = sp.image_url ? `<img src="` + sp.image_url + `">` : `<div style="height:80px; background:#0d0d0d; display:flex; align-items:center; justify-content:center;">🌴</div>`;
                     similarWrapper.innerHTML += `
-                        <div class="similar-card" onclick="switchModalProduct(${sp.id})">
-                            ${sImg}
-                            <h4>${sp.name}</h4>
-                            <span>${sp.selling_price} ج.م</span>
+                        <div class="similar-card" onclick="switchModalProduct(` + sp.id + `)">
+                            ` + sImg + `
+                            <h4>` + sp.name + `</h4>
+                            <span>` + sp.selling_price + ` ج.م</span>
                         </div>
                     `;
                 });
@@ -351,13 +345,11 @@
 
             let totalCost = product.selling_price * qty;
 
-            // حفظ البيانات تلقائياً في المتصفح لعمل حساب ذكي للعميل المرة القادمة
             localStorage.setItem('cached_cust_name', name);
             localStorage.setItem('cached_cust_phone', phone);
             localStorage.setItem('cached_cust_address', address);
             localStorage.setItem('user_logged_in', 'true');
 
-            // إرسال البيانات الفورية المباشرة لـ السيرفر الفعلي في app.py
             const orderData = { product_id: pId, product_name: product.name, quantity: qty, total: totalCost, customer_name: name, customer_phone: phone, customer_address: address };
             
             fetch('/api/orders', {
@@ -366,13 +358,13 @@
                 body: JSON.stringify(orderData)
             })
             .then(res => {
-                alert(`🎉 تم إرسال وتسجيل طلبك بنجاح داخل السيستم! إجمالي الحساب: ${totalCost} ج.م، سيتم تجهيز الأوردر فوراً لشحنه إليك.`);
+                alert(`🎉 تم إرسال وتسجيل طلبك بنجاح داخل السيستم! إجمالي الحساب: ` + totalCost + ` ج.م، سيتم تجهيز الأوردر فوراً لشحنه إليك.`);
                 document.getElementById('customer-order-form').reset();
                 isLoggedIn = true;
                 updateAuthUI();
             })
             .catch(err => {
-                alert(`🎉 تم تسجيل طلبك الفوري المباشر بالموقع! إجمالي الحساب: ${totalCost} ج.م. (تم نقله للكاشير للمراجعة والتنفيذ في الخلفية)`);
+                alert(`🎉 تم تسجيل طلبك الفوري المباشر بالموقع! إجمالي الحساب: ` + totalCost + ` ج.م. (تم نقله للكاشير للمراجعة والتنفيذ في الخلفية)`);
             });
         }
 
@@ -384,4 +376,3 @@
     </script>
 </body>
 </html>
-
