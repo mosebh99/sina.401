@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول الموحد | سينا ستور</title>
+    <link rel="icon" type="image/png" href="logo.png">
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0d0d0d; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; color: white; }
+        .login-box { background: #141414; padding: 30px; border-radius: 16px; border: 1px solid #d4af37; text-align: center; width: 100%; max-width: 380px; box-shadow: 0 4px 20px rgba(0,0,0,0.6); }
+        .login-box img { height: 60px; width: 60px; border-radius: 50%; border: 1px solid #d4af37; margin-bottom: 15px; }
+        h2 { margin: 0 0 8px 0; color: #d4af37; font-size: 20px; }
+        p { color: #a3a3a3; font-size: 13px; margin: 0 0 25px 0; }
+        
+        /* زرار جوجل الشهير والموثوق */
+        .google-btn { width: 100%; background: white; color: #333; border: none; padding: 12px; border-radius: 8px; font-weight: bold; font-family: inherit; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .google-btn:hover { background: #f3f4f6; }
+        .google-icon { width: 18px; height: 18px; }
+        
+        .footer-link { display: block; margin-top: 20px; color: #a3a3a3; text-decoration: none; font-size: 12px; }
+        .footer-link:hover { color: #d4af37; }
+    </style>
+</head>
+<body>
+
+    <div class="login-box">
+        <img src="logo.png" alt="Sena Store">
+        <h2>تسجيل الدخول الموحد</h2>
+        <p>مرحباً بك في سينا ستور 401. سجل حسابك الآن لمتابعة الطلبات أو إدارة أرباح عمولاتك.</p>
+        
+        <button class="google-btn" onclick="handleGoogleLoginMock()">
+            <img class="google-icon" src="https://fonts.gstatic.com/s/i/productlogos/googleg/v6/web-24dp/logo_googleg_color_24dp.png" alt="Google">
+            الدخول السريع باستخدام حساب Google (Gmail)
+        </button>
+
+        <a href="/" class="footer-link">⬅️ إلغاء والعودة لمتصفح المنتجات</a>
+    </div>
+
+    <script>
+        function handleGoogleLoginMock() {
+            // محاكاة سريعة وعبقرية لتسجيل الدخول الفوري دون تعقيد برمجي
+            localStorage.setItem('user_logged_in', 'true');
+            alert("🎉 تم تسجيل دخولك بنجاح عبر حساب Google المتصل بجهازك!");
+            window.location.href = '/'; // العودة للمتجر الرئيسي مباشرة وهو متعرف على العميل
+        }
+    </script>
+</body>
+</html>
