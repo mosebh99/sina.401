@@ -3,264 +3,137 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sina 401</title>
+    <title>Sina 401 | متجر سينا لملحقات الموبايل الاحترافي</title>
+    <meta name="description" content="تصفح واشترِ أحدث إكسسوارات وملحقات الهواتف المحمولة بجودة عالية وضمان حصري من سينا ستور.">
     <link rel="icon" type="image/png" href="logo.png.jpeg">
-    <style>
-        :root { --primary: #d4af37; --bg: #0d0d0d; --card-bg: #141414; --text: #ffffff; --text-muted: #a3a3a3; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 0; }
-        
-        header { background: var(--card-bg); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #2a2a2a; position: relative; }
-        header h1 { color: var(--primary); margin: 0; font-size: 24px; font-weight: bold; }
-        .menu-dots { font-size: 28px; color: var(--primary); cursor: pointer; padding: 0 10px; user-select: none; }
-        
-        .dropdown-menu { display: none; position: absolute; top: 60px; left: 20px; background: #1a1a1a; border: 1px solid var(--primary); border-radius: 8px; width: 220px; z-index: 1000; padding: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.6); }
-        .dropdown-menu.show { display: block; }
-        .dropdown-menu a, .dropdown-menu div { color: white; text-decoration: none; display: block; padding: 10px; font-size: 14px; border-bottom: 1px solid #2a2a2a; cursor: pointer; }
-        .dropdown-menu div:hover, .dropdown-menu a:hover { color: var(--primary); }
-
-        .categories-bar { display: flex; justify-content: center; gap: 10px; margin: 20px 0; padding: 0 10px; overflow-x: auto; }
-        .cat-btn { background: #1a1a1a; border: 1px solid #333; color: white; padding: 8px 18px; border-radius: 20px; cursor: pointer; font-size: 13px; font-family: inherit; transition: 0.2s; white-space: nowrap; }
-        .cat-btn.active, .cat-btn:hover { background: var(--primary); color: black; border-color: var(--primary); font-weight: bold; }
-
-        .panel-box { background: #1a160d; border: 1px solid var(--primary); padding: 15px; border-radius: 8px; margin: 20px auto; max-width: 1160px; display: none; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
-        .panel-box input { padding: 8px; background: #000; border: 1px solid #444; color: white; border-radius: 4px; font-family: inherit; }
-        .action-btn { background: var(--primary); color: #000; border: none; padding: 8px 15px; border-radius: 4px; font-weight: bold; cursor: pointer; font-family: inherit; }
-
-        .container { max-width: 1200px; margin: 0 auto; padding: 0 15px 80px 15px; }
-        
-        .products-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-        @media (min-width: 768px) { .products-grid { grid-template-columns: repeat(4, 1fr); gap: 20px; } }
-
-        .product-card { background: var(--card-bg); border: 1px solid #2a2a2a; border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
-        .product-card img { width: 100%; height: 160px; object-fit: cover; border-bottom: 1px solid #2a2a2a; cursor: zoom-in; transition: 0.3s; }
-        .product-card img:hover { opacity: 0.8; }
-        @media (min-width: 768px) { .product-card img { height: 210px; } }
-        
-        .product-info { padding: 12px; display: flex; flex-direction: column; flex-grow: 1; }
-        .product-info h3 { color: var(--text); margin: 0 0 6px 0; font-size: 15px; font-weight: 600; }
-        .product-info p { color: var(--text-muted); font-size: 12px; line-height: 1.4; margin: 0 0 12px 0; flex-grow: 1; }
-        
-        .price-row { display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 8px; border-top: 1px dashed #222; }
-        .price { color: #ffffff; font-size: 13px; }
-        
-        .btns-group { display: flex; gap: 4px; }
-        .cart-btn { background: #1a1a1a; border: 1px solid #444; color: white; padding: 6px 8px; border-radius: 5px; font-size: 11px; cursor: pointer; font-family: inherit; }
-        .buy-now-btn { background: #22c55e; color: white; border: none; padding: 6px 10px; border-radius: 5px; font-size: 11px; font-weight: bold; cursor: pointer; font-family: inherit; }
-        .buy-now-btn:hover { background: #16a34a; }
-
-        .cart-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #141414; border-top: 1px solid var(--primary); padding: 15px 20px; box-sizing: border-box; display: none; justify-content: space-between; align-items: center; z-index: 999; }
-        .cart-bar span { color: var(--primary); font-weight: bold; font-size: 14px; }
-
-        .order-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 1000; }
-        .order-card { background: #141414; border: 1px solid var(--primary); padding: 20px; border-radius: 10px; width: 90%; max-width: 400px; text-align: right; }
-        .order-card input { width: 100%; padding: 10px; margin-bottom: 12px; background: #000; border: 1px solid #444; color: white; border-radius: 5px; box-sizing: border-box; }
-
-        .image-viewer-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; justify-content: center; align-items: center; z-index: 2000; cursor: zoom-out; }
-        .image-viewer-modal img { max-width: 90%; max-height: 85%; border: 2px solid var(--primary); border-radius: 8px; box-shadow: 0 0 20px rgba(212,175,55,0.3); }
-    </style>
+    <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
 
+    <div class="toast" id="toast-notification"></div>
+
     <header>
-        <h1>Sina 401</h1>
-        <div class="menu-dots" onclick="toggleMenu(event)">⋮</div>
-        <div class="dropdown-menu" id="dots-menu">
-            <a href="/cashier.html">👑 لوحة التحكم والمدير</a>
-            <div onclick="showPanel('marketer')">🔗 حسابات وعمولات المسوقين</div>
-            <div onclick="showPanel('track')">🔍 تتبع حالة طلبك</div>
+        <h1><a href="/">✨ Sina 401</a></h1>
+        <div class="nav-links">
+            <a href="/">الرئيسية</a>
+            <a href="/marketers.html">بوابة المسوقين</a>
+            <a href="/login.html">🔐 لوحة الإدارة</a>
+            <div class="cart-status">
+                <span>🛒 السلة</span>
+                (<span id="cart-count">0</span>)
+            </div>
         </div>
     </header>
 
-    <div class="panel-box" id="marketer-box">
-        <div><strong style="color:var(--primary)">🔗 كود المسوق النشط:</strong> اكتب كودك لربطه بالمبيعات ومتابعة أرباحك</div>
-        <div>
-            <input type="text" id="m-code" placeholder="اكتب كود المسوق هنا" onchange="syncMarketerCode()">
-            <button class="action-btn" onclick="checkMarketerEarnings()">عرض أرباحي</button>
-        </div>
-        <div id="marketer-report" style="width:100%; margin-top:10px; font-size:13px; color:#22c55e; font-weight:bold;"></div>
+    <div class="hero-banner">
+        <h2>👑 الفخامة والتميز في مكان واحد</h2>
+        <p>اكتشف أقوى العروض وأحدث ملحقات الهواتف الذكية بضمان سينا ستور الأصلي المعتمد</p>
     </div>
 
-    <div class="panel-box" id="track-box">
-        <div><strong style="color:var(--primary)">🔍 تتبع طلبك:</strong> اكتب رقم الموبايل اللي سجلت بيه الطلب</div>
-        <div>
-            <input type="tel" id="t-phone" placeholder="رقم الموبايل المسجل">
-            <button class="action-btn" onclick="trackMyOrder()">استعلام</button>
-        </div>
-        <div id="track-result" style="width:100%; margin-top:10px; font-size:13px; font-weight:bold;"></div>
-    </div>
-
-    <div class="categories-bar" id="cats-bar">
-        <button class="cat-btn active" onclick="filterCat('الكل', this)">الكل 🌿</button>
-        <button class="cat-btn" onclick="filterCat('زيوت طبيعية', this)">زيوت طبيعية 🫒</button>
-        <button class="cat-btn" onclick="filterCat('أعشاب طبيعية', this)">أعشاب سيناوية 🌱</button>
-        <button class="cat-btn" onclick="filterCat('عسل', this)">عسل طبيعي 🍯</button>
-    </div>
-
-    <div class="container">
-        <div class="products-grid" id="main-grid">
-            <p style="color: var(--text-muted); text-align: center; grid-column: 1/-1;">جاري تحديث المخزن السيناوي...</p>
-        </div>
-    </div>
-
-    <div class="cart-bar" id="cart-bar">
-        <span id="cart-text">🛒 السلة: 0 منتجات</span>
-        <button onclick="openModal()" class="action-btn" style="background:#22c55e; color:white; padding: 8px 18px;">🛒 اشتري الآن</button>
-    </div>
-
-    <div class="order-modal" id="order-modal">
-        <div class="order-card">
-            <h3 style="color:var(--primary); margin-top:0;">📝 بيانات استلام الشحنة</h3>
-            <input type="text" id="ship-name" placeholder="اسم المستلم بالكامل">
-            <input type="tel" id="ship-phone" placeholder="رقم الموبايل للتواصل">
-            <input type="text" id="ship-address" placeholder="عنوان الشحن بالتفصيل">
-            <button onclick="sendOrder()" class="action-btn" style="width:100%; background:#22c55e; color:white; padding:12px; font-size:14px;">🚀 إرسال طلب الشحن</button>
-            <button onclick="closeModal()" style="width:100%; background:#333; color:white; border:none; padding:8px; margin-top:5px; border-radius:5px; cursor:pointer;">إلغاء</button>
-        </div>
-    </div>
-
-    <div class="image-viewer-modal" id="image-viewer" onclick="closeImageViewer()">
-        <img id="viewer-img" src="" alt="معاينة المنتج">
-    </div>
-
-    <script>
-        let cart = [];
-        let allProducts = [];
-        let currentMarketer = "";
-        const DEFAULT_IMG = "logo.png.jpeg"; 
-
-        function toggleMenu(e) { e.stopPropagation(); document.getElementById('dots-menu').classList.toggle('show'); }
+    <div class="controls-row">
+        <input type="text" id="search-box" class="search-input" placeholder="🔍 ابحث عن منتجك المفضل فوراً..." oninput="handleSearchAndFilter()">
         
-        function showPanel(type) {
-            document.getElementById('marketer-box').style.display = (type==='marketer')?'flex':'none';
-            document.getElementById('track-box').style.display = (type==='track')?'flex':'none';
-            document.getElementById('dots-menu').classList.remove('show');
-        }
+        <select id="category-select" class="filter-select" onchange="handleSearchAndFilter()">
+            <option value="all">كل الأقسام والمجموعات</option>
+            <option value="سماعات">سماعات</option>
+            <option value="شواحن وكابلات">شواحن وكابلات</option>
+            <option value="جرابات وحمايات">جرابات وحمايات</option>
+            <option value="ساعات ذكية">ساعات ذكية</option>
+            <option value="عام">عام وإلكترونيات</option>
+            <option value="زيوت طبيعية">زيوت طبيعية</option>
+            <option value="أعشاب طبيعية">أعشاب طبيعية</option>
+        </select>
 
-        function syncMarketerCode() {
-            currentMarketer = document.getElementById('m-code').value;
-            if(currentMarketer) alert(`✅ تم ربط كود المسوق [ ${currentMarketer} ] بنجاح مع السلة!`);
-        }
+        <select id="sort-select" class="filter-select" onchange="handleSearchAndFilter()">
+            <option value="default">الترتيب الافتراضي</option>
+            <option value="price-low">السعر: من الأقل للأعلى 📈</option>
+            <option value="price-high">السعر: من الأعلى للأقل 📉</option>
+        </select>
+    </div>
 
-        async function loadStore() {
-            try {
-                const r = await fetch('/api/products');
-                allProducts = await r.json();
-                renderGrid(allProducts);
-            } catch(e) { document.getElementById('main-grid').innerHTML = 'خطأ في جلب البيانات من السيرفر.'; }
-        }
+    <div class="products-grid" id="products-container">
+        <p style="text-align: center; grid-column: 1/-1; color: var(--text-muted); font-size: 16px; padding: 4px 0;">✨ جاري مزامنة وتحميل أحدث منتجات المخزن السحابي...</p>
+    </div>
 
-        function renderGrid(list) {
-            const g = document.getElementById('main-grid');
-            g.innerHTML = '';
-            if(!list || list.length===0) { g.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:#666;">في انتظار إضافة منتجات حية للمخزن.</p>'; return; }
-            list.forEach(p => {
-                let pImg = p.image_url && p.image_url.trim() !== "" ? p.image_url : DEFAULT_IMG;
-                g.innerHTML += `
-                    <div class="product-card">
-                        <img src="${pImg}" onerror="this.src='${DEFAULT_IMG}'" onclick="openImageViewer('${pImg}')">
-                        <div class="product-info">
-                            <h3>${p.name}</h3>
-                            <p>${p.description || ''} ... اقرأ المزيد</p>
-                            <div class="price-row">
-                                <span class="price">${p.selling_price} ج.م</span>
-                                <div class="btns-group">
-                                    <button class="cart-btn" onclick="addToCart(${p.id}, '${p.name}', ${p.selling_price}, false)">🛒 السلة</button>
-                                    <button class="buy-now-btn" onclick="addToCart(${p.id}, '${p.name}', ${p.selling_price}, true)">اشتري الآن</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-        }
+    <div style="max-width: 550px; margin: 40px auto; padding: 30px; background: rgba(20, 20, 20, 0.4); border-radius: 20px; border: 1px solid var(--card-border); backdrop-filter: blur(10px); box-shadow: 0 10px 30px rgba(0,0,0,0.3); box-sizing: border-box;">
+        <h3 style="color: var(--primary); text-align: center; margin-top: 0; font-size: 20px; font-weight: 700;">📦 تتبع حالة شحنتك فوراً</h3>
+        <p style="color: var(--text-muted); text-align: center; font-size: 13px; margin-bottom: 20px;">أدخل رقم الهاتف المسجل به الطلب لمعرفة أين وصلت شحنتك</p>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+            <input type="tel" id="track-phone" class="search-input" style="flex: 1; min-width: 200px;" placeholder="رقم الهاتف المسجل بالطلب...">
+            <button class="btn-primary" style="width: auto; margin: 0; padding: 0 25px; border-radius: 50px;" onclick="trackMyOrder()">🔍 استعلام</button>
+        </div>
+        <div id="track-output" style="margin-top: 20px; text-align: center;"></div>
+    </div>
 
-        function openImageViewer(src) {
-            document.getElementById('viewer-img').src = src;
-            document.getElementById('image-viewer').style.display = 'flex';
-        }
-        function closeImageViewer() { document.getElementById('image-viewer').style.display = 'none'; }
+    <div style="max-width: 550px; margin: 30px auto 60px auto; padding: 30px; background: rgba(20, 20, 20, 0.4); border-radius: 20px; border: 1px solid var(--card-border); backdrop-filter: blur(10px); box-shadow: 0 10px 30px rgba(0,0,0,0.3); box-sizing: border-box;">
+        <h3 style="color: var(--primary); text-align: center; margin-top: 0; font-size: 20px; font-weight: 700;">📊 فحص سريع لأرباح المسوقين</h3>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+            <input type="text" id="m-code" class="search-input" style="flex: 1; min-width: 200px;" placeholder="أدخل كود التسويق الخاص بك...">
+            <button class="btn-primary" style="width: auto; margin: 0; padding: 0 25px; border-radius: 50px;" onclick="checkMarketerEarnings()">💰 احسب أرباحي</button>
+        </div>
+        <div id="marketer-report" style="margin-top: 20px; text-align: center; color: var(--primary); font-weight: 600; font-size: 14px;"></div>
+    </div>
 
-        function filterCat(cat, btn) {
-            document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            if(cat === 'الكل') renderGrid(allProducts);
-            else renderGrid(allProducts.filter(p => p.category === cat));
-        }
+    <a href="https://wa.me/201065653401" class="floating-whatsapp" target="_blank" rel="noopener noreferrer" title="تواصل معنا عبر واتساب">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp">
+    </a>
 
-        function addToCart(id, name, price, directBuy = false) {
-            cart.push({ id, name, price });
-            let total = cart.reduce((s,i)=>s+i.price, 0);
-            document.getElementById('cart-text').innerText = `🛒 المنتجات: ${cart.length} | الإجمالي: ${total} ج.م`;
-            
-            if(directBuy) {
-                openModal();
-            } else {
-                document.getElementById('cart-bar').style.display = 'flex';
-            }
-        }
-
-        function openModal() { document.getElementById('order-modal').style.display='flex'; }
-        function closeModal() { document.getElementById('order-modal').style.display='none'; }
-
-        async function sendOrder() {
-            const n = document.getElementById('ship-name').value;
-            const p = document.getElementById('ship-phone').value;
-            const a = document.getElementById('ship-address').value;
-            if(!n || !p || !a) { alert("الرجاء كتابة بيانات الشحن كاملة!"); return; }
-
-            let total = cart.reduce((s,i)=>s+i.price,0);
-            let pMap = {}; cart.forEach(x => { pMap[x.name] = pMap[x.name] ? {name:x.name, qty:pMap[x.name].qty+1} : {name:x.name, qty:1}; });
-
-            const payload = { customer_name: n, customer_phone: p, customer_address: a, total: total, marketer_id: currentMarketer, products: Object.values(pMap) };
-            const res = await fetch('/api/orders', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
-            if(res.ok) {
-                alert(`🎉 تم إرسال طلبك بنجاح! سيتم التواصل معك قريباً لشحن المنتجات.`);
-                cart = []; document.getElementById('cart-bar').style.display='none'; closeModal();
-            }
-        }
-
+    <script src="/static/js/store.js"></script>
+    <script>
+        // دالة مصلحة لتتبع الشحنات العامة بالمتجر
         async function trackMyOrder() {
-            const ph = document.getElementById('t-phone').value;
-            if(!ph) return;
-            const res = await fetch('/api/orders');
-            const orders = await res.json();
-            const myOrder = orders.find(o => o.customer_phone === ph);
-            const out = document.getElementById('track-result');
-            if(myOrder) { 
-                let displayTotal = o.total_price ? o.total_price : o.total;
-                out.style.color = '#22c55e'; 
-                out.innerText = `📦 طلبك الحالي حالته: [ ${myOrder.status} ] بمبلغ إجمالي ${displayTotal} ج.م`; 
-            }
-            else { out.style.color = 'red'; out.innerText = "❌ لم نجد أي طلبات شحن مسجلة بهذا الرقم."; }
+            const phone = document.getElementById('track-phone').value.trim();
+            const out = document.getElementById('track-output');
+            if(!phone) { alert("من فضلك أدخل رقم الهاتف المسجل بالطلب أولاً"); return; }
+            out.innerHTML = "<span style='color:var(--primary);'>🔍 جاري فحص السجلات السحابية...</span>";
+            try {
+                const res = await fetch('/api/orders');
+                const orders = await res.json();
+                let myOrder = orders.find(o => o.customer_phone && o.customer_phone.trim() === phone);
+                if(myOrder) {
+                    out.innerHTML = `
+                        <div style="background: rgba(255,255,255,0.03); padding: 15px; border-radius: 12px; border: 1px solid var(--primary); margin-top: 10px; text-align: right;">
+                            <p style="margin:5px 0;">📦 رقم الطلب: <strong>#${myOrder.id}</strong></p>
+                            <p style="margin:5px 0;">🚦 حالة الشحنة: <span style="color:var(--primary); font-weight:bold;">${myOrder.status || 'معلق'}</span></p>
+                            <p style="margin:5px 0;">💰 إجمالي الحساب: <strong>${myOrder.total_price || myOrder.total_val || 0} ج.م</strong></p>
+                        </div>`;
+                } else { out.innerHTML = "<span style='color:var(--danger);'>❌ لم نجد أي طلبات شحن مسجلة بهذا الرقم.</span>"; }
+            } catch(e) { out.innerHTML = "<span style='color:var(--danger);'>❌ حدث خطأ أثناء الاتصال بالسيرفر.</span>"; }
         }
 
+        // دالة احتساب الأرباح للمسوقين من الواجهة مباشرة
         async function checkMarketerEarnings() {
-            const code = document.getElementById('m-code').value;
-            if(!code) { alert("اكتب كودك أولاً!"); return; }
-            const res = await fetch('/api/orders');
-            const orders = await res.json();
-            const pRes = await fetch('/api/products');
-            const prods = await pRes.json();
-            
-            let myOrders = orders.filter(o => o.marketer_id === code);
-            let totalComm = 0;
-            
-            myOrders.forEach(o => {
-                if (o.products_json) {
-                    try {
-                        let parsedProducts = JSON.parse(o.products_json);
-                        parsedProducts.forEach(item => {
-                            let matchingProd = prods.find(p => p.name === item.name);
-                            if(matchingProd) { totalComm += ((matchingProd.commission || 0) * item.qty); }
-                        });
-                    } catch(e) {}
-                }
-            });
-            document.getElementById('marketer-report').innerText = `📊 عدد المبيعات المسجلة بكودك: ${myOrders.length} طلب شحن | مستحقات عمولتك الحالية: ${totalComm} ج.م`;
+            const code = document.getElementById('m-code').value.trim();
+            if(!code) { alert("اكتب كودك التسويقي أولاً!"); return; }
+            try {
+                const res = await fetch('/api/orders');
+                const orders = await res.json();
+                const pRes = await fetch('/api/products');
+                const prods = await pRes.json();
+                
+                let myOrders = orders.filter(o => o.marketer_id === code);
+                let totalComm = 0;
+                
+                myOrders.forEach(o => {
+                    if (o.products_json) {
+                        try {
+                            let parsedProducts = JSON.parse(o.products_json);
+                            parsedProducts.forEach(item => {
+                                let matchingProd = prods.find(p => p.name === item.name);
+                                if(matchingProd) { totalComm += ((matchingProd.commission || 0) * (item.qty || 1)); }
+                            });
+                        } catch(e) {}
+                    }
+                });
+                document.getElementById('marketer-report').innerHTML = `📊 عدد الطلبات المسجلة بكودك: <span style="color:#fff;">${myOrders.length}</span> طلب شحن <br> 💵 إجمالي مستحقات عمولتك الحالية: <span style="color:var(--success); font-size:18px;">${totalComm} ج.م</span>`;
+            } catch(e) { alert("خطأ في سحب بيانات الأرباح."); }
         }
 
         window.onclick = function() { const m=document.getElementById('dots-menu'); if(m) m.classList.remove('show'); }
-        window.addEventListener('DOMContentLoaded', loadStore);
+        // دالة التشغيل التلقائي من ملف store.js الخاص بك
+        window.addEventListener('DOMContentLoaded', () => {
+            if(typeof loadStore === 'function') loadStore();
+        });
     </script>
 </body>
 </html>
