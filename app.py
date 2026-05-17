@@ -4,11 +4,11 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 from flask import Flask, jsonify, request, render_template, redirect, url_for
 
-# ضبط مسار المجلد الرئيسي لـ Vercel لقرأة ملفات الـ HTML من الجذر مباشرة
+# ضبط المسار لقرأة ملفات الـ HTML من الفولدر الرئيسي مباشرة كما هي بمشروعك
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 app = Flask(__name__, template_folder=BASE_DIR, static_folder=BASE_DIR)
 
-# رابط الاتصال المباشر والمستقر بقاعدة البيانات
+# رابط الاتصال المباشر بقاعدة بيانات سوبابيس
 DATABASE_URL = os.environ.get('DATABASE_URL') or "postgresql://postgres:MoSebA01065653401@db.ellxxztpfpaqlbqsnyhb.supabase.co:5432/postgres"
 
 def get_db_connection():
@@ -18,7 +18,7 @@ def init_db():
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
-        # إنشاء جدول المنتجات الأساسي
+        # إنشاء الجدول بالخصائص الأساسية المتوافقة تماماً مع صفحة cashier.html الحالية لديك
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS products (
                 id SERIAL PRIMARY KEY,
@@ -32,7 +32,6 @@ def init_db():
                 description TEXT
             )
         ''')
-        # إنشاء جدول الطلبات الأساسي
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS orders (
                 id SERIAL PRIMARY KEY,
@@ -49,14 +48,13 @@ def init_db():
         conn.commit()
         cursor.close()
         conn.close()
-        print("🚀 Database initialized successfully!")
+        print("🚀 Database Ready!")
     except Exception as e:
         print("❌ Database Init Error:", e)
 
-# تشغيل الفحص الأولي
 init_db()
 
-# --- 🌐 مسارات العرض والتوجيه المباشر ---
+# --- 🌐 مسارات الصفحات ---
 
 @app.route('/')
 def index():
@@ -78,7 +76,7 @@ def cashier():
 def marketers():
     return render_template('marketers.html')
 
-# --- 🛒 واجهات الـ API الخاصة بالمنتجات ---
+# --- 🛒 واجهات الـ API (متوافقة 100% مع طلبات صفحة cashier و index) ---
 
 @app.route('/api/products', methods=['GET'])
 def get_products():
@@ -100,19 +98,16 @@ def add_product():
         conn = get_db_connection()
         cursor = conn.cursor()
         
-        # التأكد من معالجة القيم بشكل صحيح وآمن لمنع الأخطاء الحسابية
-        selling_price = float(data.get('selling_price', 0) or 0)
-        purchasing_price = float(data.get('purchasing_price', 0) or 0)
-        commission = float(data.get('commission', 0) or 0)
-        stock_quantity = int(data.get('stock_quantity', 0) or 0)
-
+        # استقبال البيانات بالشكل الأساسي الذي ترسله واجهتك الحالية لمنع أي خطأ
         cursor.execute('''
-            INSERT INTO products (name, category, selling_price, purchasing_price, commission, stock_quantity, image_url, description)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            INSERT INTO products (name, category, selling_price, image_url, description)
+            VALUES (%s, %s, %s, %s, %s)
         ''', (
-            data.get('name'), data.get('category', 'عام'), 
-            selling_price, purchasing_price, commission, stock_quantity,
-            data.get('image_url'), data.get('description', '')
+            data.get('name'), 
+            data.get('category', 'عام'), 
+            float(data.get('selling_price', 0) or 0), 
+            data.get('image_url'), 
+            data.get('description', '')
         ))
         conn.commit()
         cursor.close()
@@ -134,7 +129,7 @@ def delete_product(p_id):
     except Exception as e: 
         return jsonify({"status": "error", "message": str(e)}), 500
 
-# --- 📦 واجهات الـ API الخاصة بالطلبات ---
+# --- 📦 واجهات الطلبات ---
 
 @app.route('/api/orders', methods=['POST'])
 def create_order():
@@ -142,6 +137,9 @@ def create_order():
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
+        
+        # معالجة إجمالي الطلب سواء كان الاسم total_price أو total_val لضمان عدم حدوث خطأ
+        total_val = data.get('total_price') or data.get('total_val') or 0
         products_json_str = json.dumps(data.get('products', []), ensure_ascii=False)
         
         cursor.execute('''
@@ -151,7 +149,7 @@ def create_order():
             data.get('customer_name'), 
             data.get('customer_phone'), 
             data.get('customer_address'), 
-            float(data.get('total_price', 0)), 
+            float(total_val), 
             data.get('marketer_id'), 
             products_json_str
         ))
@@ -174,21 +172,6 @@ def get_orders():
         return jsonify([dict(r) for r in rows]), 200
     except Exception as e: 
         return jsonify([]), 200
-
-@app.route('/api/orders/<int:o_id>', methods=['PUT'])
-def update_order_status(o_id):
-    data = request.get_json() or {}
-    status = data.get('status')
-    try:
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute("UPDATE orders SET status=%s WHERE id=%s", (status, o_id))
-        conn.commit()
-        cursor.close()
-        conn.close()
-        return jsonify({"status": "success"}), 200
-    except Exception as e: 
-        return jsonify({"status": "error"}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
