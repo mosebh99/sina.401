@@ -4,22 +4,18 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 from flask import Flask, jsonify, request, render_template, redirect, url_for
 
-# ضبط المسارات الأساسية للمشروع لضمان قراءة الملفات على السيرفر السحابي
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
 STATIC_DIR = os.path.join(BASE_DIR, 'static')
 
-# إنشاء تطبيق Flask وتوجيهه للمجلدات الصحيحة
 app = Flask(__name__, template_folder=TEMPLATE_DIR, static_folder=STATIC_DIR)
 
 # 🚀 السطر الإجباري لمنصة Vercel للتعرف على محرك التشغيل ومنع الـ Failed
 app = app
 
-# رابط الاتصال بقاعدة بيانات Supabase (PostgreSQL)
 DATABASE_URL = os.environ.get('DATABASE_URL') or "postgresql://postgres:MoSebA01065653401@db.ellxxztpfpaqlbqsnyhb.supabase.co:5432/postgres"
 
 def get_db_connection():
-    """إنشاء اتصال آمن مع قاعدة البيانات"""
     conn = psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
     return conn
 
@@ -29,27 +25,23 @@ def get_db_connection():
 
 @app.route('/')
 def index_page():
-    """الصفحة الرئيسية للمتجر"""
     return render_template('index.html')
 
 @app.route('/cashier.html')
 def cashier_page():
-    """لوحة الكاشير وإدارة المبيعات"""
     return render_template('cashier.html')
 
 @app.route('/login.html')
 def login_page():
-    """صفحة تسجيل الدخول الموحدة"""
     return render_template('login.html')
 
+# 📊 إصلاح مسار صفحة المسوقين لتقرأ من داخل فولدر templates مباشرة
 @app.route('/marketers.html')
 def marketers_page():
-    """بوابة المسوقين بالعمولة"""
     return render_template('marketers.html')
 
 @app.route('/product/<int:product_id>')
 def product_detail_page(product_id):
-    """صفحة تفاصيل منتج معين"""
     return render_template('product_detail.html')
 
 # ==========================================
@@ -58,17 +50,14 @@ def product_detail_page(product_id):
 
 @app.route('/api/products', methods=['GET', 'POST'])
 def api_products():
-    """جلب وإضافة المنتجات في المخزن"""
     conn = get_db_connection()
     cur = conn.cursor()
-    
     if request.method == 'GET':
         cur.execute("SELECT * FROM products ORDER BY id DESC;")
         products = cur.fetchall()
         cur.close()
         conn.close()
         return jsonify(products)
-        
     elif request.method == 'POST':
         data = request.json
         cur.execute("""
@@ -83,14 +72,12 @@ def api_products():
         conn.commit()
         cur.close()
         conn.close()
-        return jsonify(new_product), 21
+        return jsonify(new_product), 201
 
 @app.route('/api/products/<int:pid>', methods=['GET', 'PUT', 'DELETE'])
 def api_single_product(pid):
-    """التحكم في منتج فردي (تعديل، حذف، جلب تفاصيل)"""
     conn = get_db_connection()
     cur = conn.cursor()
-    
     if request.method == 'GET':
         cur.execute("SELECT * FROM products WHERE id = %s;", (pid,))
         p = cur.fetchone()
@@ -98,7 +85,6 @@ def api_single_product(pid):
         conn.close()
         if p: return jsonify(p)
         return jsonify({"error": "المنتج غير موجود"}), 404
-        
     elif request.method == 'PUT':
         data = request.json
         cur.execute("""
@@ -113,7 +99,6 @@ def api_single_product(pid):
         cur.close()
         conn.close()
         return jsonify(updated)
-        
     elif request.method == 'DELETE':
         cur.execute("DELETE FROM products WHERE id = %s;", (pid,))
         conn.commit()
@@ -123,17 +108,14 @@ def api_single_product(pid):
 
 @app.route('/api/orders', methods=['GET', 'POST'])
 def api_orders():
-    """إدارة وتلقي طلبات الشراء والشحن"""
     conn = get_db_connection()
     cur = conn.cursor()
-    
     if request.method == 'GET':
         cur.execute("SELECT * FROM orders ORDER BY id DESC;")
         orders = cur.fetchall()
         cur.close()
         conn.close()
         return jsonify(orders)
-        
     elif request.method == 'POST':
         data = request.json
         cur.execute("""
@@ -152,7 +134,6 @@ def api_orders():
 
 @app.route('/api/orders/<int:oid>', methods=['PUT'])
 def update_order_status(oid):
-    """تحديث حالة الشحنة من قبل الأدمن أو الكاشير"""
     data = request.json
     conn = get_db_connection()
     cur = conn.cursor()
@@ -163,9 +144,5 @@ def update_order_status(oid):
     conn.close()
     return jsonify(updated)
 
-# ==========================================
-# 📊 نظام تشغيل السيرفر محلياً (Local Run)
-# ==========================================
 if __name__ == '__main__':
-    # التشغيل المحلي على بورت 5000 مع تفعيل وظيفة المراقبة والتحديث التلقائي
     app.run(debug=True, host='0.0.0.0', port=5000)
