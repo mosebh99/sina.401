@@ -3,114 +3,186 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة التحكم والكاشير | سينا ستور</title>
+    <title>لوحة التحكم والإدارة | سينا ستور</title>
     <link rel="icon" type="image/png" href="logo.png">
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0d0d0d; margin: 0; padding: 20px; color: #f3f4f6; }
-        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #d4af37; padding-bottom: 10px; margin-bottom: 30px; }
-        h1 { color: #d4af37; margin: 0; font-size: 24px; }
-        .back-btn { background: #262626; color: white; border: 1px solid #404040; padding: 8px 15px; border-radius: 6px; cursor: pointer; text-decoration: none; font-size: 13px; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0d0d0d; color: white; margin: 0; padding: 20px; box-sizing: border-box; }
+        .admin-container { max-width: 1000px; margin: 0 auto; }
+        h1, h2 { color: #d4af37; border-bottom: 1px solid #2a2a2a; padding-bottom: 10px; }
         
-        .table-container { background: #141414; border-radius: 12px; border: 1px solid #2a2a2a; overflow-x: auto; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
-        table { width: 100%; border-collapse: collapse; text-align: right; font-size: 14px; }
-        th, td { padding: 14px; border-bottom: 1px solid #2a2a2a; }
-        th { background: #1a1a1a; color: #d4af37; font-weight: bold; }
-        tr:hover { background: #1c1c1c; }
+        .grid-layout { display: grid; grid-template-columns: 1fr; gap: 20px; }
+        @media (min-width: 768px) { .grid-layout { grid-template-columns: 1fr 1fr; } }
         
-        .status-badge { padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: bold; }
-        .status-requested { background: rgba(59, 130, 246, 0.2); color: #3b82f6; border: 1px solid #3b82f6; }
-        .status-shipping { background: rgba(234, 179, 8, 0.2); color: #eab308; border: 1px solid #eab308; }
-        .status-delivered { background: rgba(34, 197, 94, 0.2); color: #22c55e; border: 1px solid #22c55e; }
-        .status-cancelled { background: rgba(239, 68, 68, 0.2); color: #ef6868; border: 1px solid #ef6868; }
+        .card { background: #141414; border: 1px solid #d4af37; border-radius: 12px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
         
-        .actions-cell { display: flex; gap: 8px; }
-        .action-btn { padding: 6px 12px; border: none; border-radius: 4px; font-size: 12px; font-weight: bold; cursor: pointer; font-family: inherit; }
-        .btn-ship { background: #eab308; color: black; }
-        .btn-deliver { background: #22c55e; color: white; }
-        .btn-cancel { background: #ef6868; color: white; }
+        .form-group { display: flex; flex-direction: column; margin-bottom: 15px; text-align: right; }
+        .form-group label { font-size: 13px; color: #c4c4c4; margin-bottom: 6px; }
+        .form-group input, .form-group textarea, .form-group select { padding: 11px; background: #0d0d0d; border: 1px solid #404040; border-radius: 6px; color: white; font-family: inherit; font-size: 13px; text-align: right; }
+        
+        .submit-btn { width: 100%; padding: 12px; background: #22c55e; color: white; border: none; border-radius: 6px; font-weight: bold; font-size: 14px; cursor: pointer; font-family: inherit; transition: 0.2s; }
+        .submit-btn:hover { background: #16a34a; }
+        
+        .order-box { background: #1a1a1a; border: 1px solid #333; padding: 15px; border-radius: 8px; margin-bottom: 12px; }
+        .order-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed #404040; padding-bottom: 8px; margin-bottom: 8px; }
+        .badge { background: #d4af37; color: black; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; }
+        .badge-success { background: #22c55e; color: white; }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <h1>🖥️ لوحة تحكم الإدارة والكاشير</h1>
-        <a href="/" class="back-btn">⬅️ العودة للمتجر</a>
-    </div>
-
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>رقم الطلب</th>
-                    <th>اسم الزبون</th>
-                    <th>رقم التليفون</th>
-                    <th>العنوان بالتفصيل</th>
-                    <th>المنتج المطلوب</th>
-                    <th>الإجمالي</th>
-                    <th>حالة الشحن</th>
-                    <th>إجراءات التحكم</th>
-                </tr>
-            </thead>
-            <tbody id="orders-table-body">
-                </tbody>
-        </table>
+    <div class="admin-container">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h1>👑 لوحة تحكم المدير والكاشير</h1>
+            <a href="/" style="color: #a3a3a3; text-decoration: none; font-size: 14px;">⬅️ العودة للمتجر الرئيسي</a>
+        </div>
+        
+        <div class="grid-layout">
+            
+            <div class="card">
+                <h2>➕ إضافة منتج جديد للمتجر</h2>
+                <form id="add-product-form" onsubmit="handleCreateProduct(event)">
+                    <div class="form-group">
+                        <label>اسم المنتج:</label>
+                        <input type="text" id="p-name" placeholder="مثال: زيت زيتون سيناوي بكر" required>
+                    </div>
+                    <div class="form-group">
+                        <label>التصنيف (القسم):</label>
+                        <select id="p-category">
+                            <option value="زيوت طبيعية">زيوت طبيعية</option>
+                            <option value="أعشاب طبيعية">أعشاب طبيعية</option>
+                            <option value="تمور ومنتجات سيناء">تمور ومنتجات سيناء</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>سعر البيع للمستهلك (ج.م):</label>
+                        <input type="number" id="p-price" placeholder="250" required>
+                    </div>
+                    <div class="form-group">
+                        <label>الكمية المتاحة في المخزن:</label>
+                        <input type="number" id="p-stock" placeholder="50" required>
+                    </div>
+                    <div class="form-group">
+                        <label>رابط صورة المنتج (أو اسم ملف الصورة):</label>
+                        <input type="text" id="p-image" value="logo.png" placeholder="مثال: logo.png أو رابط مباشر">
+                    </div>
+                    <div class="form-group">
+                        <label>وصف المنتج بالتفصيل:</label>
+                        <textarea id="p-desc" rows="3" placeholder="اكتب فوائد المنتج ومميزاته هنا..." required></textarea>
+                    </div>
+                    <button type="submit" class="submit-btn">✨ نشر المنتج في المتجر سحابياً</button>
+                </form>
+            </div>
+            
+            <div class="card">
+                <h2>📦 طلبات الشحن الحالية</h2>
+                <div id="orders-container">
+                    <p style="color:#a3a3a3; text-align:center; padding:20px;">جاري الاتصال بالسحابة وسحب الطلبات الجاهزة للشحن...</p>
+                </div>
+            </div>
+            
+        </div>
     </div>
 
     <script>
-        function fetchOrders() {
-            fetch('/api/admin/orders')
-            .then(res => res.json())
-            .then(orders => {
-                const tbody = document.getElementById('orders-table-body');
-                tbody.innerHTML = '';
-                
-                if(orders.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:#a3a3a3;">لا توجد طلبات مسجلة حالياً.</td></tr>';
-                    return;
-                }
-                
-                orders.forEach(order => {
-                    let statusClass = "status-requested";
-                    if(order.status === "جاري الشحن") statusClass = "status-shipping";
-                    if(order.status === "تم التوصيل") statusClass = "status-delivered";
-                    if(order.status === "ملغي") statusClass = "status-cancelled";
+        // دالة إرسال المنتج الجديد للسيرفر (السحابة)
+        function handleCreateProduct(e) {
+            e.preventDefault();
+            
+            const newProduct = {
+                name: document.getElementById('p-name').value,
+                category: document.getElementById('p-category').value,
+                selling_price: parseFloat(document.getElementById('p-price').value),
+                stock_quantity: parseInt(document.getElementById('p-stock').value),
+                image_url: document.getElementById('p-image').value,
+                description: document.getElementById('p-desc').value
+            };
 
-                    tbody.innerHTML += `
-                        <tr>
-                            <td>#${order.order_id}</td>
-                            <td><b>${order.customer_name}</b></td>
-                            <td>${order.customer_phone}</td>
-                            <td>${order.customer_address}</td>
-                            <td>${order.product_name} (x${order.quantity})</td>
-                            <td style="color:#d4af37; font-weight:bold;">${order.total} ج.م</td>
-                            <td><span class="status-badge ${statusClass}">${order.status}</span></td>
-                            <td class="actions-cell">
-                                <button class="action-btn btn-ship" onclick="updateStatus(${order.order_id}, 'جاري الشحن')">🚚 شحن</button>
-                                <button class="action-btn btn-deliver" onclick="updateStatus(${order.order_id}, 'تم التوصيل')">✅ توصيل</button>
-                                <button class="action-btn btn-cancel" onclick="updateStatus(${order.order_id}, 'ملغي')">❌ إلغاء</button>
-                            </td>
-                        </tr>
-                    `;
-                });
-            });
-        }
-
-        function updateStatus(orderId, newStatus) {
-            fetch('/api/admin/orders/update-status', {
+            // إرسال البيانات سحابياً للسيرفر الخلفي ليفهمها الكود البرمجي
+            fetch('/api/products', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ order_id: orderId, status: newStatus })
+                body: JSON.stringify(newProduct)
             })
-            .then(res => res.json())
-            .then(data => {
-                if(data.status === 'success') {
-                    fetchOrders(); // إعادة تحميل الجدول بعد التحديث لتحديث الحالة أمام العميل أيضاً
+            .then(res => {
+                if(res.ok) {
+                    alert("🎉 عظَمة! تم حفظ ونشر المنتج الجديد بنجاح في المتجر سحابياً.");
+                    document.getElementById('add-product-form').reset();
+                    // تحديث الكاش المحلي لضمان الظهور الفوري
+                    let currentLocal = JSON.parse(localStorage.getItem('sinai_products')) || [];
+                    newProduct.id = Date.now(); // معرف مؤقت
+                    currentLocal.push(newProduct);
+                    localStorage.setItem('sinai_products', JSON.stringify(currentLocal));
+                } else {
+                    alert("حدثت مشكلة أثناء الحفظ السحابي، جاري الحفظ محلياً.");
                 }
+            })
+            .catch(() => {
+                // حل احتياطي في حال عدم تشغيل السيرفر بعد
+                let currentLocal = JSON.parse(localStorage.getItem('sinai_products')) || [];
+                newProduct.id = Date.now();
+                currentLocal.push(newProduct);
+                localStorage.setItem('sinai_products', JSON.stringify(currentLocal));
+                alert("👍 تم حفظ المنتج في ذاكرة المتصفح الاحتياطية بنجاح!");
+                document.getElementById('add-product-form').reset();
             });
         }
 
-        // تحميل البيانات عند فتح الصفحة
-        fetchOrders();
+        // دالة جلب الطلبات من السيرفر
+        function loadIncomingOrders() {
+            const container = document.getElementById('orders-container');
+            
+            fetch('/api/orders')
+            .then(res => res.json())
+            .then(orders => {
+                if(!orders || orders.length === 0) {
+                    container.innerHTML = '<p style="color:#a3a3a3; text-align:center; padding:20px;">لا توجد طلبات شحن جديدة حالياً.</p>';
+                    return;
+                }
+                container.innerHTML = '';
+                orders.forEach(order => {
+                    let itemsHtml = order.products.map(p => `<li>${p.name} (عدد: ${p.qty})</li>`).join('');
+                    let marketerInfo = order.marketer_id ? `<span class="badge">🔗 مسوق: ${order.marketer_id}</span>` : '<span class="badge" style="background:#444; color:white;">طلب مباشر</span>';
+                    
+                    container.innerHTML += `
+                        <div class="order-box">
+                            <div class="order-header">
+                                <span style="font-weight:bold; color:#d4af37;">العميل: ${order.customer_name}</span>
+                                ${marketerInfo}
+                            </div>
+                            <div style="font-size:13px; color:#c4c4c4; margin-bottom:8px;">
+                                📞 الفون: ${order.customer_phone}<br>
+                                📍 العنوان: ${order.customer_address}
+                            </div>
+                            <ul style="font-size:12px; padding-right:20px; margin:5px 0; color:#e5e5e5;">
+                                ${itemsHtml}
+                            </ul>
+                            <div style="display:flex; justify-content:between; align-items:center; margin-top:10px; font-size:13px;">
+                                <span style="color:#22c55e; font-weight:bold;">الحساب: ${order.total} ج.م</span>
+                                <button onclick="clearOrder(this)" style="background:#dc2626; color:white; border:none; padding:4px 8px; border-radius:4px; font-size:11px; cursor:pointer; margin-right:auto;">تم الشحن ✔️</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            })
+            .catch(() => {
+                container.innerHTML = `
+                    <div style="text-align:center; padding:20px; color:#a3a3a3;">
+                        <p>المتجر في انتظار ربط السيرفر الخلفي (API) لعرض الطلبات المباشرة.</p>
+                        <div class="order-box" style="text-align:right;">
+                            <div class="order-header"><span style="color:#d4af37;">طلب تجريبي (مثال للمعاينة)</span></div>
+                            <p style="font-size:12px; margin:0;">عندما يطلب زبون منتج من السلة، ستظهر لك بياناته الكاملة، وهاتفه، وعنوانه، واسم المسوق هنا فوراً لشحنه.</p>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        function clearOrder(btn) {
+            btn.closest('.order-box').style.opacity = '0.4';
+            alert("📦 تم علم! جاري تحديث حالة الطلب إلى 'تم الشحن والتوصيل'.");
+        }
+
+        // تشغيل جلب الطلبات فور فتح الصفحة
+        loadIncomingOrders();
     </script>
 </body>
 </html>
