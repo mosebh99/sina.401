@@ -3,23 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة الكاشير - Sina Store 401</title>
+    <title>لوحة الكاشير وإدارة المخزن | Sina 401</title>
+    <link rel="icon" type="image/png" href="/static/css/logo.png.jpeg">
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
-    <header class="main-header">
-        <h1>🖥️ نظام الكاشير والمبيعات السحابي</h1>
-        <a href="/" class="btn-secondary">🏠 العودة للمتجر</a>
+    <header>
+        <h1><a href="/cashier.html">🖥️ شاشة الكاشير والمبيعات</a></h1>
+        <div class="nav-links"><a href="/">🏠 عرض المتجر الرئيسي</a></div>
     </header>
 
-    <main class="cashier-wrapper" style="padding: 20px;">
-        <div style="background: #1e1e1e; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-            <h2>🛒 إنشاء فاتورة مبيعات جديدة</h2>
-            <div id="order-form" style="margin-top: 15px;">
-                <p>إدارة الفواتير والطلبات متصلة تلقائياً بالسيرفر الخلفي وقاعدة بيانات Supabase.</p>
-            </div>
+    <div style="padding: 20px; max-width: 1200px; margin: auto;">
+        <div style="background: var(--card-bg); padding: 25px; border-radius: 12px; border: 1px solid #222; text-align: center;">
+            <h2 style="color: var(--primary); margin-top:0;">📦 نظام إدارة المخزن الموحد</h2>
+            <p style="color: var(--text-muted);">الشاشة متصلة الآن بقاعدة بيانات Supabase مباشرة ويمكنك التحكم الكامل بالمخزون والمبيعات.</p>
         </div>
-    </main>
+    </div>
 
     <script src="/static/js/store.js"></script>
 </body>
