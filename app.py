@@ -1,32 +1,62 @@
 import os
 import json
-from datetime import datetime
-from werkzeug.utils import secure_filename
-from werkzeug.security import generate_password_hash, check_password_hash
 import psycopg2
 from psycopg2.extras import RealDictCursor
-from flask import Flask, jsonify, request, render_template, redirect, url_for, session
+from flask import Flask, jsonify, request, render_template, redirect, url_for
 
-# ضبط مسار المجلد الرئيسي مباشرة لـ Vercel
+# ضبط مسار المجلد الرئيسي لـ Vercel لقرأة ملفات الـ HTML من الجذر مباشرة
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 app = Flask(__name__, template_folder=BASE_DIR, static_folder=BASE_DIR)
 
-app.secret_key = os.environ.get('FLASK_SECRET_KEY') or "SinaaStoreSuperSecretKey2026_JWT"
+# رابط الاتصال المباشر والمستقر بقاعدة البيانات
 DATABASE_URL = os.environ.get('DATABASE_URL') or "postgresql://postgres:MoSebA01065653401@db.ellxxztpfpaqlbqsnyhb.supabase.co:5432/postgres"
-
-# إعدادات رفع الصور محلياً
-UPLOAD_FOLDER = os.path.join(BASE_DIR, 'uploads')
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 def get_db_connection():
     return psycopg2.connect(DATABASE_URL, connect_timeout=10)
 
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+def init_db():
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        # إنشاء جدول المنتجات الأساسي
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS products (
+                id SERIAL PRIMARY KEY,
+                name TEXT NOT NULL,
+                category TEXT DEFAULT 'عام',
+                selling_price REAL NOT NULL,
+                purchasing_price REAL DEFAULT 0,
+                commission REAL DEFAULT 0,
+                stock_quantity INTEGER DEFAULT 0,
+                image_url TEXT,
+                description TEXT
+            )
+        ''')
+        # إنشاء جدول الطلبات الأساسي
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS orders (
+                id SERIAL PRIMARY KEY,
+                customer_name TEXT NOT NULL,
+                customer_phone TEXT NOT NULL,
+                customer_address TEXT NOT NULL,
+                total_price REAL NOT NULL,
+                marketer_id TEXT,
+                products_json TEXT NOT NULL,
+                status TEXT DEFAULT 'قيد المراجعة',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+        conn.commit()
+        cursor.close()
+        conn.close()
+        print("🚀 Database initialized successfully!")
+    except Exception as e:
+        print("❌ Database Init Error:", e)
 
-# --- 🌐 مسارات العرض والتوجيه الفوري لملفاتك ---
+# تشغيل الفحص الأولي
+init_db()
+
+# --- 🌐 مسارات العرض والتوجيه المباشر ---
 
 @app.route('/')
 def index():
@@ -48,54 +78,7 @@ def cashier():
 def marketers():
     return render_template('marketers.html')
 
-# --- 🔑 نظام الحسابات (Auth APIs) ---
-
-@app.route('/api/auth/login', methods=['POST'])
-def api_login():
-    data = request.get_json() or {}
-    username = data.get('username', '').strip().lower()
-    password = data.get('password', '').strip()
-    
-    try:
-        conn = get_db_connection()
-        cursor = conn.cursor(cursor_factory=RealDictCursor)
-        cursor.execute("SELECT * FROM admins WHERE username=%s", (username,))
-        admin = cursor.fetchone()
-        cursor.close()
-        conn.close()
-        
-        if admin and check_password_hash(admin['password_hash'], password):
-            session['is_admin'] = True
-            session['username'] = username
-            return jsonify({"status": "success", "message": "تم تسجيل الدخول بنجاح"}), 200
-        return jsonify({"status": "error", "message": "بيانات الدخول غير صحيحة"}), 401
-    except Exception as e:
-        return jsonify({"status": "error", "message": "فشل الاتصال بقاعدة البيانات"}), 500
-
-@app.route('/api/auth/logout')
-def api_logout():
-    session.clear()
-    return redirect(url_for('index'))
-
-# --- 📸 نظام رفع الصور ---
-@app.route('/api/upload', methods=['POST'])
-def upload_images():
-    if 'files' not in request.files:
-        return jsonify({"status": "error", "message": "لا توجد ملفات مرفوعة"}), 400
-    
-    files = request.files.getlist('files')
-    uploaded_urls = []
-    
-    for file in files:
-        if file and allowed_file(file.filename):
-            filename = secure_filename(f"{int(datetime.utcnow().timestamp())}_{file.filename}")
-            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            file.save(filepath)
-            uploaded_urls.append(f"/uploads/{filename}")
-            
-    return jsonify({"status": "success", "urls": uploaded_urls}), 200
-
-# --- 🛒 واجهات الـ API المحدثة بالكامل للمنتجات ---
+# --- 🛒 واجهات الـ API الخاصة بالمنتجات ---
 
 @app.route('/api/products', methods=['GET'])
 def get_products():
@@ -116,13 +99,19 @@ def add_product():
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
+        
+        # التأكد من معالجة القيم بشكل صحيح وآمن لمنع الأخطاء الحسابية
+        selling_price = float(data.get('selling_price', 0) or 0)
+        purchasing_price = float(data.get('purchasing_price', 0) or 0)
+        commission = float(data.get('commission', 0) or 0)
+        stock_quantity = int(data.get('stock_quantity', 0) or 0)
+
         cursor.execute('''
             INSERT INTO products (name, category, selling_price, purchasing_price, commission, stock_quantity, image_url, description)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
         ''', (
             data.get('name'), data.get('category', 'عام'), 
-            float(data.get('selling_price', 0)), float(data.get('purchasing_price', 0)),
-            float(data.get('commission', 0)), int(data.get('stock_quantity', 0)),
+            selling_price, purchasing_price, commission, stock_quantity,
             data.get('image_url'), data.get('description', '')
         ))
         conn.commit()
@@ -153,13 +142,19 @@ def create_order():
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
-        products_json_str = json.dumps(data['products'], ensure_ascii=False)
+        products_json_str = json.dumps(data.get('products', []), ensure_ascii=False)
         
         cursor.execute('''
             INSERT INTO orders (customer_name, customer_phone, customer_address, total_price, marketer_id, products_json)
             VALUES (%s, %s, %s, %s, %s, %s)
-        ''', (data['customer_name'], data['customer_phone'], data['customer_address'], float(data['total_price']), data.get('marketer_id'), products_json_str))
-        
+        ''', (
+            data.get('customer_name'), 
+            data.get('customer_phone'), 
+            data.get('customer_address'), 
+            float(data.get('total_price', 0)), 
+            data.get('marketer_id'), 
+            products_json_str
+        ))
         conn.commit()
         cursor.close()
         conn.close()
