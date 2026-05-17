@@ -2,7 +2,7 @@ from flask import Flask, jsonify, request, render_template
 
 app = Flask(__name__, template_folder='.')
 
-# مصفوفة المنتجات السحابية الافتراضية
+# قاعدة بيانات سحابية مؤقتة للمنتجات
 cloud_products = [
     {
         "id": 1,
@@ -24,8 +24,20 @@ cloud_products = [
     }
 ]
 
-# مخزن الطلبات السحابية لصفحة الكاشير
-cloud_orders = []
+# مخزن الطلبات المطور (يحتوي على حالة الشحن واسم المسوق لو وجد)
+cloud_orders = [
+    {
+        "order_id": 101,
+        "product_name": "زيت زيتون سيناوي بكر ممتاز",
+        "quantity": 2,
+        "total": 500,
+        "customer_name": "أحمد علي",
+        "customer_phone": "01012345678",
+        "customer_address": "القاهرة - مدينة نصر",
+        "status": "تم الطلب", # الحالات: تم الطلب، جاري الشحن، تم التوصيل، ملغي
+        "marketer_id": "marketer_ahmed"
+    }
+]
 
 @app.route('/')
 def index():
@@ -39,7 +51,11 @@ def cashier():
 def marketers():
     return render_template('marketers.html')
 
-# روابط الـ API الخاصة بالمتجر
+@app.route('/login.html')
+def login_page():
+    return render_template('login.html')
+
+# روابط الـ API
 @app.route('/api/products', methods=['GET'])
 def get_products():
     return jsonify(cloud_products), 200
@@ -51,10 +67,26 @@ def get_admin_orders():
 @app.route('/api/orders', methods=['POST'])
 def create_order():
     data = request.get_json()
+    # إعطاء رقم تلقائي للطلب وتحديد الحالة الافتراضية
+    data['order_id'] = len(cloud_orders) + 101
+    data['status'] = "تم الطلب"
     cloud_orders.append(data)
-    return jsonify({"status": "success", "message": "تم تسجيل الطلب في السحابة بنجاح"}), 200
+    return jsonify({"status": "success", "order_id": data['order_id']}), 200
 
-# تم تعديل هذا السطر خصيصاً ليتوافق مع معايير Vercel الصارمة لمنع فشل الـ Build
+# رابط لتحديث حالة الشحن من صفحة الكاشير
+@app.route('/api/admin/orders/update-status', methods=['POST'])
+def update_order_status():
+    data = request.get_json()
+    order_id = int(data.get('order_id'))
+    new_status = data.get('status')
+    
+    for order in cloud_orders:
+        if order['order_id'] == order_id:
+            order['status'] = new_status
+            return jsonify({"status": "success", "message": f"تم تحديث الحالة إلى {new_status}"}), 200
+            
+    return jsonify({"status": "error", "message": "الطلب غير موجود"}), 404
+
 application = app
 
 if __name__ == '__main__':
