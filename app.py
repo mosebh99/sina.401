@@ -4,7 +4,7 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 from flask import Flask, jsonify, request, render_template, redirect, url_for
 
-# ضبط المسار لقرأة ملفات الـ HTML من الفولدر الرئيسي مباشرة كما هي بمشروعك
+# ضبط المسار لقرأة ملفات الـ HTML من الفولدر الرئيسي مباشرة
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 app = Flask(__name__, template_folder=BASE_DIR, static_folder=BASE_DIR)
 
@@ -13,46 +13,6 @@ DATABASE_URL = os.environ.get('DATABASE_URL') or "postgresql://postgres:MoSebA01
 
 def get_db_connection():
     return psycopg2.connect(DATABASE_URL, connect_timeout=10)
-
-def init_db():
-    try:
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        # إنشاء الجدول بالخصائص الأساسية المتوافقة تماماً مع صفحة cashier.html الحالية لديك
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS products (
-                id SERIAL PRIMARY KEY,
-                name TEXT NOT NULL,
-                category TEXT DEFAULT 'عام',
-                selling_price REAL NOT NULL,
-                purchasing_price REAL DEFAULT 0,
-                commission REAL DEFAULT 0,
-                stock_quantity INTEGER DEFAULT 0,
-                image_url TEXT,
-                description TEXT
-            )
-        ''')
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS orders (
-                id SERIAL PRIMARY KEY,
-                customer_name TEXT NOT NULL,
-                customer_phone TEXT NOT NULL,
-                customer_address TEXT NOT NULL,
-                total_price REAL NOT NULL,
-                marketer_id TEXT,
-                products_json TEXT NOT NULL,
-                status TEXT DEFAULT 'قيد المراجعة',
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        ''')
-        conn.commit()
-        cursor.close()
-        conn.close()
-        print("🚀 Database Ready!")
-    except Exception as e:
-        print("❌ Database Init Error:", e)
-
-init_db()
 
 # --- 🌐 مسارات الصفحات ---
 
@@ -76,7 +36,7 @@ def cashier():
 def marketers():
     return render_template('marketers.html')
 
-# --- 🛒 واجهات الـ API (متوافقة 100% مع طلبات صفحة cashier و index) ---
+# --- 🛒 واجهات الـ API الخاصة بالمنتجات ---
 
 @app.route('/api/products', methods=['GET'])
 def get_products():
@@ -98,14 +58,22 @@ def add_product():
         conn = get_db_connection()
         cursor = conn.cursor()
         
-        # استقبال البيانات بالشكل الأساسي الذي ترسله واجهتك الحالية لمنع أي خطأ
+        # تحويل البيانات بشكل آمن لضمان عدم حدوث خطأ أثناء الإدخال
+        selling_price = float(data.get('selling_price', 0) or 0)
+        purchasing_price = float(data.get('purchasing_price', 0) or 0)
+        commission = float(data.get('commission', 0) or 0)
+        stock_quantity = int(data.get('stock_quantity', 0) or 0)
+
         cursor.execute('''
-            INSERT INTO products (name, category, selling_price, image_url, description)
-            VALUES (%s, %s, %s, %s, %s)
+            INSERT INTO products (name, category, selling_price, purchasing_price, commission, stock_quantity, image_url, description)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
         ''', (
             data.get('name'), 
             data.get('category', 'عام'), 
-            float(data.get('selling_price', 0) or 0), 
+            selling_price,
+            purchasing_price,
+            commission,
+            stock_quantity,
             data.get('image_url'), 
             data.get('description', '')
         ))
@@ -129,7 +97,7 @@ def delete_product(p_id):
     except Exception as e: 
         return jsonify({"status": "error", "message": str(e)}), 500
 
-# --- 📦 واجهات الطلبات ---
+# --- 📦 واجهات الطلبات شحن ---
 
 @app.route('/api/orders', methods=['POST'])
 def create_order():
@@ -138,7 +106,6 @@ def create_order():
         conn = get_db_connection()
         cursor = conn.cursor()
         
-        # معالجة إجمالي الطلب سواء كان الاسم total_price أو total_val لضمان عدم حدوث خطأ
         total_val = data.get('total_price') or data.get('total_val') or 0
         products_json_str = json.dumps(data.get('products', []), ensure_ascii=False)
         
