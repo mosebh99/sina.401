@@ -3,472 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>سينا ستور 401 - شاشة الكاشير والمخزن</title>
+    <title>لوحة التحكم والكاشير | سينا ستور</title>
+    <link rel="icon" type="image/png" href="logo.png">
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #1a1a1a; margin: 0; padding: 0; color: #f3f4f6; }
-        nav { background: #eab308; color: #111827; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
-        nav h1 { margin: 0; font-size: 22px; font-weight: bold; }
-        .nav-actions { display: flex; align-items: center; gap: 11px; }
-        .cash-badge { background: #111827; color: #eab308; padding: 8px 15px; border-radius: 6px; font-size: 14px; font-weight: bold; border: 1px solid #eab308; }
-        .admin-btn { background: #111827; color: white; padding: 8px 15px; border-radius: 6px; font-size: 13px; font-weight: bold; border: 1px solid #374151; cursor: pointer; }
-        .logout-btn { background: #ef4444; color: white; padding: 8px 15px; border-radius: 6px; border: none; cursor: pointer; font-weight: bold; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0d0d0d; margin: 0; padding: 20px; color: #f3f4f6; }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #d4af37; padding-bottom: 10px; margin-bottom: 30px; }
+        h1 { color: #d4af37; margin: 0; font-size: 24px; }
+        .back-btn { background: #262626; color: white; border: 1px solid #404040; padding: 8px 15px; border-radius: 6px; cursor: pointer; text-decoration: none; font-size: 13px; }
         
-        .container { max-width: 1350px; margin: 25px auto; padding: 0 20px; display: grid; grid-template-columns: 1.12fr 2fr; gap: 25px; }
-        @media (max-width: 1000px) { .container { grid-template-columns: 1fr; } }
+        .table-container { background: #141414; border-radius: 12px; border: 1px solid #2a2a2a; overflow-x: auto; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        table { width: 100%; border-collapse: collapse; text-align: right; font-size: 14px; }
+        th, td { padding: 14px; border-bottom: 1px solid #2a2a2a; }
+        th { background: #1a1a1a; color: #d4af37; font-weight: bold; }
+        tr:hover { background: #1c1c1c; }
         
-        .card { background: #262626; padding: 20px; border-radius: 10px; border: 1px solid #404040; margin-bottom: 20px; }
-        .border-yellow { border-top: 5px solid #eab308; }
-        .border-neutral { border-top: 5px solid #a3a3a3; }
-        h2 { margin-top: 0; font-size: 17px; margin-bottom: 15px; }
-        .text-yellow { color: #eab308; }
+        .status-badge { padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: bold; }
+        .status-requested { background: rgba(59, 130, 246, 0.2); color: #3b82f6; border: 1px solid #3b82f6; }
+        .status-shipping { background: rgba(234, 179, 8, 0.2); color: #eab308; border: 1px solid #eab308; }
+        .status-delivered { background: rgba(34, 197, 94, 0.2); color: #22c55e; border: 1px solid #22c55e; }
+        .status-cancelled { background: rgba(239, 68, 68, 0.2); color: #ef6868; border: 1px solid #ef6868; }
         
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; font-size: 13px; margin-bottom: 6px; color: #d4d4d4; }
-        .form-group input, .form-group select { width: 100%; padding: 10px; background: #171717; border: 1px solid #525252; border-radius: 6px; box-sizing: border-box; color: white; text-align: right; font-size: 14px; }
-        
-        .triple-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
-        button { display: block; width: 100%; padding: 12px; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; text-align: center; }
-        .btn-yellow { background: #eab308; color: #111827; }
-        .btn-blue { background: #3b82f6; color: white; }
-        
-        .search-box { width: 100%; padding: 10px; background: #171717; border: 1px solid #525252; border-radius: 6px; color: white; box-sizing: border-box; text-align: right; margin-bottom: 15px; }
-
-        .cashier-products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; margin-bottom: 15px; max-height: 280px; overflow-y: auto; padding-right: 5px; }
-        .cashier-prod-card { background: #171717; border: 1px solid #404040; border-radius: 8px; overflow: hidden; cursor: pointer; display: flex; flex-direction: column; }
-        .cashier-prod-card:hover { border-color: #eab308; }
-        .cashier-prod-img { width: 100%; height: 90px; object-fit: cover; background: #262626; }
-        .cashier-prod-info { padding: 8px; font-size: 11px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
-        .cashier-prod-title { font-weight: bold; color: white; margin: 0 0 4px 0; font-size: 12px; }
-        .cashier-prod-price { color: #eab308; font-weight: bold; }
-        .no-img { height: 90px; background: #262626; display: flex; align-items: center; justify-content: center; font-size: 24px; }
-
-        .cart-table { width: 100%; margin-bottom: 10px; font-size: 12px; }
-        .cart-total-bar { background: #171717; padding: 12px; border-radius: 6px; font-weight: bold; font-size: 15px; text-align: center; color: #eab308; border: 1px solid #404040; margin-bottom: 10px; }
-
-        table { width: 100%; border-collapse: collapse; text-align: right; font-size: 13px; background: #262626; margin-bottom: 15px; }
-        th, td { padding: 10px; border: 1px solid #404040; }
-        th { background: #171717; color: #eab308; }
-        
-        .admin-lock-box { background: #1c1917; border: 1px solid #44403c; border-right: 5px solid #eab308; color: #f5f5f4; padding: 15px; border-radius: 8px; text-align: center; }
-        .summary-box { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-top: 10px; }
-        .sum-item { padding: 15px; border-radius: 8px; text-align: center; font-weight: bold; }
-        
-        .backup-section { display: flex; gap: 10px; margin-top: 15px; }
-        .btn-backup { background: #4b5563; color: white; padding: 10px; font-size: 12px; border-radius: 6px; width: 50%; }
+        .actions-cell { display: flex; gap: 8px; }
+        .action-btn { padding: 6px 12px; border: none; border-radius: 4px; font-size: 12px; font-weight: bold; cursor: pointer; font-family: inherit; }
+        .btn-ship { background: #eab308; color: black; }
+        .btn-deliver { background: #22c55e; color: white; }
+        .btn-cancel { background: #ef6868; color: white; }
     </style>
 </head>
 <body>
 
-    <nav>
-        <h1>🖥️ سينا ستور 401 - شاشة الكاشير والمخزن</h1>
-        <div class="nav-actions">
-            <div id="cash-badge-container" style="display: none;" class="cash-badge">💸 الصندوق: <span id="cash-register">0</span> ج.م</div>
-            <button id="admin-btn" onclick="toggleAdmin()" class="admin-btn">⚙️ وضع المدير الخاص</button>
-            <button onclick="goToPage('index.html')" class="admin-btn" style="background:#404040;">⬅️ الخروج للمتجر</button>
-        </div>
-    </nav>
+    <div class="header">
+        <h1>🖥️ لوحة تحكم الإدارة والكاشير</h1>
+        <a href="/" class="back-btn">⬅️ العودة للمتجر</a>
+    </div>
 
-    <div class="container">
-        <div>
-            <div class="card border-yellow">
-                <h2 class="text-yellow">🛒 سلة مبيعات المحل الفورية</h2>
-                <input type="text" id="cashier-search" class="search-box" placeholder="🔍 ابحث هنا عن المنتج بالاسم لإضافته للسلة..." oninput="renderProducts()">
-                <div class="cashier-products-grid" id="cashier-gallery"></div>
-
-                <h4 style="margin: 10px 0 5px 0; font-size: 13px; color: #a3a3a3;">المنتجات المضافة للفاتورة الحالية:</h4>
-                <table class="cart-table">
-                    <thead>
-                        <tr>
-                            <th>المنتج</th>
-                            <th>السعر</th>
-                            <th>الكمية</th>
-                            <th>حذف</th>
-                        </tr>
-                    </thead>
-                    <tbody id="cart-table-body">
-                        <tr><td colspan="4" style="text-align:center; color:#737373;">السلة فارغة. اضغط على المنتجات فوق لإضافتها.</td></tr>
-                    </tbody>
-                </table>
-                <div class="cart-total-bar">إجمالي الحساب المطلوب: <span id="cart-total-view">0</span> ج.م</div>
-                <button onclick="checkoutCart()" class="btn-yellow">🧾 تأكيد الفاتورة ونفاذ البيع المجمع</button>
-            </div>
-
-            <div class="card border-neutral">
-                <h2>📥 توريد وجرد البضائع (للمدير)</h2>
-                <div id="admin-form-container"></div>
-            </div>
-        </div>
-
-        <div>
-            <div class="card border-yellow">
-                <h2>📊 التقارير المالية والربحية اليومية للمحل</h2>
-                <div id="financial-reports-container"></div>
-                
-                <div id="backup-zone" style="display:none;" class="backup-section">
-                    <button onclick="exportData()" class="btn-backup">📥 تحميل نسخة احتياطية</button>
-                    <button onclick="document.getElementById('import-file').click()" class="btn-backup" style="background:#0284c7;">📤 رفع نسخة قديمة</button>
-                    <input type="file" id="import-file" style="display:none;" accept=".json" onchange="importData(event)">
-                </div>
-            </div>
-
-            <div class="card">
-                <h2>📦 جرد مخزن المحل الفعلي الحالي</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>اسم المنتج</th>
-                            <th class="admin-field" style="display:none;">سعر الشراء</th>
-                            <th>سعر البيع</th>
-                            <th>العمولة</th>
-                            <th>المخزون</th>
-                            <th class="admin-field" style="display:none;">إجراءات</th>
-                        </tr>
-                    </thead>
-                    <tbody id="products-table-body"></tbody>
-                </table>
-            </div>
-
-            <div class="card" style="border-top: 5px solid #3b82f6;">
-                <h2 style="color:#3b82f6; display:flex; justify-content:space-between; align-items:center;">
-                    📜 سجل حركة المبيعات والمشتريات اليومي
-                    <button class="admin-field" onclick="clearLogs()" style="display:none; background:#ef4444; color:white; padding:4px 8px; font-size:11px; width:auto;">تصفير السجل</button>
-                </h2>
-                <div style="max-height: 250px; overflow-y: auto;">
-                    <table style="font-size:12px; margin-bottom:0;">
-                        <thead>
-                            <tr>
-                                <th>الحركة</th>
-                                <th>المنتج</th>
-                                <th>الكمية</th>
-                                <th>السعر</th>
-                                <th>التوقيت</th>
-                            </tr>
-                        </thead>
-                        <tbody id="logs-table-body"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>رقم الطلب</th>
+                    <th>اسم الزبون</th>
+                    <th>رقم التليفون</th>
+                    <th>العنوان بالتفصيل</th>
+                    <th>المنتج المطلوب</th>
+                    <th>الإجمالي</th>
+                    <th>حالة الشحن</th>
+                    <th>إجراءات التحكم</th>
+                </tr>
+            </thead>
+            <tbody id="orders-table-body">
+                </tbody>
+        </table>
     </div>
 
     <script>
-        let products = JSON.parse(localStorage.getItem('sinai_products')) || [];
-        let transactions = JSON.parse(localStorage.getItem('sinai_transactions')) || [];
-        let cart = [];
-        let isAdmin = false;
-
-        function saveToStorage() {
-            localStorage.setItem('sinai_products', JSON.stringify(products));
-            localStorage.setItem('sinai_transactions', JSON.stringify(transactions));
-        }
-
-        function goToPage(page) {
-            window.location.href = window.location.origin + window.location.pathname.replace('cashier.html', '') + page;
-        }
-
-        function toggleAdmin() {
-            if (!isAdmin) {
-                let pass = prompt("الرجاء إدخال رمز المدير السري:");
-                if (pass === "010656534") { isAdmin = true; updateUI(); } 
-                else { alert("الرمز غير صحيح!"); }
-            } else { isAdmin = false; updateUI(); }
-        }
-
-        function updateUI() {
-            const adminBtn = document.getElementById('admin-btn');
-            const cashBadge = document.getElementById('cash-badge-container');
-            const backupZone = document.getElementById('backup-zone');
-            
-            if (isAdmin) {
-                adminBtn.textContent = "قفل وضع المدير";
-                adminBtn.className = "logout-btn";
-                cashBadge.style.display = "block";
-                if(backupZone) backupZone.style.display = 'flex';
-            } else {
-                adminBtn.textContent = "⚙️ وضع المدير الخاص";
-                adminBtn.className = "admin-btn";
-                cashBadge.style.display = "none";
-                if(backupZone) backupZone.style.display = 'none';
-            }
-
-            document.querySelectorAll('.admin-field').forEach(f => f.style.display = isAdmin ? '' : 'none');
-            renderAdminForm();
-            renderFinancialReports();
-            renderProducts();
-            renderCart();
-            renderLogs();
-        }
-
-        function renderAdminForm() {
-            const container = document.getElementById('admin-form-container');
-            if (isAdmin) {
-                container.innerHTML = `
-                    <form onsubmit="saveProduct(event)">
-                        <div class="form-group"><label>اسم المنتج الفعلي:</label><input type="text" id="prod-name" required></div>
-                        <div class="form-group"><label>رابط الصورة أونلاين:</label><input type="url" id="prod-img" placeholder="https://example.com/photo.jpg"></div>
-                        <div class="triple-grid">
-                            <div class="form-group"><label>سعر الشراء:</label><input type="number" id="prod-pur" required></div>
-                            <div class="form-group"><label>سعر البيع:</label><input type="number" id="prod-sel" required></div>
-                            <div class="form-group"><label>العمولة:</label><input type="number" id="prod-comm" required value="0"></div>
-                        </div>
-                        <div class="form-group"><label>الكمية الموردة:</label><input type="number" id="prod-qty" value="1" min="1" required></div>
-                        <button type="submit" class="btn-blue">تثبيت وتوريد للمخزن والصالة</button>
-                    </form>
-                `;
-            } else {
-                container.innerHTML = `<div class="admin-lock-box">🔒 خاص بالمدير لتعديل المخزون والأسعار والصور والنسخ الاحتياطي.</div>`;
-            }
-        }
-
-        function renderFinancialReports() {
-            const container = document.getElementById('financial-reports-container');
-            if (isAdmin) {
-                let totalSales = 0, totalPurchases = 0, totalProfits = 0;
-                transactions.forEach(t => {
-                    if (t.type === 'بيع') {
-                        totalSales += t.quantity * t.price;
-                        totalProfits += (t.price - (t.cost_price || 0)) * t.quantity;
-                    } else if (t.type === 'شراء') { totalPurchases += t.quantity * t.price; }
-                });
-                document.getElementById('cash-register').textContent = (totalSales - totalPurchases).toFixed(2);
-                container.innerHTML = `
-                    <div class="summary-box">
-                        <div class="sum-item" style="background: #44403c;">المشتريات: ${totalPurchases} ج.م</div>
-                        <div class="sum-item" style="background: #15803d;">المبيعات: ${totalSales} ج.م</div>
-                        <div class="sum-item" style="background: #854d0e;">صافي الربح: ${totalProfits} ج.م</div>
-                    </div>
-                `;
-            } else {
-                container.innerHTML = `<div class="admin-lock-box">🔒 التقارير المالية والأرباح محجوبة حتى دخول الإدارة.</div>`;
-            }
-        }
-
-        function renderProducts() {
-            const tableBody = document.getElementById('products-table-body');
-            const gallery = document.getElementById('cashier-gallery');
-            const searchQuery = document.getElementById('cashier-search').value.toLowerCase().trim();
-
-            tableBody.innerHTML = '';
-            gallery.innerHTML = '';
-
-            let filteredProducts = products.filter(p => p.name.toLowerCase().includes(searchQuery));
-
-            filteredProducts.forEach(p => {
-                let imgHtml = p.image_url ? `<img src="${p.image_url}" class="cashier-prod-img">` : `<div class="no-img">📦</div>`;
-                let outOfStock = p.stock_quantity <= 0;
+        function fetchOrders() {
+            fetch('/api/admin/orders')
+            .then(res => res.json())
+            .then(orders => {
+                const tbody = document.getElementById('orders-table-body');
+                tbody.innerHTML = '';
                 
-                gallery.innerHTML += `
-                    <div class="cashier-prod-card" style="${outOfStock ? 'opacity:0.4; cursor:not-allowed;' : ''}" onclick="addToCart(${p.id})">
-                        ${imgHtml}
-                        <div class="cashier-prod-info">
-                            <h4 class="cashier-prod-title">${p.name}</h4>
-                            <div>
-                                <div class="cashier-prod-price">${p.selling_price} ج.م</div>
-                                <div style="color:#a3a3a3; font-size:10px;">المتاح: ${p.stock_quantity} ق</div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-
-            products.forEach(p => {
-                let row = `<tr>
-                    <td style="font-weight: bold; color: white;">${p.name}</td>
-                    ${isAdmin ? `<td>${p.purchase_price} ج.م</td>` : ''}
-                    <td style="color: #eab308; font-weight: bold;">${p.selling_price} ج.م</td>
-                    <td style="color: #f97316;">${p.commission} ج.م</td>
-                    <td style="color:${p.stock_quantity <= 0 ? '#ef4444' : '#e5e5e5'}">${p.stock_quantity} ق</td>
-                    ${isAdmin ? `<td><button onclick="deleteProduct(${p.id})" style="background:#ef4444; color:white; padding:4px 8px; font-size:11px; width:auto; display:inline;">حذف</button></td>` : ''}
-                </tr>`;
-                tableBody.innerHTML += row;
-            });
-        }
-
-        function addToCart(id) {
-            let product = products.find(p => p.id === id);
-            if (!product || product.stock_quantity <= 0) {
-                alert("⚠️ هذا المنتج نفذ من المخزن حالياً!");
-                return;
-            }
-
-            let cartItem = cart.find(item => item.product_id === id);
-            if (cartItem) {
-                if (cartItem.quantity >= product.stock_quantity) {
-                    alert("⚠️ لا يمكنك إضافة كمية أكبر من المتاحة بالمخزن!");
+                if(orders.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:#a3a3a3;">لا توجد طلبات مسجلة حالياً.</td></tr>';
                     return;
                 }
-                cartItem.quantity++;
-            } else {
-                cart.push({ product_id: id, name: product.name, price: product.selling_price, cost_price: product.purchase_price, quantity: 1 });
-            }
-            renderCart();
-        }
+                
+                orders.forEach(order => {
+                    let statusClass = "status-requested";
+                    if(order.status === "جاري الشحن") statusClass = "status-shipping";
+                    if(order.status === "تم التوصيل") statusClass = "status-delivered";
+                    if(order.status === "ملغي") statusClass = "status-cancelled";
 
-        function removeFromCart(id) {
-            cart = cart.filter(item => item.product_id !== id);
-            renderCart();
-        }
-
-        function renderCart() {
-            const body = document.getElementById('cart-table-body');
-            const totalView = document.getElementById('cart-total-view');
-            body.innerHTML = '';
-            
-            if (cart.length === 0) {
-                body.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#737373;">السلة فارغة. اضغط على المنتجات فوق لإضافتها.</td></tr>';
-                totalView.textContent = '0';
-                return;
-            }
-
-            let total = 0;
-            cart.forEach(item => {
-                total += item.price * item.quantity;
-                body.innerHTML += `
-                    <tr>
-                        <td>${item.name}</td>
-                        <td>${item.price} ج.م</td>
-                        <td>${item.quantity}</td>
-                        <td><button onclick="removeFromCart(${item.product_id})" style="background:#ef4444; color:white; padding:2px 6px; font-size:11px; width:auto;">❌</button></td>
-                    </tr>
-                `;
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>#${order.order_id}</td>
+                            <td><b>${order.customer_name}</b></td>
+                            <td>${order.customer_phone}</td>
+                            <td>${order.customer_address}</td>
+                            <td>${order.product_name} (x${order.quantity})</td>
+                            <td style="color:#d4af37; font-weight:bold;">${order.total} ج.م</td>
+                            <td><span class="status-badge ${statusClass}">${order.status}</span></td>
+                            <td class="actions-cell">
+                                <button class="action-btn btn-ship" onclick="updateStatus(${order.order_id}, 'جاري الشحن')">🚚 شحن</button>
+                                <button class="action-btn btn-deliver" onclick="updateStatus(${order.order_id}, 'تم التوصيل')">✅ توصيل</button>
+                                <button class="action-btn btn-cancel" onclick="updateStatus(${order.order_id}, 'ملغي')">❌ إلغاء</button>
+                            </td>
+                        </tr>
+                    `;
+                });
             });
-            totalView.textContent = total;
         }
 
-        function checkoutCart() {
-            if (cart.length === 0) {
-                alert("سلة المشتريات فارغة!");
-                return;
-            }
-
-            cart.forEach(item => {
-                let product = products.find(p => p.id === item.product_id);
-                if (product) {
-                    product.stock_quantity -= item.quantity;
-                    transactions.push({
-                        type: 'بيع',
-                        product_id: item.product_id,
-                        product_name: item.name,
-                        quantity: item.quantity,
-                        price: item.price,
-                        cost_price: item.cost_price,
-                        date: new Date().toLocaleString('ar-EG')
-                    });
+        function updateStatus(orderId, newStatus) {
+            fetch('/api/admin/orders/update-status', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ order_id: orderId, status: newStatus })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.status === 'success') {
+                    fetchOrders(); // إعادة تحميل الجدول بعد التحديث لتحديث الحالة أمام العميل أيضاً
                 }
             });
-
-            cart = [];
-            saveToStorage();
-            updateUI();
-            alert("✅ تم تسجيل الفاتورة بنجاح وخصم المنتجات مجمعة من الجرد.");
         }
 
-        function renderLogs() {
-            const body = document.getElementById('logs-table-body');
-            body.innerHTML = '';
-            
-            if (transactions.length === 0) {
-                body.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#737373;">لا توجد عمليات مسجلة اليوم.</td></tr>';
-                return;
-            }
-
-            let reversedTransactions = [...transactions].reverse();
-            reversedTransactions.forEach(t => {
-                let prodName = t.product_name || (products.find(p => p.id === t.product_id)?.name) || "منتج محذوف";
-                let typeStyle = t.type === 'بيع' ? 'color:#22c55e; font-weight:bold;' : 'color:#3b82f6; font-weight:bold;';
-                body.innerHTML += `
-                    <tr>
-                        <td style="${typeStyle}">${t.type}</td>
-                        <td>${prodName}</td>
-                        <td>${t.quantity} ق</td>
-                        <td>${t.price * t.quantity} ج.م</td>
-                        <td style="color:#a3a3a3; font-size:11px;">${t.date}</td>
-                    </tr>
-                `;
-            });
-        }
-
-        function clearLogs() {
-            if(confirm("هل أنت متأكد من مسح سجل المبيعات بالكامل؟")) {
-                transactions = [];
-                saveToStorage();
-                updateUI();
-            }
-        }
-
-        function saveProduct(event) {
-            event.preventDefault();
-            const name = document.getElementById('prod-name').value.trim();
-            const img = document.getElementById('prod-img').value.trim();
-            const purchase_price = parseFloat(document.getElementById('prod-pur').value);
-            const selling_price = parseFloat(document.getElementById('prod-sel').value);
-            const commission = parseFloat(document.getElementById('prod-comm').value);
-            const quantity = parseInt(document.getElementById('prod-qty').value);
-
-            let existingProduct = products.find(p => p.name === name);
-            let p_id;
-
-            if (existingProduct) {
-                existingProduct.stock_quantity += quantity;
-                existingProduct.purchase_price = purchase_price;
-                existingProduct.selling_price = selling_price;
-                existingProduct.commission = commission;
-                if(img) existingProduct.image_url = img;
-                p_id = existingProduct.id;
-            } else {
-                p_id = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
-                products.push({ id: p_id, name: name, purchase_price: purchase_price, selling_price: selling_price, commission: commission, stock_quantity: quantity, image_url: img });
-            }
-
-            transactions.push({
-                type: 'شراء',
-                product_id: p_id,
-                product_name: name,
-                quantity: quantity,
-                price: purchase_price,
-                date: new Date().toLocaleString('ar-EG')
-            });
-
-            saveToStorage(); updateUI(); alert("✅ تم تحديث وتوريد المنتج للمخزن.");
-        }
-
-        function deleteProduct(id) {
-            if (confirm("هل تريد حذف هذا المنتج تماماً من الجرد؟")) { 
-                products = products.filter(p => p.id !== id); 
-                saveToStorage(); updateUI(); 
-            }
-        }
-
-        function exportData() {
-            let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ products, transactions }));
-            let downloadAnchor = document.createElement('a');
-            downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", `نسخة_احتياطية_سينا_ستور_401_${new Date().toLocaleDateString()}.json`);
-            document.body.appendChild(downloadAnchor);
-            downloadAnchor.click();
-            downloadAnchor.remove();
-        }
-
-        function importData(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const imported = JSON.parse(e.target.result);
-                    if(imported.products && imported.transactions) {
-                        products = imported.products;
-                        transactions = imported.transactions;
-                        saveToStorage();
-                        updateUI();
-                        alert("✅ تم استعادة البيانات الجردية بنجاح!");
-                    } else { alert("الملف غير متوافق!"); }
-                } catch(err) { alert("حدث خطأ في قراءة ملف النسخة!"); }
-            };
-            reader.readAsText(file);
-        }
-
-        updateUI();
+        // تحميل البيانات عند فتح الصفحة
+        fetchOrders();
     </script>
 </body>
 </html>
