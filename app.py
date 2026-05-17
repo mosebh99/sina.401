@@ -5,7 +5,7 @@ from flask import Flask, jsonify, request, render_template
 
 app = Flask(__name__, template_folder='.')
 
-# مسار قاعدة البيانات المتوافق مع السيرفرات السحابية ومحمي من الفشل
+# مسار قاعدة البيانات الآمن للسيرفرات السحابية والمحلية
 if os.environ.get('VERCEL') or os.environ.get('RENDER') or 'AWS_LAMBDA_FUNCTION_NAME' in os.environ:
     DB_FILE = "/tmp/database.db"
 else:
@@ -15,20 +15,22 @@ def init_db():
     conn = sqlite3.connect(DB_FILE)
     cursor = conn.cursor()
     
-    # جدول المنتجات
+    # جدول المنتجات الشامل (يدعم سعر الشراء والعمولة للربحية)
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS products (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
-            category TEXT,
+            category TEXT DEFAULT 'عام',
             selling_price REAL NOT NULL,
-            stock_quantity INTEGER,
+            purchasing_price REAL DEFAULT 0,
+            commission REAL DEFAULT 0,
+            stock_quantity INTEGER DEFAULT 0,
             image_url TEXT NOT NULL,
             description TEXT
         )
     ''')
     
-    # جدول طلبات الشحن
+    # جدول الطلبات الشامل (يدعم التتبع وكود المسوق)
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS orders (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -37,7 +39,8 @@ def init_db():
             customer_address TEXT NOT NULL,
             total_price REAL NOT NULL,
             marketer_id TEXT,
-            products_json TEXT NOT NULL
+            products_json TEXT NOT NULL,
+            status TEXT DEFAULT 'قيد المراجعة ⏳'
         )
     ''')
     conn.commit()
@@ -51,7 +54,7 @@ def index(): return render_template('index.html')
 @app.route('/cashier.html')
 def cashier(): return render_template('cashier.html')
 
-# --- الـ APIs الخاصة بالمنتجات ---
+# --- تشغيل وبوابات المنتجات ---
 @app.route('/api/products', methods=['GET'])
 def get_products():
     conn = sqlite3.connect(DB_FILE)
@@ -65,58 +68,38 @@ def get_products():
 @app.route('/api/products', methods=['POST'])
 def add_product():
     data = request.get_json()
-    if not data: return jsonify({"status": "error"}), 400
     try:
         conn = sqlite3.connect(DB_FILE)
         cursor = conn.cursor()
-        
-        name = data.get('name') or data.get('p-name')
-        price = data.get('selling_price') or data.get('p-price') or 0
-        stock = data.get('stock_quantity') or data.get('p-stock') or 0
-        img = data.get('image_url') or data.get('image') or 'logo.png'
-        desc = data.get('description') or data.get('p-desc') or ''
+        name = data.get('name')
+        price = data.get('selling_price') or 0
+        p_price = data.get('purchasing_price') or 0
+        comm = data.get('commission') or 0
+        stock = data.get('stock_quantity') or 0
+        img = data.get('image_url') or 'logo.png'
+        desc = data.get('description') or ''
         cat = data.get('category') or 'عام'
 
         cursor.execute('''
-            INSERT INTO products (name, category, selling_price, stock_quantity, image_url, description)
-            VALUES (?, ?, ?, ?, ?, ?)
-        ''', (name, cat, float(price), int(stock), img, desc))
+            INSERT INTO products (name, category, selling_price, purchasing_price, commission, stock_quantity, image_url, description)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (name, cat, float(price), float(p_price), float(comm), int(stock), img, desc))
         conn.commit()
         conn.close()
         return jsonify({"status": "success"}), 201
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 400
 
-@app.route('/api/products/<int:p_id>', methods=['PUT'])
-def update_product(p_id):
-    data = request.get_json()
-    try:
-        conn = sqlite3.connect(DB_FILE)
-        cursor = conn.cursor()
-        cursor.execute('''
-            UPDATE products 
-            SET name=?, selling_price=?, stock_quantity=?, image_url=?, description=?
-            WHERE id=?
-        ''', (data['name'], float(data['selling_price']), int(data['stock_quantity']), data['image_url'], data['description'], p_id))
-        conn.commit()
-        conn.close()
-        return jsonify({"status": "success"}), 200
-    except Exception as e:
-        return jsonify({"status": "error"}), 400
-
 @app.route('/api/products/<int:p_id>', methods=['DELETE'])
 def delete_product(p_id):
-    try:
-        conn = sqlite3.connect(DB_FILE)
-        cursor = conn.cursor()
-        cursor.execute("DELETE FROM products WHERE id=?", (p_id,))
-        conn.commit()
-        conn.close()
-        return jsonify({"status": "success"}), 200
-    except Exception as e:
-        return jsonify({"status": "error"}), 400
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM products WHERE id=?", (p_id,))
+    conn.commit()
+    conn.close()
+    return jsonify({"status": "success"}), 200
 
-# --- الـ APIs الخاصة بالطلبات ---
+# --- تشغيل وبوابات الطلبات والتتبع ---
 @app.route('/api/orders', methods=['POST'])
 def create_order():
     data = request.get_json()
@@ -124,7 +107,6 @@ def create_order():
         conn = sqlite3.connect(DB_FILE)
         cursor = conn.cursor()
         products_json_str = json.dumps(data['products'], ensure_ascii=False)
-        
         cursor.execute('''
             INSERT INTO orders (customer_name, customer_phone, customer_address, total_price, marketer_id, products_json)
             VALUES (?, ?, ?, ?, ?, ?)
@@ -132,8 +114,7 @@ def create_order():
         conn.commit()
         conn.close()
         return jsonify({"status": "success"}), 201
-    except Exception as e:
-        return jsonify({"status": "error"}), 400
+    except Exception as e: return jsonify({"status": "error"}), 400
 
 @app.route('/api/orders', methods=['GET'])
 def get_orders():
@@ -143,19 +124,18 @@ def get_orders():
     cursor.execute("SELECT * FROM orders ORDER BY id DESC")
     rows = cursor.fetchall()
     conn.close()
-    
-    orders_list = []
-    for row in rows:
-        orders_list.append({
-            "id": row["id"],
-            "customer_name": row["customer_name"],
-            "customer_phone": row["customer_phone"],
-            "customer_address": row["customer_address"],
-            "total": row["total_price"],
-            "marketer_id": row["marketer_id"],
-            "products": json.loads(row["products_json"])
-        })
-    return jsonify(orders_list), 200
+    return jsonify([dict(r) for r in rows]), 200
+
+@app.route('/api/orders/<int:o_id>', methods=['PUT'])
+def update_order_status(o_id):
+    data = request.get_json()
+    status = data.get('status')
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+    cursor.execute("UPDATE orders SET status=? WHERE id=?", (status, o_id))
+    conn.commit()
+    conn.close()
+    return jsonify({"status": "success"}), 200
 
 handler = app
 if __name__ == '__main__':
