@@ -4,9 +4,8 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 from flask import Flask, jsonify, request, render_template, redirect, url_for
 
-# ضبط المسار لقرأة ملفات الـ HTML من الفولدر الرئيسي مباشرة
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-app = Flask(__name__, template_folder=BASE_DIR, static_folder=BASE_DIR)
+# التعديل الصحيح: جعل Flask يقرأ من فولدر templates الطبيعي لمنع انهيار السيرفر
+app = Flask(__name__)
 
 # رابط الاتصال المباشر بقاعدة بيانات سوبابيس
 DATABASE_URL = os.environ.get('DATABASE_URL') or "postgresql://postgres:MoSebA01065653401@db.ellxxztpfpaqlbqsnyhb.supabase.co:5432/postgres"
@@ -14,7 +13,7 @@ DATABASE_URL = os.environ.get('DATABASE_URL') or "postgresql://postgres:MoSebA01
 def get_db_connection():
     return psycopg2.connect(DATABASE_URL, connect_timeout=10)
 
-# --- 🌐 مسارات الصفحات ---
+# --- 🌐 مسارات الصفحات (تقرأ الآن تلقائياً من داخل مجلد templates) ---
 
 @app.route('/')
 def index():
@@ -58,7 +57,6 @@ def add_product():
         conn = get_db_connection()
         cursor = conn.cursor()
         
-        # تحويل البيانات بشكل آمن لضمان عدم حدوث خطأ أثناء الإدخال
         selling_price = float(data.get('selling_price', 0) or 0)
         purchasing_price = float(data.get('purchasing_price', 0) or 0)
         commission = float(data.get('commission', 0) or 0)
@@ -97,7 +95,7 @@ def delete_product(p_id):
     except Exception as e: 
         return jsonify({"status": "error", "message": str(e)}), 500
 
-# --- 📦 واجهات الطلبات شحن ---
+# --- 📦 واجهات الطلبات ---
 
 @app.route('/api/orders', methods=['POST'])
 def create_order():
