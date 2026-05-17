@@ -3,178 +3,152 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة التحكم والجرد المتقدمة | Sina 401</title>
-    <link rel="stylesheet" href="/static/css/style.css">
+    <title>لوحة التحكم المطورة | Sina Store</title>
+    <link rel="icon" type="image/png" href="/logo.png.jpeg">
     <style>
-        .layout-flex { max-width: 1200px; margin: 30px auto; padding: 0 20px; display: flex; gap: 25px; flex-wrap: wrap; }
-        .box-side { flex: 1; min-width: 320px; background: var(--card-bg); padding: 25px; border-radius: 12px; border: 1px solid #222; }
-        .table-side { flex: 2; min-width: 320px; background: var(--card-bg); padding: 25px; border-radius: 12px; border: 1px solid #222; }
-        .dash-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; max-width: 1200px; margin: 0 auto 20px auto; padding: 0 20px; box-sizing: border-box; }
-        .stat-widget { background: var(--card-bg); border-top: 4px solid var(--primary); padding: 20px; border-radius: 8px; text-align: center; }
-        table { width: 100%; border-collapse: collapse; text-align: right; }
-        th, td { padding: 12px; border-bottom: 1px solid #222; }
-        th { color: var(--primary); }
+        :root { --primary: #d4af37; --bg: #0d0d0d; --card-bg: #141414; --text: #ffffff; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 20px; }
+        .container { max-width: 900px; margin: 0 auto; }
+        h1, h2 { color: var(--primary); text-align: center; }
+        .form-box { background: var(--card-bg); border: 1px solid var(--primary); padding: 20px; border-radius: 10px; margin-bottom: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        .grid-inputs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        .form-group { margin-bottom: 15px; }
+        .full-width { grid-column: span 2; }
+        label { display: block; margin-bottom: 5px; color: var(--primary); font-size: 14px; }
+        input, select, textarea { width: 100%; padding: 10px; background: #000; border: 1px solid #333; color: #fff; border-radius: 5px; box-sizing: border-box; }
+        input:focus, select:focus, textarea:focus { border-color: var(--primary); outline: none; }
+        button { background: var(--primary); color: #000; border: none; padding: 12px 20px; font-weight: bold; border-radius: 5px; cursor: pointer; width: 100%; font-size: 16px; margin-top: 10px; }
+        button:hover { background: #b5942b; }
+        .product-card { background: var(--card-bg); border: 1px solid #222; padding: 15px; border-radius: 8px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .prod-info h3 { margin: 0 0 5px 0; color: var(--primary); }
+        .prod-info p { margin: 3px 0; font-size: 13px; color: #aaa; }
+        .badge { background: #222; padding: 2px 8px; border-radius: 4px; font-size: 11px; color: var(--primary); }
+        .btn-del { background: #dc2626; color: white; width: auto; padding: 5px 15px; font-size: 13px; }
+        .btn-del:hover { background: #b91c1c; }
     </style>
 </head>
 <body>
-
-    <header>
-        <h1 style="color: var(--primary);">👑 الإدارة العليا للمخازن</h1>
-        <div class="nav-links">
-            <a href="/" target="_blank">👁️ معاينة المتجر</a>
-            <a href="/api/auth/logout" style="color:#dc2626; font-weight:bold;">🚪 تسجيل الخروج</a>
-        </div>
-    </header>
-
-    <h2 style="text-align:center; margin-top:20px;">📊 لوحة مراقبة الأرباح وجداول الجرد السحابية</h2>
-    
-    <div class="dash-row">
-        <div class="stat-widget"><h4>السلع الحالية على الرف</h4><div id="stat-count-p">0</div></div>
-        <div class="stat-widget"><h4>إجمالي التدفقات المالية للطلبات</h4><div id="stat-sum-money">0 ج.م</div></div>
-        <div class="stat-widget"><h4>عدد الطلبات المسجلة</h4><div id="stat-count-o">0</div></div>
-    </div>
-
-    <div class="layout-flex">
-        <div class="box-side">
-            <h3 style="color:var(--primary); margin-top:0;">✨ إضافة منتج جديد</h3>
-            <form id="add-prod-form" onsubmit="saveProductToDB(event)">
-                <input type="text" id="p-name" class="search-input" style="width:100%; margin-bottom:12px;" placeholder="اسم المنتج *" required>
-                
-                <select id="p-category" class="filter-select" style="width:100%; margin-bottom:12px;">
-                    <option value="عام">عام وإلكترونيات</option>
-                    <option value="زيوت طبيعية">زيوت طبيعية</option>
-                    <option value="أعشاب طبيعية">أعشاب طبيعية</option>
-                </select>
-
-                <input type="number" id="p-price" class="search-input" style="width:100%; margin-bottom:12px;" placeholder="سعر البيع *" required>
-                <input type="number" id="p-stock" class="search-input" style="width:100%; margin-bottom:12px;" placeholder="الكمية المتوفرة بالقطع *" required>
-                
-                <div style="margin-bottom:12px;">
-                    <label style="color:var(--primary); font-size:12px; display:block; margin-bottom:4px;">📸 اختر صور المنتج (يمكنك رفع عدة صور معاً):</label>
-                    <input type="file" id="p-media-files" multiple accept="image/*" class="search-input" style="width:100%;">
+    <div class="container">
+        <h1>Sina Store 401 🏪</h1>
+        <h2>لوحة إدارة المنتجات والمخزن المحدثة</h2>
+        
+        <div class="form-box">
+            <form id="product-form" onsubmit="handleSave(event)">
+                <div class="grid-inputs">
+                    <div class="form-group full-width">
+                        <label>اسم المنتج *</label>
+                        <input type="text" id="p-name" required placeholder="مثال: سماعة بلوتوث P9">
+                    </div>
+                    <div class="form-group">
+                        <label>الفئة (القسم)</label>
+                        <select id="p-cat">
+                            <option value="سماعات">سماعات</option>
+                            <option value="شواحن وكابلات">شواحن وكابلات</option>
+                            <option value="جرابات وحمايات">جرابات وحمايات</option>
+                            <option value="ساعات ذكية">ساعات ذكية</option>
+                            <option value="عام">عام</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>سعر البيع للمستهلك (ج.م) *</label>
+                        <input type="number" id="p-price" required placeholder="0.00" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label>سعر الشراء (التكلفة) *</label>
+                        <input type="number" id="p-purchasing" required placeholder="0.00" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label>عمولة المسوق (ج.م) *</label>
+                        <input type="number" id="p-commission" required placeholder="0.00" step="0.01">
+                    </div>
+                    <div class="form-group full-width">
+                        <label>الكمية المتاحة في المخزن *</label>
+                        <input type="number" id="p-stock" required placeholder="مثال: 50">
+                    </div>
+                    <div class="form-group full-width">
+                        <label>رابط صورة المنتج</label>
+                        <input type="text" id="p-img" placeholder="https://example.com/image.png">
+                    </div>
+                    <div class="form-group full-width">
+                        <label>وصف المنتج</label>
+                        <textarea id="p-desc" rows="3" placeholder="اكتب تفاصيل المنتج ومميزاته هنا..."></textarea>
+                    </div>
                 </div>
-
-                <textarea id="p-description" class="search-input" style="width:100%; margin-bottom:12px; border-radius:8px;" placeholder="وصف المنتج لـ SEO..."></textarea>
-                
-                <button type="submit" class="btn-primary">🚀 حفظ وتثبيت بالمتجر أونلاين</button>
+                <button type="submit">🚀 حفظ وتثبيت المنتج في السحاب</button>
             </form>
         </div>
 
-        <div class="table-side">
-            <h3 style="color:var(--primary); margin-top:0;">📦 جدول جرد السلع ومراقبة قرب النفاد</h3>
-            <div style="overflow-x:auto;">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>المنتج</th>
-                            <th>القسم</th>
-                            <th>السعر</th>
-                            <th>المخزون المتاح</th>
-                            <th>الإجراء</th>
-                        </tr>
-                    </thead>
-                    <tbody id="admin-inventory-rows">
-                        <tr><td colspan="5" style="text-align:center;">جاري الجرد السحابي...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+        <h2>📦 المنتجات الحالية بالمخزن</h2>
+        <div id="products-list"></div>
     </div>
 
     <script>
-        async function fetchAdminInventory() {
+        async function loadProducts() {
             try {
                 const res = await fetch('/api/products');
-                const products = await res.json();
+                const prods = await res.json();
+                const container = document.getElementById('products-list');
+                container.innerHTML = prods.length === 0 ? '<p style="text-align:center;color:#666;">لا توجد منتجات حالياً.</p>' : '';
                 
-                const tbody = document.getElementById('admin-inventory-rows');
-                tbody.innerHTML = '';
-                
-                products.forEach(p => {
-                    let stockBadge = p.stock_quantity;
-                    if(p.stock_quantity <= 5) {
-                        stockBadge = `<span style="background:#ea580c; padding:2px 6px; border-radius:4px; font-size:11px;">⚠️ قرب ينفد (${p.stock_quantity})</span>`;
-                    }
-                    
-                    tbody.innerHTML += `
-                        <tr>
-                            <td><strong>${p.name}</strong></td>
-                            <td>${p.category}</td>
-                            <td style="color:var(--primary); font-weight:bold;">${p.selling_price} ج.م</td>
-                            <td>${stockBadge}</td>
-                            <td>
-                                <button onclick="removeProductFromStore(${p.id})" style="background:#dc2626; color:white; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;">❌ حذف</button>
-                            </td>
-                        </tr>
+                prods.forEach(p => {
+                    container.innerHTML += `
+                        <div class="product-card">
+                            <div class="prod-info">
+                                <h3>${p.name} <span class="badge">${p.category}</span></h3>
+                                <p>💰 سعر البيع: ${p.selling_price} ج.م | 📉 التكلفة: ${p.purchasing_price || 0} ج.م</p>
+                                <p>💵 عمولة المسوق: ${p.commission || 0} ج.م | 📦 المخزون: ${p.stock_quantity || 0} قطع</p>
+                            </div>
+                            <button class="btn-del" onclick="deleteProduct(${p.id})">حذف</button>
+                        </div>
                     `;
                 });
-
-                document.getElementById('stat-count-p').innerText = products.length;
-
-                // تحديث مؤشرات الـ Dashboard المبيعات والطلبات
-                const orderRes = await fetch('/api/orders');
-                if(orderRes.ok) {
-                    const orders = await orderRes.json();
-                    document.getElementById('stat-count-o').innerText = orders.length;
-                    let revenue = orders.reduce((total, ord) => total + ord.total_price, 0);
-                    document.getElementById('stat-sum-money').innerText = revenue.toFixed(0) + " ج.م";
-                }
-            } catch(e) { console.error(e); }
+            } catch (e) {
+                console.error("خطأ في جلب المنتجات", e);
+            }
         }
 
-        async function saveProductToDB(e) {
+        async function handleSave(e) {
             e.preventDefault();
-            
-            const fileCtrl = document.getElementById('p-media-files');
-            let mainUrl = "";
-            let subUrlsList = [];
-            
-            if(fileCtrl.files.length > 0) {
-                const fData = new FormData();
-                for(let i=0; i<fileCtrl.files.length; i++) {
-                    fData.append('files', fileCtrl.files[i]);
-                }
-                
-                const upRes = await fetch('/api/upload', { method: 'POST', body: fData });
-                if(upRes.ok) {
-                    const upJson = await upRes.json();
-                    mainUrl = upJson.urls[0] || "";
-                    subUrlsList = upJson.urls.slice(1) || [];
-                }
-            }
-
             const payload = {
-                name: document.getElementById('p-name').value.trim(),
-                category: document.getElementById('p-category').value,
+                name: document.getElementById('p-name').value,
+                category: document.getElementById('p-cat').value,
                 selling_price: parseFloat(document.getElementById('p-price').value),
+                purchasing_price: parseFloat(document.getElementById('p-purchasing').value),
+                commission: parseFloat(document.getElementById('p-commission').value),
                 stock_quantity: parseInt(document.getElementById('p-stock').value),
-                description: document.getElementById('p-description').value.trim(),
-                image_url: mainUrl,
-                images_json: subUrlsList
+                image_url: document.getElementById('p-img').value,
+                description: document.getElementById('p-desc').value
             };
 
-            const response = await fetch('/api/products', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(payload)
-            });
+            try {
+                const res = await fetch('/api/products', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
 
-            if(response.ok) {
-                alert("🎉 تم تثبيت السلعة وصورها بنجاح في قاعدة البيانات السحابية!");
-                document.getElementById('add-prod-form').reset();
-                fetchAdminInventory();
-            } else {
-                alert("❌ فشل عملية الحفظ. يرجى التحقق من الجلسة.");
+                if (res.ok) {
+                    alert('🎉 تم حفظ وتثبيت المنتج وتحديث المخزن بنجاح!');
+                    document.getElementById('product-form').reset();
+                    loadProducts();
+                } else {
+                    const errData = await res.json();
+                    alert('❌ فشل الإضافة: ' + (errData.message || 'خطأ غير معروف'));
+                }
+            } catch (error) {
+                alert('❌ حدث خطأ في الاتصال بالسيرفر.');
             }
         }
 
-        async function removeProductFromStore(id) {
-            if(!confirm("هل تود حذف هذه السلعة نهائياً من الرف؟")) return;
-            const res = await fetch(`/api/products/${id}`, { method: 'DELETE' });
-            if(res.ok) { fetchAdminInventory(); }
+        async function deleteProduct(id) {
+            if (!confirm('هل أنت متأكد من حذف هذا المنتج؟')) return;
+            try {
+                const res = await fetch(`/api/products/${id}`, { method: 'DELETE' });
+                if (res.ok) { loadProducts(); }
+            } catch (e) { alert('خطأ في الحذف.'); }
         }
 
-        window.addEventListener('DOMContentLoaded', fetchAdminInventory);
+        window.addEventListener('DOMContentLoaded', loadProducts);
     </script>
 </body>
 </html>
