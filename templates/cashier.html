@@ -3,50 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sina Store 401 - المتجر الرئيسي</title>
+    <title>لوحة الكاشير - Sina Store 401</title>
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
-
     <header class="main-header">
-        <div class="logo-section">
-            <img src="/static/css/logo.png.jpeg" alt="Sina 401 Logo" class="brand-logo">
-            <h1>Sina Store 401</h1>
-        </div>
-        <nav class="nav-links">
-            <a href="/">🏠 الرئيسية</a>
-            <a href="/marketers.html">📊 بوابة المسوقين</a>
-            <a href="/login.html">🔐 لوحة الإدارة</a>
-        </nav>
+        <h1>🖥️ نظام الكاشير والمبيعات السحابي</h1>
+        <a href="/" class="btn-secondary">🏠 العودة للمتجر</a>
     </header>
 
-    <main class="store-container">
-        <section class="filter-bar">
-            <input type="text" id="search-box" placeholder="🔍 ابحث عن إكسسوارات، شواحن، كابلات..." oninput="handleSearchAndFilter()">
-            <select id="category-filter" onchange="handleSearchAndFilter()">
-                <option value="all">كل الأقسام</option>
-                <option value="شواحن">شواحن وطاقة</option>
-                <option value="كابلات">كابلات ووصلات</option>
-                <option value="جرابات">جرابات وحماية</option>
-                <option value="سماعات">سماعات وصوتيات</option>
-            </select>
-        </section>
-
-        <section class="tracking-section" style="margin-bottom: 20px; background: #1e1e1e; padding: 15px; border-radius: 8px;">
-            <h3>📦 تتبع حالة شحنتك</h3>
-            <div style="display: flex; gap: 10px; margin-top: 10px;">
-                <input type="text" id="track-phone" placeholder="أدخل رقم الهاتف المسجل به الطلب" style="flex: 1; padding: 8px; border-radius: 4px; border: 1px solid #333; background: #111; color: #fff;">
-                <button class="btn-primary" onclick="trackMyOrder()" style="padding: 8px 15px;">بحث</button>
+    <main class="cashier-wrapper" style="padding: 20px;">
+        <div style="background: #1e1e1e; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+            <h2>🛒 إنشاء فاتورة مبيعات جديدة</h2>
+            <div id="order-form" style="margin-top: 15px;">
+                <p>إدارة الفواتير والطلبات متصلة تلقائياً بالسيرفر الخلفي وقاعدة بيانات Supabase.</p>
             </div>
-            <div id="track-output"></div>
-        </section>
-
-        <section class="products-grid" id="products-container">
-            <p style="grid-column: 1/-1; text-align:center;">🔄 جاري تحميل أحدث المنتجات من المخزن السحابي...</p>
-        </section>
+        </div>
     </main>
-
-    <div id="toast-notification" class="toast"></div>
 
     <script src="/static/js/store.js"></script>
 </body>
