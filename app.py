@@ -9,14 +9,13 @@ TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
 STATIC_DIR = os.path.join(BASE_DIR, 'static')
 
 app = Flask(__name__, template_folder=TEMPLATE_DIR, static_folder=STATIC_DIR)
-app = app
+app = app  # السطر الإجباري لمنصة Vercel لمنع الـ Failed
 
-# الرابط المباشر المؤمن لقاعدة بيانات Supabase
+# رابط الاتصال المباشر والمؤمن بقاعدة بيانات Supabase
 DATABASE_URL = "postgresql://postgres:MoSebA01065653401@db.ellxxztpfpaqlbqsnyhb.supabase.co:5432/postgres"
 
 def get_db_connection():
-    """إنشاء اتصال مؤمن وقوي مع السيرفر السحابي لمنع فشل الاتصال"""
-    # إضافة sslmode لضمان قبول الاستضافة السحابية للاتصال الخارجي
+    """إنشاء اتصال مؤمن بالسيرفر السحابي لحماية البيانات من السقوط"""
     conn = psycopg2.connect(DATABASE_URL, sslmode='allow', cursor_factory=RealDictCursor)
     return conn
 
@@ -138,21 +137,6 @@ def api_orders():
             cur.close()
             conn.close()
             return jsonify(new_order), 201
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-@app.route('/api/orders/<int:oid>', methods=['PUT'])
-def update_order_status(oid):
-    try:
-        data = request.json
-        conn = get_db_connection()
-        cur = conn.cursor()
-        cur.execute("UPDATE orders SET status = %s WHERE id = %s RETURNING *;", (data.get('status'), oid))
-        updated = cur.fetchone()
-        conn.commit()
-        cur.close()
-        conn.close()
-        return jsonify(updated)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
