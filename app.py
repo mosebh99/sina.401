@@ -5,6 +5,7 @@ from flask import Flask, jsonify, request, render_template
 
 app = Flask(__name__, template_folder='.')
 
+# مسار قاعدة البيانات المتوافق مع السيرفرات السحابية ومحمي من الفشل
 if os.environ.get('VERCEL') or os.environ.get('RENDER') or 'AWS_LAMBDA_FUNCTION_NAME' in os.environ:
     DB_FILE = "/tmp/database.db"
 else:
@@ -13,6 +14,8 @@ else:
 def init_db():
     conn = sqlite3.connect(DB_FILE)
     cursor = conn.cursor()
+    
+    # جدول المنتجات
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS products (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -24,6 +27,8 @@ def init_db():
             description TEXT
         )
     ''')
+    
+    # جدول طلبات الشحن
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS orders (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -46,6 +51,7 @@ def index(): return render_template('index.html')
 @app.route('/cashier.html')
 def cashier(): return render_template('cashier.html')
 
+# --- الـ APIs الخاصة بالمنتجات ---
 @app.route('/api/products', methods=['GET'])
 def get_products():
     conn = sqlite3.connect(DB_FILE)
@@ -59,10 +65,11 @@ def get_products():
 @app.route('/api/products', methods=['POST'])
 def add_product():
     data = request.get_json()
+    if not data: return jsonify({"status": "error"}), 400
     try:
         conn = sqlite3.connect(DB_FILE)
         cursor = conn.cursor()
-        # هنا بنضمن إن السيرفر يقبل المسميات القديمة والجديدة مع بعض عشان ميهنجش
+        
         name = data.get('name') or data.get('p-name')
         price = data.get('selling_price') or data.get('p-price') or 0
         stock = data.get('stock_quantity') or data.get('p-stock') or 0
@@ -95,7 +102,7 @@ def update_product(p_id):
         conn.close()
         return jsonify({"status": "success"}), 200
     except Exception as e:
-        return jsonify({"status": "error", "message": str(e)}), 400
+        return jsonify({"status": "error"}), 400
 
 @app.route('/api/products/<int:p_id>', methods=['DELETE'])
 def delete_product(p_id):
@@ -107,7 +114,48 @@ def delete_product(p_id):
         conn.close()
         return jsonify({"status": "success"}), 200
     except Exception as e:
-        return jsonify({"status": "error", "message": str(e)}), 400
+        return jsonify({"status": "error"}), 400
+
+# --- الـ APIs الخاصة بالطلبات ---
+@app.route('/api/orders', methods=['POST'])
+def create_order():
+    data = request.get_json()
+    try:
+        conn = sqlite3.connect(DB_FILE)
+        cursor = conn.cursor()
+        products_json_str = json.dumps(data['products'], ensure_ascii=False)
+        
+        cursor.execute('''
+            INSERT INTO orders (customer_name, customer_phone, customer_address, total_price, marketer_id, products_json)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ''', (data['customer_name'], data['customer_phone'], data['customer_address'], float(data['total']), data.get('marketer_id'), products_json_str))
+        conn.commit()
+        conn.close()
+        return jsonify({"status": "success"}), 201
+    except Exception as e:
+        return jsonify({"status": "error"}), 400
+
+@app.route('/api/orders', methods=['GET'])
+def get_orders():
+    conn = sqlite3.connect(DB_FILE)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM orders ORDER BY id DESC")
+    rows = cursor.fetchall()
+    conn.close()
+    
+    orders_list = []
+    for row in rows:
+        orders_list.append({
+            "id": row["id"],
+            "customer_name": row["customer_name"],
+            "customer_phone": row["customer_phone"],
+            "customer_address": row["customer_address"],
+            "total": row["total_price"],
+            "marketer_id": row["marketer_id"],
+            "products": json.loads(row["products_json"])
+        })
+    return jsonify(orders_list), 200
 
 handler = app
 if __name__ == '__main__':
