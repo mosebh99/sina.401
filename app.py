@@ -7,7 +7,7 @@ from flask import Flask, jsonify, request, render_template
 app = Flask(__name__, template_folder='.')
 
 # 🔗 حط هنا الرابط اللي جبناه من Supabase (تأكد إن الباسورد مكتوبة جواه صح مكان [YOUR-PASSWORD])
-DATABASE_URL = os.environ.get('DATABASE_URL') or "postgresql://postgres:[YOUR-PASSWORD]@db.ellxxztpfpaqlbqsnyhb.supabase.co:5432/postgres"
+DATABASE_URL = os.environ.get('DATABASE_URL') or "postgresql://postgres:MoSebA01065653401@db.ellxxztpfpaqlbqsnyhb.supabase.co:5432/postgres"
 
 def get_db_connection():
     # الاتصال بقاعدة البيانات السحابية Supabase بدلاً من sqlite3 المؤقتة
