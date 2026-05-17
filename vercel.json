@@ -11,6 +11,14 @@
       "dest": "app.py"
     },
     {
+      "src": "/logo.png.png",
+      "dest": "/logo.png.png"
+    },
+    {
+      "src": "/logo.png (1).jpeg",
+      "dest": "/logo.png (1).jpeg"
+    },
+    {
       "src": "/(.*)",
       "dest": "app.py"
     }
