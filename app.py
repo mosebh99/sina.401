@@ -1,10 +1,15 @@
 import os
 import sqlite3
+import json
 from flask import Flask, jsonify, request, render_template
 
 app = Flask(__name__, template_folder='.')
 
-DB_FILE = "database.db"
+# 🛠️ حل مشكلة الاستضافة السحابية: تحديد مسار ذكي لقاعدة البيانات يتوافق مع صلاحيات السيرفر
+if os.environ.get('VERCEL') or os.environ.get('RENDER') or 'AWS_LAMBDA_FUNCTION_NAME' in os.environ:
+    DB_FILE = "/tmp/database.db"
+else:
+    DB_FILE = "database.db"
 
 # --- دالة الاتصال بقاعدة البيانات وإنشاء الجداول لو مش موجودة ---
 def init_db():
@@ -142,14 +147,13 @@ def delete_product(p_id):
 
 
 # =======================================================
-# 📦 ثانياً: لوحة تحكم طلبات الشحن (تأكيد الطلبات / عرضها)
+# 📦 ثانياً: لوحة تحكم الطلبات (تأكيد الطلبات / عرضها)
 # =======================================================
 
 # 1. استقبال طلب شراء جديد من سلة المشتريات وتخزينه فوراً للمدير
 @app.route('/api/orders', methods=['POST'])
 def create_order():
     data = request.get_json()
-    import json
     try:
         conn = sqlite3.connect(DB_FILE)
         cursor = conn.cursor()
@@ -171,7 +175,6 @@ def create_order():
 # 2. جلب كل طلبات الشحن الحالية لتعرض في صفحة المدير
 @app.route('/api/orders', methods=['GET'])
 def get_orders():
-    import json
     conn = sqlite3.connect(DB_FILE)
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
@@ -192,8 +195,8 @@ def get_orders():
         })
     return jsonify(orders_list), 200
 
+# المتغير الرئيسي المطلوب من بعض منصات الاستضافة السحابية للتشغيل
+handler = app
 
-# تشغيل الخادم السحابي
-application = app
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
