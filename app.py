@@ -2,8 +2,7 @@ from flask import Flask, jsonify, request, render_template
 
 app = Flask(__name__, template_folder='.')
 
-# قاعدة بيانات سحابية وهمية مؤقتة داخل السيرفر (تتحدث ديناميكياً من صفحة الكاشير)
-# يمكنك ربطها بملف json أو داتابيز خارجية لاحقاً
+# مصفوفة المنتجات السحابية الافتراضية
 cloud_products = [
     {
         "id": 1,
@@ -11,7 +10,7 @@ cloud_products = [
         "category": "زيوت طبيعية",
         "selling_price": 250,
         "stock_quantity": 15,
-        "image_url": "",
+        "image_url": "logo.png",
         "description": "زيت زيتون طبيعي 100% من معاصر سيناء بجودة عالية وفائقة."
     },
     {
@@ -20,10 +19,13 @@ cloud_products = [
         "category": "أعشاب طبيعية",
         "selling_price": 85,
         "stock_quantity": 30,
-        "image_url": "",
+        "image_url": "logo.png",
         "description": "مرمية برية طبيعية مجففة ومقطوفة بعناية من جبال سيناء."
     }
 ]
+
+# مخزن الطلبات السحابية لصفحة الكاشير
+cloud_orders = []
 
 @app.route('/')
 def index():
@@ -37,19 +39,22 @@ def cashier():
 def marketers():
     return render_template('marketers.html')
 
-# رابط السحابية لجلب المنتجات للمتجر
+# روابط الـ API الخاصة بالمتجر
 @app.route('/api/products', methods=['GET'])
 def get_products():
     return jsonify(cloud_products), 200
 
-# رابط السحابية لاستقبال الطلبات الجديدة من الزبائن
+@app.route('/api/admin/orders', methods=['GET'])
+def get_admin_orders():
+    return jsonify(cloud_orders), 200
+
 @app.route('/api/orders', methods=['POST'])
 def create_order():
     data = request.get_json()
-    print("🔔 طلب سحابي جديد وصل للسيستم:", data)
+    cloud_orders.append(data)
     return jsonify({"status": "success", "message": "تم تسجيل الطلب في السحابة بنجاح"}), 200
 
-# لضمان تعرف Vercel على السيرفر كـ Handler رئيسي
+# تم تعديل هذا السطر خصيصاً ليتوافق مع معايير Vercel الصارمة لمنع فشل الـ Build
 application = app
 
 if __name__ == '__main__':
