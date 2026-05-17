@@ -4,293 +4,168 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 from flask import Flask, jsonify, request, render_template, redirect, url_for
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))\nTEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
+# ضبط المسارات الأساسية للمشروع لضمان قراءة الملفات على السيرفر السحابي
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
+STATIC_DIR = os.path.join(BASE_DIR, 'static')
 
-app = Flask(__name__, template_folder=TEMPLATE_DIR)
+# إنشاء تطبيق Flask وتوجيهه للمجلدات الصحيحة
+app = Flask(__name__, template_folder=TEMPLATE_DIR, static_folder=STATIC_DIR)
 
+# 🚀 السطر الإجباري لمنصة Vercel للتعرف على محرك التشغيل ومنع الـ Failed
+app = app
+
+# رابط الاتصال بقاعدة بيانات Supabase (PostgreSQL)
 DATABASE_URL = os.environ.get('DATABASE_URL') or "postgresql://postgres:MoSebA01065653401@db.ellxxztpfpaqlbqsnyhb.supabase.co:5432/postgres"
 
 def get_db_connection():
-    return psycopg2.connect(DATABASE_URL, connect_timeout=10)
+    """إنشاء اتصال آمن مع قاعدة البيانات"""
+    conn = psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
+    return conn
 
-# 🚀 دالة الإصلاح والهيكلة الفورية لقاعدة البيانات (تحديث الجداول آلياً)
-def fix_database_and_create_tables():
-    try:
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        
-        # 1. تحديث جدول المنتجات بالحقول المحاسبية وصيغ الصور الإضافية المعقدة
-        cursor.execute('''
-            ALTER TABLE products ADD COLUMN IF NOT EXISTS purchasing_price REAL DEFAULT 0;
-            ALTER TABLE products ADD COLUMN IF NOT EXISTS commission REAL DEFAULT 0;
-            ALTER TABLE products ADD COLUMN IF NOT EXISTS stock_quantity INTEGER DEFAULT 0;
-            ALTER TABLE products ADD COLUMN IF NOT EXISTS extra_images TEXT DEFAULT '[]';
-        ''')
-        
-        # 2. إنشاء جدول المسوقين المحمي وطلبات الانضمام الأمنية
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS marketers (
-                id SERIAL PRIMARY KEY,
-                name VARCHAR(255) NOT NULL,
-                phone VARCHAR(50) UNIQUE NOT NULL,
-                password VARCHAR(255) NOT NULL,
-                marketer_code VARCHAR(100) UNIQUE DEFAULT NULL,
-                status VARCHAR(50) DEFAULT 'معلق'
-            );
-        ''')
-        
-        conn.commit()
-        cursor.close()
-        conn.close()
-        print("🎉 [SYSTEM SATELLITE] Database structured and verified successfully!")
-    except Exception as e:
-        print(f"❌ Database structure failed: {e}")
-
-# تشغيل الفحص الهيكلي فوراً عند الإقلاع
-fix_database_and_create_tables()
-
-# --- 🌐 مسارات توجيه واستعراض صفحات الـ Frontend ---
+# ==========================================
+# 🏠 مسارات واجهات العرض (Frontend Routes)
+# ==========================================
 
 @app.route('/')
-def home():
-    return render_template('index.html')
-
-@app.route('/index.html')
-def index_redirect():
+def index_page():
+    """الصفحة الرئيسية للمتجر"""
     return render_template('index.html')
 
 @app.route('/cashier.html')
-def cashier():
+def cashier_page():
+    """لوحة الكاشير وإدارة المبيعات"""
     return render_template('cashier.html')
 
 @app.route('/login.html')
-def login():
+def login_page():
+    """صفحة تسجيل الدخول الموحدة"""
     return render_template('login.html')
 
 @app.route('/marketers.html')
-def marketers():
+def marketers_page():
+    """بوابة المسوقين بالعمولة"""
     return render_template('marketers.html')
 
 @app.route('/product/<int:product_id>')
-def product_detail(product_id):
+def product_detail_page(product_id):
+    """صفحة تفاصيل منتج معين"""
     return render_template('product_detail.html')
 
+# ==========================================
+# 📊 مسارات البيانات الخلفية (API Routes)
+# ==========================================
 
-# --- 📦 مسارات الـ API والتحكم البرمجي للمنتجات والمخزن ---
-
-@app.route('/api/products', methods=['GET'])
-def get_products():
-    try:
-        conn = get_db_connection()
-        cursor = conn.cursor(cursor_factory=RealDictCursor)
-        cursor.execute("SELECT * FROM products ORDER BY id DESC")
-        rows = cursor.fetchall()
-        cursor.close()
+@app.route('/api/products', methods=['GET', 'POST'])
+def api_products():
+    """جلب وإضافة المنتجات في المخزن"""
+    conn = get_db_connection()
+    cur = conn.cursor()
+    
+    if request.method == 'GET':
+        cur.execute("SELECT * FROM products ORDER BY id DESC;")
+        products = cur.fetchall()
+        cur.close()
         conn.close()
-        return jsonify(rows), 200
-    except Exception as e:
-        return jsonify({"status": "error", "message": str(e)}), 500
-
-@app.route('/api/products/<int:id>', methods=['GET'])
-def get_single_product(id):
-    try:
-        conn = get_db_connection()
-        cursor = conn.cursor(cursor_factory=RealDictCursor)
-        cursor.execute("SELECT * FROM products WHERE id = %s", (id,))
-        row = cursor.fetchone()
-        cursor.close()
-        conn.close()
-        if row:
-            return jsonify(row), 200
-        return jsonify({"status": "error", "message": "Product not found"}), 404
-    except Exception as e:
-        return jsonify({"status": "error", "message": str(e)}), 500
-
-@app.route('/api/products', methods=['POST'])
-def add_product():
-    data = request.get_json() or {}
-    try:
-        conn = get_db_connection()
-        cursor = conn.cursor()
+        return jsonify(products)
         
-        cursor.execute('''
-            INSERT INTO products (name, category, description, image_url, extra_images, purchasing_price, selling_price, commission, stock_quantity)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-        ''', (
-            data.get('name'),
-            data.get('category', 'عام'),
-            data.get('description', ''),
-            data.get('image_url'), # استقبال نص الصورة الرئيسية المضغوطة
-            data.get('extra_images', '[]'), # استقبال مصفوفة الصور الإضافية المعقدة
-            float(data.get('purchasing_price', 0)),
-            float(data.get('selling_price', 0)),
-            float(data.get('commission', 0)),
-            int(data.get('stock_quantity', 0))
+    elif request.method == 'POST':
+        data = request.json
+        cur.execute("""
+            INSERT INTO products (name, category, cost_price, selling_price, stock_qty, image_url, description, extra_images)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s) RETURNING *;
+        """, (
+            data.get('name'), data.get('category'), data.get('cost_price', 0),
+            data.get('selling_price', 0), data.get('stock_qty', 0),
+            data.get('image_url'), data.get('description'), json.dumps(data.get('extra_images', []))
         ))
+        new_product = cur.fetchone()
         conn.commit()
-        cursor.close()
+        cur.close()
         conn.close()
-        return jsonify({"status": "success"}), 201
-    except Exception as e:
-        return jsonify({"status": "error", "message": str(e)}), 400
+        return jsonify(new_product), 21
 
-@app.route('/api/products/<int:id>', methods=['DELETE'])
-def delete_product(id):
-    try:
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute("DELETE FROM products WHERE id = %s", (id,))
-        conn.commit()
-        cursor.close()
-        conn.close()
-        return jsonify({"status": "success"}), 200
-    except Exception as e:
-        return jsonify({"status": "error", "message": str(e)}), 400
-
-
-# --- 🔐 مسارات التحقق والأمان والـ Auth وبوابة العبور ---
-
-@app.route('/api/auth/login', methods=['POST'])
-def admin_login():
-    data = request.get_json() or {}
-    username = data.get('username', '').strip()
-    password = data.get('password', '').strip()
+@app.route('/api/products/<int:pid>', methods=['GET', 'PUT', 'DELETE'])
+def api_single_product(pid):
+    """التحكم في منتج فردي (تعديل، حذف، جلب تفاصيل)"""
+    conn = get_db_connection()
+    cur = conn.cursor()
     
-    # 1. الدخول الافتراضي للمشرف (إبراهيم) لوحة التحكم الكبرى
-    if username == "admin" and password == "MoSebA01065653401":
-        return jsonify({"status": "success", "redirect": "/cashier.html"}), 200
-        
-    # 2. فحص ما إذا كان المسجل هو مسوق مقبول ومثبت بكود في قاعدة البيانات
-    try:
-        conn = get_db_connection()
-        cursor = conn.cursor(cursor_factory=RealDictCursor)
-        cursor.execute("SELECT * FROM marketers WHERE (marketer_code = %s OR phone = %s) AND password = %s", (username, username, password))
-        marketer = cursor.fetchone()
-        cursor.close()
+    if request.method == 'GET':
+        cur.execute("SELECT * FROM products WHERE id = %s;", (pid,))
+        p = cur.fetchone()
+        cur.close()
         conn.close()
+        if p: return jsonify(p)
+        return jsonify({"error": "المنتج غير موجود"}), 404
         
-        if marketer:
-            if marketer['status'] == 'معلق':
-                return jsonify({"status": "error", "message": "حسابك معلق حالياً بانتظار تفعيل ومراجعة الإدارة العليا (إبراهيم)"}), 403
-            # إذا كان مقبولاً، يتم توجيهه تلقائياً للوحة أرباح المسوقين الخاصة به
-            return jsonify({"status": "success", "redirect": f"/marketers.html?code={marketer['marketer_code']}"}), 200
-            
-        return jsonify({"status": "error", "message": "بيانات العبور السرية خاطئة!"}), 401
-    except Exception as e:
-        return jsonify({"status": "error", "message": str(e)}), 500
-
-
-# --- ⏳ مسارات التحكم بحسابات وطلبات انضمام المسوقين الجدد ---
-
-@app.route('/api/marketers/apply', methods=['POST'])
-def apply_marketer():
-    data = request.get_json() or {}
-    name = data.get('name', '').strip()
-    phone = data.get('phone', '').strip()
-    password = data.get('password', '').strip()
-    
-    if not name or not phone or not password:
-        return jsonify({"status": "error", "message": "برجاء استكمال كافة الحقول المطلوبة!"}), 400
-        
-    try:
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute('''
-            INSERT INTO marketers (name, phone, password, status)
-            VALUES (%s, %s, %s, 'معلق')
-        ''', (name, phone, password))
-        conn.commit()
-        cursor.close()
-        conn.close()
-        return jsonify({"status": "success", "message": "تم تقديم طلبك بنجاح"}), 201
-    except psycopg2.errors.UniqueViolation:
-        return jsonify({"status": "error", "message": "رقم الهاتف هذا تقدم بطلب انضمام سابقاً!"}), 400
-    except Exception as e:
-        return jsonify({"status": "error", "message": str(e)}), 500
-
-@app.route('/api/marketers/pending', methods=['GET'])
-def get_pending_marketers():
-    try:
-        conn = get_db_connection()
-        cursor = conn.cursor(cursor_factory=RealDictCursor)
-        cursor.execute("SELECT id, name, phone, status FROM marketers WHERE status = 'معلق' ORDER BY id DESC")
-        rows = cursor.fetchall()
-        cursor.close()
-        conn.close()
-        return jsonify(rows), 200
-    except Exception as e:
-        return jsonify({"status": "error", "message": str(e)}), 500
-
-@app.route('/api/marketers/approve/<int:id>', methods=['POST'])
-def approve_marketer(id):
-    data = request.get_json() or {}
-    code = data.get('code', '').strip()
-    
-    if not code:
-        return jsonify({"status": "error", "message": "برجاء تخصيص كود تسويقي فريد للمسوق أولاً!"}), 400
-        
-    try:
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute('''
-            UPDATE marketers 
-            SET status = 'مقبول', marketer_code = %s 
-            WHERE id = %s
-        ''', (code, id))
-        conn.commit()
-        cursor.close()
-        conn.close()
-        return jsonify({"status": "success"}), 200
-    except psycopg2.errors.UniqueViolation:
-        return jsonify({"status": "error", "message": "كود التسويق هذا مخصص لمسوق آخر بالفعل، اختر كوداً فريداً!"}), 400
-    except Exception as e:
-        return jsonify({"status": "error", "message": str(e)}), 500
-
-
-# --- 📦 واجهات ومسارات معالجة طلبات المبيعات والشحنات العامة ---
-
-@app.route('/api/orders', methods=['POST'])
-def create_order():
-    data = request.get_json() or {}
-    try:
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        total_val = data.get('total_price') or data.get('total_val') or 0
-        products_json_str = json.dumps(data.get('products', []), ensure_ascii=False)
-        
-        cursor.execute('''
-            INSERT INTO orders (customer_name, customer_phone, customer_address, total_price, marketer_id, products_json)
-            VALUES (%s, %s, %s, %s, %s, %s)
-        ''', (
-            data.get('customer_name'), 
-            data.get('customer_phone'), \n            data.get('customer_address'), 
-            float(total_val), 
-            data.get('marketer_id'), 
-            products_json_str
+    elif request.method == 'PUT':
+        data = request.json
+        cur.execute("""
+            UPDATE products SET name=%s, category=%s, cost_price=%s, selling_price=%s, 
+            stock_qty=%s, image_url=%s, description=%s, extra_images=%s WHERE id=%s RETURNING *;
+        """, (
+            data.get('name'), data.get('category'), data.get('cost_price'), data.get('selling_price'),
+            data.get('stock_qty'), data.get('image_url'), data.get('description'), json.dumps(data.get('extra_images', [])), pid
         ))
+        updated = cur.fetchone()
         conn.commit()
-        cursor.close()
+        cur.close()
         conn.close()
-        return jsonify({"status": "success"}), 201
-    except Exception as e: 
-        return jsonify({"status": "error", "message": str(e)}), 400
-
-@app.route('/api/orders', methods=['GET'])
-def get_orders():
-    try:
-        conn = get_db_connection()
-        cursor = conn.cursor(cursor_factory=RealDictCursor)
-        cursor.execute("SELECT * FROM orders ORDER BY id DESC")
-        rows = cursor.fetchall()
-        cursor.close()
+        return jsonify(updated)
+        
+    elif request.method == 'DELETE':
+        cur.execute("DELETE FROM products WHERE id = %s;", (pid,))
+        conn.commit()
+        cur.close()
         conn.close()
-        return jsonify(rows), 200
-    except Exception as e:
-        return jsonify({"status": "error", "message": str(e)}), 500
+        return jsonify({"success": True})
 
-@app.route('/api/public/orders', methods=['GET'])
-def get_public_orders():
-    return get_orders()
+@app.route('/api/orders', methods=['GET', 'POST'])
+def api_orders():
+    """إدارة وتلقي طلبات الشراء والشحن"""
+    conn = get_db_connection()
+    cur = conn.cursor()
+    
+    if request.method == 'GET':
+        cur.execute("SELECT * FROM orders ORDER BY id DESC;")
+        orders = cur.fetchall()
+        cur.close()
+        conn.close()
+        return jsonify(orders)
+        
+    elif request.method == 'POST':
+        data = request.json
+        cur.execute("""
+            INSERT INTO orders (customer_name, customer_phone, customer_address, total_price, marketer_id, items, status)
+            VALUES (%s, %s, %s, %s, %s, %s, %s) RETURNING *;
+        """, (
+            data.get('customer_name'), data.get('customer_phone'), data.get('customer_address'),
+            data.get('total_price', 0), data.get('marketer_id'), json.dumps(data.get('items', [])),
+            data.get('status', 'قيد المراجعة')
+        ))
+        new_order = cur.fetchone()
+        conn.commit()
+        cur.close()
+        conn.close()
+        return jsonify(new_order), 201
 
+@app.route('/api/orders/<int:oid>', methods=['PUT'])
+def update_order_status(oid):
+    """تحديث حالة الشحنة من قبل الأدمن أو الكاشير"""
+    data = request.json
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("UPDATE orders SET status = %s WHERE id = %s RETURNING *;", (data.get('status'), oid))
+    updated = cur.fetchone()
+    conn.commit()
+    cur.close()
+    conn.close()
+    return jsonify(updated)
+
+# ==========================================
+# 📊 نظام تشغيل السيرفر محلياً (Local Run)
+# ==========================================
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
+    # التشغيل المحلي على بورت 5000 مع تفعيل وظيفة المراقبة والتحديث التلقائي
+    app.run(debug=True, host='0.0.0.0', port=5000)
