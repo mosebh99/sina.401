@@ -4,23 +4,40 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 from flask import Flask, jsonify, request, render_template, redirect, url_for
 
-# إعداد ذكي للمسارات: جعل Flask يقرأ من الجذر ومن فولدر templates معاً لمنع الانهيار
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
 
 app = Flask(__name__, template_folder=TEMPLATE_DIR)
 
-# رابط الاتصال المباشر بقاعدة بيانات سوبابيس
 DATABASE_URL = os.environ.get('DATABASE_URL') or "postgresql://postgres:MoSebA01065653401@db.ellxxztpfpaqlbqsnyhb.supabase.co:5432/postgres"
 
 def get_db_connection():
     return psycopg2.connect(DATABASE_URL, connect_timeout=10)
 
+# 🚀 دالة الإجبار: بتعديل الجدول تلقائياً أول ما الموقع يشتغل
+def fix_database_columns_forced():
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute('''
+            ALTER TABLE products ADD COLUMN IF NOT EXISTS purchasing_price REAL DEFAULT 0;
+            ALTER TABLE products ADD COLUMN IF NOT EXISTS commission REAL DEFAULT 0;
+            ALTER TABLE products ADD COLUMN IF NOT EXISTS stock_quantity INTEGER DEFAULT 0;
+        ''')
+        conn.commit()
+        cursor.close()
+        conn.close()
+        print("🎉 [FORCED] Database columns verified/added successfully!")
+    except Exception as e:
+        print(f"❌ Database auto-fix failed: {e}")
+
+# تشغيل دالة الإصلاح فوراً عند بدء التطبيق
+fix_database_columns_forced()
+
 # --- 🌐 مسارات الصفحات ---
 
 @app.route('/')
 def index():
-    # تعديل خاص لبيئة Vercel: إذا كان index.html برة، يقرأه مباشرة، وإلا يقرأه من templates
     main_index_path = os.path.join(BASE_DIR, 'index.html')
     if os.path.exists(main_index_path):
         with open(main_index_path, 'r', encoding='utf-8') as f:
@@ -111,7 +128,6 @@ def create_order():
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
-        
         total_val = data.get('total_price') or data.get('total_val') or 0
         products_json_str = json.dumps(data.get('products', []), ensure_ascii=False)
         
