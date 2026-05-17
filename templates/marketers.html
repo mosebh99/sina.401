@@ -3,96 +3,271 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>بوابة عمولات المسوقين | Sina 401</title>
+    <title>بوابة عمولات المسوقين الاحترافية | Sina 401</title>
+    <link rel="icon" type="image/png" href="/logo.png.jpeg">
     <link rel="stylesheet" href="/static/css/style.css">
     <style>
-        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; max-width: 1000px; margin: 20px auto; padding: 0 20px; }
-        .card-stat { background: var(--card-bg); border-top: 3px solid var(--primary); padding: 20px; border-radius: 10px; text-align: center; }
-        .table-wrap { max-width: 1000px; margin: 30px auto; background: var(--card-bg); padding: 20px; border-radius: 12px; border: 1px solid #222; }
-        table { width: 100%; border-collapse: collapse; text-align: right; }
-        th, td { padding: 12px; border-bottom: 1px solid #222; }
+        /* التنسيقات الفاخرة الخاصة بلوحة تحكم ومحفظة المسوقين */
+        .marketer-wrapper {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .welcome-block {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .welcome-block h2 {
+            font-size: 30px;
+            font-weight: 800;
+            color: #fff;
+            margin: 0 0 10px 0;
+        }
+
+        /* شبكة الكروت الزجاجية الثلاثية للإحصائيات */
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .card-stat {
+            background: rgba(20, 20, 20, 0.4);
+            border: 1px solid var(--card-border);
+            padding: 25px 20px;
+            border-radius: 20px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-stat:hover {
+            transform: translateY(-5px);
+            border-color: rgba(212, 175, 55, 0.4);
+        }
+
+        /* تمييز كارت المحفظة والعمولات بلون نيون مشجع */
+        .card-stat.wallet-card {
+            border-color: rgba(34, 197, 94, 0.2);
+            background: linear-gradient(180deg, rgba(20,20,20,0.4) 0%, rgba(34, 197, 94, 0.03) 100%);
+        }
+        .card-stat.wallet-card:hover {
+            border-color: rgba(34, 197, 94, 0.5);
+            box-shadow: 0 15px 30px rgba(34, 197, 94, 0.05);
+        }
+
+        .card-stat h4 {
+            margin: 0 0 10px 0;
+            font-size: 15px;
+            color: var(--text-muted);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .card-stat .stat-number {
+            font-size: 28px;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .card-stat.wallet-card .stat-number {
+            color: var(--success);
+        }
+
+        /* حاوية جدول البيانات المطور */
+        .table-wrap {
+            background: rgba(15, 15, 15, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 25px;
+            border-radius: 24px;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            overflow-x: auto;
+        }
+
+        .table-wrap h3 {
+            margin: 0 0 20px 0;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: right;
+        }
+
+        th {
+            background: rgba(255, 255, 255, 0.02);
+            padding: 16px;
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 14px;
+            border-bottom: 2px solid rgba(212, 175, 55, 0.15);
+        }
+
+        td {
+            padding: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 14px;
+            color: #eee;
+            transition: var(--transition);
+        }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.01);
+        }
+
+        /* شارات الحالات الملونة الاحترافية داخل الجدول */
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1px solid transparent;
+        }
+        
+        /* توافق الألوان للحالات المجلوبة */
+        .status-badge.completed { background: rgba(34, 197, 94, 0.1); border-color: rgba(34, 197, 94, 0.3); color: var(--success); }
+        .status-badge.pending { background: rgba(212, 175, 55, 0.1); border-color: rgba(212, 175, 55, 0.3); color: var(--primary); }
+
+        /* التجاوب التام للموبايل */
+        @media (max-width: 768px) {
+            .grid-3 {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            .table-wrap {
+                padding: 15px;
+                border-radius: 16px;
+            }
+            th, td {
+                padding: 12px 10px;
+                font-size: 13px;
+            }
+        }
     </style>
 </head>
 <body>
 
     <header>
         <h1><a href="/">✨ Sina 401</a></h1>
-        <div class="nav-links"><a href="/">⬅️ عودة للمتجر الرئيسي</a></div>
+        <div class="nav-links">
+            <a href="/">🏠 عودة للمتجر الرئيسي</a>
+        </div>
     </header>
 
-    <div style="max-width: 500px; margin: 30px auto; padding: 0 20px; text-align: center;">
-        <h3 style="color: var(--primary);">📊 استعلام كود وعمولات المسوق</h3>
-        <div style="display: flex; gap: 10px;">
-            <input type="text" id="m-code-input" class="search-input" style="flex: 1;" placeholder="أدخل كود التسويق الخاص بك...">
-            <button class="btn-primary" style="width: auto; margin: 0; padding: 0 20px;" onclick="loadMarketerReport()">عرض التقارير</button>
+    <div class="marketer-wrapper">
+        
+        <div class="welcome-block">
+            <h2>📊 لوحة أداء ومبيعات المسوقين</h2>
+            <div style="max-width: 500px; margin: 20px auto; display: flex; gap: 10px;">
+                <input type="text" id="m-code-input" class="search-input" style="margin: 0;" placeholder="أدخل كود التسويق الخاص بك هنا...">
+                <button class="btn-primary" style="width: auto; margin: 0; padding: 0 25px; border-radius: 50px;" onclick="fetchMarketerDashboard()">📊 استعلام</button>
+            </div>
         </div>
-    </div>
 
-    <div class="grid-3">
-        <div class="card-stat"><h3>عدد مبيعاتك</h3><div id="m-count" style="font-size:24px; color:var(--primary); font-weight:bold;">0 طلب</div></div>
-        <div class="card-stat"><h3>إجمالي تدفقات مبيعاتك</h3><div id="m-total-sales" style="font-size:24px; color:var(--primary); font-weight:bold;">0 ج.م</div></div>
-        <div class="card-stat"><h3>أرباح عمولتك الحالية</h3><div id="m-commission" style="font-size:24px; color:#22c55e; font-weight:bold;">0 ج.م</div></div>
-    </div>
+        <div class="grid-3">
+            <div class="card-stat">
+                <h4>📦 إجمالي الشحنات والطلبات</h4>
+                <div class="stat-number" id="m-count">0 طلب</div>
+            </div>
+            <div class="card-stat">
+                <h4>📈 إجمالي قيمة المبيعات</h4>
+                <div class="stat-number" id="m-total-sales" style="color: var(--primary);">0 ج.م</div>
+            </div>
+            <div class="card-stat wallet-card">
+                <h4>💰 المحفظة والعمولات المستحقة</h4>
+                <div class="stat-number" id="m-commission">0 ج.م</div>
+            </div>
+        </div>
 
-    <div class="table-wrap">
-        <h3 style="color: var(--primary); margin-top:0;">📋 سجل الشحنات والطلبات المسجلة بكودك</h3>
-        <div style="overflow-x:auto;">
+        <div class="table-wrap">
+            <h3>📦 سجل الشحنات المبيوعة وتتبع الحالات</h3>
             <table>
                 <thead>
                     <tr>
                         <th>رقم الطلب</th>
                         <th>اسم العميل</th>
-                        <th>الحساب الإجمالي</th>
-                        <th>حالة الشحن الحالية</th>
+                        <th>إجمالي قيمة الطلب</th>
+                        <th>حالة الشحنة الحالية</th>
                     </tr>
                 </thead>
-                <tbody id="marketer-rows">
-                    <tr><td colspan="4" style="text-align: center; color: var(--text-muted);">ادخل كودك واضغط عرض التقارير لاستخراج البيانات...</td></tr>
+                <tbody id="marketer-table-body">
+                    <tr>
+                        <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 30px 0;">
+                            ✨ اكتب كودك التسويقي في الأعلى واضغط استعلام لعرض الأرباح والسجلات...
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div>
+
     </div>
 
     <script>
-        async function loadMarketerReport() {
+        async function fetchMarketerDashboard() {
             const code = document.getElementById('m-code-input').value.trim();
-            if(!code) { alert("من فضلك أدخل كود التسويق أولاً"); return; }
+            if(!code) { alert("من فضلك أدخل كود التسويق الخاص بك أولاً!"); return; }
+            
+            const tbody = document.getElementById('marketer-table-body');
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--primary);">🔍 جاري جلب سجلاتك ومزامنة المحفظة من السيرفر السحابي...</td></tr>`;
             
             try {
-                const res = await fetch('/api/public/orders');
+                const res = await fetch('/api/orders');
                 const orders = await res.json();
                 
-                // فلترة الطلبات التي تنتمي لهذا المسوق
-                let myOrders = orders.filter(o => o.marketer_id && o.marketer_id.trim() === code);
-                
-                const tbody = document.getElementById('marketer-rows');
+                // تصفية الطلبات الخاصة بالمسوق بناءً على الكود
+                let myOrders = orders.filter(o => o.marketer_id === code);
                 tbody.innerHTML = '';
                 
                 let totalSalesSum = 0;
                 
                 if(myOrders.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#aaa;">لا توجد مبيعات مسجلة بهذا الكود حالياً.</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding: 20px 0;">❌ لا توجد مبيعات أو شحنات مسجلة بكودك حالياً.</td></tr>`;
                 } else {
                     myOrders.forEach(o => {
-                        totalSalesSum += o.total_price;
+                        totalSalesSum += (o.total_price || 0);
+                        
+                        // تحديد شكل شارة الحالة بشكل احترافي ملون
+                        let statusClass = "pending";
+                        if(o.status === "تم التسليم" || o.status === "delivered") {
+                            statusClass = "completed";
+                        }
+                        
                         tbody.innerHTML += `
                             <tr>
                                 <td><strong>#${o.id}</strong></td>
-                                <td>${o.customer_name || 'عميل المتجر'}</td>
-                                <td style="color:var(--primary); font-weight:bold;">${o.total_price} ج.م</td>
-                                <td style="color:var(--primary); font-weight:bold;">🔄 ${o.status}</td>
+                                <td>👤 ${o.customer_name || 'عميل المتجر'}</td>
+                                <td style="font-weight:700; color:#fff;">${o.total_price} ج.م</td>
+                                <td>
+                                    <span class="status-badge ${statusClass}">
+                                        🔄 ${o.status || 'معلق'}
+                                    </span>
+                                </td>
                             </tr>
                         `;
                     });
                 }
                 
+                // تحديث الأرقام في الكروت الفاخرة فوق
                 document.getElementById('m-count').innerText = `${myOrders.length} طلب`;
                 document.getElementById('m-total-sales').innerText = `${totalSalesSum} ج.م`;
-                // احتساب العمولة الافتراضية الثابتة 10% من إجمالي قيمة المبيعات
+                
+                // الحسبة الافتراضية الثابتة مؤقتاً لحين عمل اللوجن وربط قاعدة البيانات الفعلي
                 document.getElementById('m-commission').innerText = `${Math.round(totalSalesSum * 0.10)} ج.م`;
                 
             } catch(e) {
-                alert("خطأ في الاتصال بالخادم.");
+                alert("❌ حدث خطأ أثناء الاتصال بالخادم، يرجى المحاولة لاحقاً.");
+                tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--danger);">❌ فشل الاتصال بالسيرفر.</td></tr>`;
             }
         }
     </script>
