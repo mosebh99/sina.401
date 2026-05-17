@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>عرض المنتج | Sina 401</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        .details-container { max-width: 900px; margin: 40px auto; padding: 20px; display: flex; gap: 30px; flex-wrap: wrap; }
+        .gallery-box { flex: 1; min-width: 300px; }
+        .info-box { flex: 1; min-width: 300px; }
+        .main-img { width: 100%; max-height: 380px; object-fit: cover; border-radius: 12px; border: 1px solid var(--primary); }
+        .thumb-images { display: flex; gap: 10px; margin-top: 15px; }
+        .thumb-images img { width: 65px; height: 65px; object-fit: cover; border-radius: 6px; cursor: pointer; border: 1px solid #333; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1><a href="/">✨ Sina 401</a></h1>
+        <div class="nav-links"><a href="/">⬅️ العودة للمتجر</a></div>
+    </header>
+
+    <div class="details-container" id="product-detail-view">
+        <p style="text-align: center; width: 100%;">جاري تحميل مواصفات المنتج الفاخرة...</p>
+    </div>
+
+    <script>
+        const productId = {{ product_id }};
+        
+        async function fetchProductDetail() {
+            try {
+                const res = await fetch(`/api/products/${productId}`);
+                if(!res.ok) { document.getElementById('product-detail-view').innerHTML = "❌ المنتج غير متوفر."; return; }
+                const p = await res.json();
+                
+                let extraImgs = [];
+                try { extraImgs = JSON.parse(p.images_json || "[]"); } catch(e){}
+                
+                let thumbsHtml = `<img src="${p.image_url}" onclick="document.getElementById('large-img').src='${p.image_url}'">`;
+                extraImgs.forEach(url => {
+                    thumbsHtml += `<img src="${url}" onclick="document.getElementById('large-img').src='${url}'">`;
+                });
+
+                document.getElementById('product-detail-view').innerHTML = `
+                    <div class="gallery-box">
+                        <img id="large-img" src="${p.image_url || '/static/css/logo.png.jpeg'}" class="main-img">
+                        <div class="thumb-images">${thumbsHtml}</div>
+                    </div>
+                    <div class="info-box">
+                        <h2 style="color:var(--primary); margin-top:0;">${p.name}</h2>
+                        <p style="line-height:1.6; color:#ccc;">${p.description || 'لا توجد تفاصيل إضافية لهذا المنتج.'}</p>
+                        <div style="font-size:22px; color:var(--primary); font-weight:bold; margin:20px 0;">السعر: ${p.selling_price} ج.م</div>
+                        <button class="btn-primary" onclick="window.location.href='https://wa.me/201065653401?text=أريد طلب منتج: ${p.name}'" style="background:#25d366; color:white;">شراء مباشر عبر واتساب 💬</button>
+                    </div>
+                `;
+            } catch(e) {
+                document.getElementById('product-detail-view').innerHTML = "❌ خطأ في سحب البيانات السحابية.";
+            }
+        }
+        window.addEventListener('DOMContentLoaded', fetchProductDetail);
+    </script>
+</body>
+</html>
