@@ -1,118 +1,144 @@
-let allProducts = [];
-let cart = JSON.parse(localStorage.getItem('sinaa_cart')) || [];
+import os
+import json
+import psycopg2
+from psycopg2.extras import RealDictCursor
+from flask import Flask, jsonify, request, render_template
 
-document.addEventListener('DOMContentLoaded', () => {
-    if (document.getElementById('products-container')) {
-        loadStoreProducts();
-    }
-    updateCartUI();
-});
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
+STATIC_DIR = os.path.join(BASE_DIR, 'static')
 
-function showToast(msg) {
-    const toast = document.getElementById('toast-notification');
-    if(toast) {
-        toast.innerText = msg;
-        toast.style.display = 'block';
-        setTimeout(() => { toast.style.display = 'none'; }, 3000);
-    }
-}
+app = Flask(__name__, template_folder=TEMPLATE_DIR, static_folder=STATIC_DIR)
+app = app  # السطر الإجباري لمنصة Vercel لمنع الـ Failed
 
-async function loadStoreProducts() {
-    try {
-        const res = await fetch('/api/products');
-        allProducts = await res.json();
-        renderProducts(allProducts);
-    } catch (err) {
-        console.error("خطأ في جلب المنتجات:", err);
-        const container = document.getElementById('products-container');
-        if(container) {
-            container.innerHTML = `<p style="grid-column: 1/-1; text-align:center; color: red;">❌ فشل الاتصال بالمخزن السحابي.</p>`;
-        }
-    }
-}
+# رابط الاتصال المباشر والمؤمن بقاعدة بيانات Supabase
+DATABASE_URL = "postgresql://postgres:MoSebA01065653401@db.ellxxztpfpaqlbqsnyhb.supabase.co:5432/postgres"
 
-function renderProducts(products) {
-    const container = document.getElementById('products-container');
-    if(!container) return;
-    container.innerHTML = '';
-    
-    if(products.length === 0) {
-        container.innerHTML = `<p style="grid-column: 1/-1; text-align:center; color: var(--text-muted);">لم نجد منتجات تطابق البحث الحالي.</p>`;
-        return;
-    }
+def get_db_connection():
+    """إنشاء اتصال مؤمن بالسيرفر السحابي لحماية البيانات من السقوط"""
+    conn = psycopg2.connect(DATABASE_URL, sslmode='allow', cursor_factory=RealDictCursor)
+    return conn
 
-    products.forEach(p => {
-        // حماية مسار الصورة الأصلي المتوافق مع الفلاسك وسوبابيس
-        let imgSrc = p.image_url || '/static/css/logo.png.jpeg';
-        
-        container.innerHTML += `
-            <div class="product-card">
-                <img src="${imgSrc}" loading="lazy" alt="${p.name}" onerror="this.src='/static/css/logo.png.jpeg'">
-                <div class="card-body">
-                    <h3><a href="/product/${p.id}">${p.name}</a></h3>
-                    <p style="color: var(--text-muted); font-size:13px; margin: 0 0 10px 0;">${p.category || 'عام'}</p>
-                    <div class="price-box">${p.selling_price || 0} ج.م</div>
-                    <button class="btn-primary" onclick="window.location.href='/product/${p.id}'">🔎 عرض التفاصيل والشراء</button>
-                </div>
-            </div>
-        `;
-    });
-}
+# ==========================================
+# 🏠 مسارات واجهات العرض (Frontend Routes)
+# ==========================================
 
-function handleSearchAndFilter() {
-    const query = document.getElementById('search-box').value.toLowerCase().trim();
-    const category = document.getElementById('category-filter').value;
-    const sort = document.getElementById('sort-select') ? document.getElementById('sort-select').value : 'default';
+@app.route('/')
+def index_page():
+    return render_template('index.html')
 
-    let filtered = allProducts.filter(p => {
-        const matchesSearch = p.name.toLowerCase().includes(query) || (p.description && p.description.toLowerCase().includes(query));
-        const matchesCategory = (category === 'all' || p.category === category);
-        return matchesSearch && matchesCategory;
-    });
+@app.route('/cashier.html')
+def cashier_page():
+    return render_template('cashier.html')
 
-    if (sort === 'price-low') {
-        filtered.sort((a, b) => (a.selling_price || 0) - (b.selling_price || 0));
-    } else if (sort === 'price-high') {
-        filtered.sort((a, b) => (b.selling_price || 0) - (a.selling_price || 0));
-    }
+@app.route('/login.html')
+def login_page():
+    return render_template('login.html')
 
-    renderProducts(filtered);
-}
+@app.route('/marketers.html')
+def marketers_page():
+    return render_template('marketers.html')
 
-function updateCartUI() {
-    const countEl = document.getElementById('cart-count');
-    if(countEl) countEl.innerText = cart.reduce((sum, item) => sum + item.qty, 0);
-}
+@app.route('/product/<int:product_id>')
+def product_detail_page(product_id):
+    return render_template('product_detail.html')
 
-// 🚀 دالة تتبع الشحنات الاحترافية المصلحة والمحمية من الـ Crash تماماً بنسبة 100%
-async function trackMyOrder() {
-    const phoneInput = document.getElementById('track-phone').value.trim();
-    const out = document.getElementById('track-output');
-    if(!phoneInput) { alert("من فضلك أدخل رقم الهاتف المسجل به الطلب"); return; }
-    
-    out.innerHTML = "🔍 جاري البحث في السجلات...";
-    try {
-        const res = await fetch('/api/orders');
-        const orders = await res.json();
-        
-        // 🔒 الإصلاح السحري: تم إضافة شرط التأكد من وجود التليفون أولاً لمنع الخطأ الظاهر في السكرين شوت
-        let myOrder = orders.find(o => o.customer_phone && o.customer_phone.trim() === phoneInput);
-        
-        if(myOrder) {
-            let displayTotal = myOrder.total_price ? myOrder.total_price : (myOrder.total_val ? myOrder.total_val : 0);
-            
-            out.innerHTML = `
-                <div style="background:#141414; padding:15px; border-radius:8px; border-right:4px solid var(--primary); margin-top:10px; text-align:right;">
-                    <p style="margin:5px 0;">📦 رقم الشحنة: <strong>#${myOrder.id}</strong></p>
-                    <p style="margin:5px 0;">🚦 حالة الطلب: <span style="color:var(--primary); font-weight:bold;">🔄 ${myOrder.status || 'قيد المراجعة'}</span></p>
-                    <p style="margin:5px 0;">💰 إجمالي الحساب: <strong>${displayTotal} ج.م</strong></p>
-                </div>
-            `;
-        } else {
-            out.innerHTML = `<p style="color:#ef4444; text-align:center; font-weight:bold; margin-top:10px;">❌ لم نجد أي طلبات شحن مسجلة بهذا الرقم.</p>`;
-        }
-    } catch(e) {
-        console.error(e);
-        out.innerHTML = `<p style="color:#ef4444; text-align:center; margin-top:10px;">❌ حدث خطأ أثناء الاتصال بالسيرفر.</p>`;
-    }
-}
+# ==========================================
+# 📊 مسارات البيانات الخلفية (API Routes)
+# ==========================================
+
+@app.route('/api/products', methods=['GET', 'POST'])
+def api_products():
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        if request.method == 'GET':
+            cur.execute("SELECT * FROM products ORDER BY id DESC;")
+            products = cur.fetchall()
+            cur.close()
+            conn.close()
+            return jsonify(products)
+        elif request.method == 'POST':
+            data = request.json
+            cur.execute("""
+                INSERT INTO products (name, category, cost_price, selling_price, stock_qty, image_url, description, extra_images)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s) RETURNING *;
+            """, (
+                data.get('name'), data.get('category'), data.get('cost_price', 0),
+                data.get('selling_price', 0), data.get('stock_qty', 0),
+                data.get('image_url'), data.get('description'), json.dumps(data.get('extra_images', []))
+            ))
+            new_product = cur.fetchone()
+            conn.commit()
+            cur.close()
+            conn.close()
+            return jsonify(new_product), 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/products/<int:pid>', methods=['GET', 'PUT', 'DELETE'])
+def api_single_product(pid):
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        if request.method == 'GET':
+            cur.execute("SELECT * FROM products WHERE id = %s;", (pid,))
+            p = cur.fetchone()
+            cur.close()
+            conn.close()
+            if p: return jsonify(p)
+            return jsonify({"error": "المنتج غير موجود"}), 404
+        elif request.method == 'PUT':
+            data = request.json
+            cur.execute("""
+                UPDATE products SET name=%s, category=%s, cost_price=%s, selling_price=%s, 
+                stock_qty=%s, image_url=%s, description=%s, extra_images=%s WHERE id=%s RETURNING *;
+            """, (
+                data.get('name'), data.get('category'), data.get('cost_price'), data.get('selling_price'),
+                data.get('stock_qty'), data.get('image_url'), data.get('description'), json.dumps(data.get('extra_images', [])), pid
+            ))
+            updated = cur.fetchone()
+            conn.commit()
+            cur.close()
+            conn.close()
+            return jsonify(updated)
+        elif request.method == 'DELETE':
+            cur.execute("DELETE FROM products WHERE id = %s;", (pid,))
+            conn.commit()
+            cur.close()
+            conn.close()
+            return jsonify({"success": True})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/orders', methods=['GET', 'POST'])
+def api_orders():
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        if request.method == 'GET':
+            cur.execute("SELECT * FROM orders ORDER BY id DESC;")
+            orders = cur.fetchall()
+            cur.close()
+            conn.close()
+            return jsonify(orders)
+        elif request.method == 'POST':
+            data = request.json
+            cur.execute("""
+                INSERT INTO orders (customer_name, customer_phone, customer_address, total_price, marketer_id, items, status)
+                VALUES (%s, %s, %s, %s, %s, %s, %s) RETURNING *;
+            """, (
+                data.get('customer_name'), data.get('customer_phone'), data.get('customer_address'),
+                data.get('total_price', 0), data.get('marketer_id'), json.dumps(data.get('items', [])),
+                data.get('status', 'قيد المراجعة')
+            ))
+            new_order = cur.fetchone()
+            conn.commit()
+            cur.close()
+            conn.close()
+            return jsonify(new_order), 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0', port=5000)
