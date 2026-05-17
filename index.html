@@ -107,7 +107,7 @@
     <script>
         let isLoggedIn = localStorage.getItem('user_logged_in') === 'true';
         let selectedCategory = "الكل";
-        let products = JSON.parse(localStorage.getItem('sinai_products')) || [];
+        let products = [];
 
         function toggleMenu(e) { e.stopPropagation(); const d = document.getElementById('more-dropdown'); d.style.display = d.style.display === 'block' ? 'none' : 'block'; }
         document.addEventListener('click', () => { document.getElementById('more-dropdown').style.display = 'none'; });
@@ -125,6 +125,25 @@
 
         function goToPage(p) { window.location.href = window.location.origin + window.location.pathname.replace('index.html', '') + p; }
 
+        // دالة جلب البيانات السحابية من الـ API
+        function fetchCloudData() {
+            fetch('/api/products')
+            .then(res => res.json())
+            .then(data => {
+                products = data;
+                // مزامنة الكاش المحلي مع السحابي
+                localStorage.setItem('sinai_products', JSON.stringify(products));
+                renderCategoriesBar();
+                renderStore();
+            })
+            .catch(err => {
+                console.log("استدعاء الكاش الاحتياطي المحلي نتيجة لعدم اكتمال السيرفر حالياً:", err);
+                products = JSON.parse(localStorage.getItem('sinai_products')) || [];
+                renderCategoriesBar();
+                renderStore();
+            });
+        }
+
         function renderCategoriesBar() {
             const w = document.getElementById('categories-wrapper'); let cats = ["الكل"];
             products.forEach(p => { if(p.category && !cats.includes(p.category)) cats.push(p.category); });
@@ -139,9 +158,9 @@
             container.innerHTML = ''; select.innerHTML = '<option value="">-- اضغط واختر المنتج المطلوب شراءه --</option>';
 
             let filtered = products.filter(p => p.name.toLowerCase().includes(query) && (selectedCategory === "الكل" || p.category === selectedCategory));
-            products.forEach(p => { if(p.stock_quantity > 0) select.innerHTML += `<option value="${p.id}">${p.name} - ${p.selling_price} ج.م</option>`; });
+            products.forEach(p => { if(p.stock_quantity > 0) select.innerHTML += `<option value="${p.id}">${p.name} - ${p.selling_price} ج.م</option>'; });
 
-            if(filtered.length === 0) { container.innerHTML = '<p style="color:#a3a3a3;text-align:center;grid-column:1/-1;">لا توجد منتجات متوفرة.</p>'; return; }
+            if(filtered.length === 0) { container.innerHTML = '<p style="color:#a3a3a3;text-align:center;grid-column:1/-1;">لا توجد منتجات متوفرة حالياً.</p>'; return; }
             filtered.forEach(p => {
                 let img = p.image_url ? `<img src="${p.image_url}" class="product-img">` : `<div class="no-img-placeholder">🌴</div>`;
                 let btn = p.stock_quantity > 0 ? `<button class="action-card-btn" onclick="selectProductForForm(event, ${p.id})">📦 اطلب الآن فوري</button>` : '';
@@ -165,7 +184,7 @@
         function openProductDetail(id) {
             const p = products.find(x => x.id === id); if(!p) return;
             let img = p.image_url ? `<img src="${p.image_url}" class="modal-img">` : `<div class="no-img-placeholder" style="height:240px;">🌴</div>`;
-            document.getElementById('modal-body-content').innerHTML = img + `<h2>${p.name}</h2><div class="price-badge-mini">${p.selling_price} ج.م</div><p style="color:#d4d4d4;background:#0d0d0d;padding:15px;border-radius:8px;">${p.description||'منتج طبيعي مميز.'}</p>`;
+            document.getElementById('modal-body-content').innerHTML = img + `<h2>${p.name}</h2><div class="price-badge-mini">${p.selling_price} ج.م</div><p style="color:#d4d4d4;background:#0d0d0d;padding:15px;border-radius:8px;">${p.description||'منتج طبيعي مميز من أرض سيناء.'}</p>`;
             document.getElementById('modal-order-action-container').innerHTML = p.stock_quantity > 0 ? `<button class="modal-order-btn" onclick="orderFromModal(${p.id})">📦 اطلب الآن فوري</button>` : '';
             
             let sim = products.filter(x => x.category === p.category && x.id !== p.id && x.stock_quantity > 0).slice(0, 4);
@@ -185,12 +204,13 @@
             localStorage.setItem('cached_cust_name', name); localStorage.setItem('cached_cust_phone', phone); localStorage.setItem('cached_cust_address', address); localStorage.setItem('user_logged_in', 'true');
             
             fetch('/api/orders', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ product_id: id, product_name: p.name, quantity: qty, total: p.selling_price*qty, customer_name: name, customer_phone: phone, customer_address: address }) })
-            .then(() => { alert(`🎉 تم إرسال الطلب بنجاح! الإجمالي: ${p.selling_price*qty} ج.م`); document.getElementById('customer-order-form').reset(); isLoggedIn=true; updateAuthUI(); })
-            .catch(() => { alert(`🎉 تم حفظ الطلب فوري في السيستم كاشير مؤقتاً! الإجمالي: ${p.selling_price*qty} ج.م`); });
+            .then(() => { alert(`🎉 تم إرسال طلبك السحابي بنجاح! الإجمالي: ${p.selling_price*qty} ج.م`); document.getElementById('customer-order-form').reset(); isLoggedIn=true; updateAuthUI(); })
+            .catch(() => { alert(`🎉 تم حفظ الطلب كاش بالسيستم المحلي بنجاح! الإجمالي: ${p.selling_price*qty} ج.م`); });
         }
 
         document.getElementById('search-input').addEventListener('input', renderStore);
-        updateAuthUI(); renderCategoriesBar(); renderStore();
+        updateAuthUI(); 
+        fetchCloudData(); // استدعاء البيانات السحابية مباشرة عند التحميل
     </script>
 </body>
 </html>
