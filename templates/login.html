@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول الآمن | Sina 401</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        .login-wrapper { max-width: 380px; margin: 100px auto; background: var(--card-bg); border: 1px solid var(--primary); padding: 30px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center; }
+        .form-input { width: 100%; padding: 12px; margin-bottom: 15px; background: #000; border: 1px solid #333; color: white; border-radius: 8px; box-sizing: border-box; }
+    </style>
+</head>
+<body>
+    <div class="login-wrapper">
+        <h2 style="color: var(--primary); margin-top:0;">🔐 لوحة عبور المشرفين</h2>
+        <form id="admin-login-form">
+            <input type="text" id="adm-user" class="form-input" placeholder="اسم المستخدم" required>
+            <input type="password" id="adm-pass" class="form-input" placeholder="كلمة المرور السرية" required>
+            <button type="submit" class="btn-primary">تحقق آمن وعبور لقاعدة البيانات</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('admin-login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const res = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    username: document.getElementById('adm-user').value,
+                    password: document.getElementById('adm-pass').value
+                })
+            });
+            const data = await res.json();
+            if(res.ok) {
+                window.location.href = '/cashier.html';
+            } else {
+                alert("❌ خطأ حماية: " + data.message);
+            }
+        });
+    </script>
+</body>
+</html>
