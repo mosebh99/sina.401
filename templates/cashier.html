@@ -3,342 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مركز القيادة السحابي والكاشير | Sina Store</title>
-    <link rel="icon" type="image/png" href="/logo.png.jpeg">
+    <title>Sina Store 401 - المتجر الرئيسي</title>
     <link rel="stylesheet" href="/static/css/style.css">
-    <style>
-        /* ستايل مركز القيادة زجاجي فاخر ومتكامل */
-        .cashier-container {
-            max-width: 1200px;
-            margin: 40px auto;
-            padding: 0 20px;
-        }
-
-        .tabs-menu {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 25px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            padding-bottom: 10px;
-        }
-
-        .tab-btn {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            color: var(--text-muted);
-            padding: 10px 20px;
-            border-radius: 50px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: var(--transition);
-        }
-
-        .tab-btn.active, .tab-btn:hover {
-            background: rgba(212, 175, 55, 0.1);
-            border-color: var(--primary);
-            color: #fff;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        .form-box {
-            background: rgba(20, 20, 20, 0.4);
-            border: 1px solid rgba(212, 175, 55, 0.25);
-            padding: 30px;
-            border-radius: 24px;
-            backdrop-filter: blur(15px);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
-            margin-bottom: 40px;
-        }
-
-        .grid-inputs {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-        }
-
-        @media (max-width: 768px) {
-            .grid-inputs { grid-template-columns: 1fr; }
-            .full-width { grid-column: span 1 !important; }
-        }
-
-        .full-width { grid-column: span 2; }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .form-group label {
-            font-size: 14px;
-            font-weight: 600;
-            color: #fff;
-        }
-
-        .form-control {
-            padding: 12px 18px;
-            background: rgba(10, 10, 10, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            color: #fff;
-            border-radius: 50px;
-            outline: none;
-            font-size: 14px;
-            transition: var(--transition);
-        }
-
-        .form-control:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 15px rgba(212,175,55,0.15);
-        }
-
-        /* ستايل مخصص لرفع الصور المتطور */
-        .file-drop-zone {
-            border: 2px dashed rgba(212, 175, 55, 0.3);
-            background: rgba(212, 175, 55, 0.02);
-            padding: 25px;
-            border-radius: 16px;
-            text-align: center;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .file-drop-zone:hover {
-            border-color: var(--primary);
-            background: rgba(212, 175, 55, 0.05);
-        }
-
-        .image-preview-container {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-            flex-wrap: wrap;
-        }
-
-        .preview-badge {
-            position: relative;
-            width: 80px;
-            height: 80px;
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .preview-badge img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .table-wrap {
-            background: rgba(15, 15, 15, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 25px;
-            border-radius: 24px;
-            backdrop-filter: blur(15px);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: right;
-        }
-
-        th {
-            background: rgba(255, 255, 255, 0.02);
-            padding: 16px;
-            color: var(--primary);
-            border-bottom: 2px solid rgba(212, 175, 55, 0.15);
-        }
-
-        td {
-            padding: 16px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            font-size: 14px;
-        }
-
-        .stock-indicator {
-            font-weight: 700;
-            padding: 4px 10px;
-            border-radius: 30px;
-            font-size: 12px;
-        }
-        .stock-good { background: rgba(34,197,94,0.1); color: var(--success); }
-        .stock-danger { background: rgba(239,68,68,0.1); color: #ef4444; animation: blink 1.5s infinite; }
-
-        @keyframes blink { 50% { opacity: 0.5; } }
-
-        .btn-danger-sm {
-            background: rgba(239,68,68,0.1); color: #ef4444; border: 1px solid rgba(239,68,68,0.2);
-            padding: 6px 14px; border-radius: 50px; cursor: pointer; transition: var(--transition);
-        }
-        .btn-danger-sm:hover { background: #ef4444; color: #fff; }
-    </style>
 </head>
 <body>
 
-    <header>
-        <h1><a href="/">✨ لوحة تحكم الإدارة العليا | Sina 401</a></h1>
-        <div class="nav-links"><a href="/">🏠 عرض المتجر</a></div>
+    <header class="main-header">
+        <div class="logo-section">
+            <img src="/static/css/logo.png.jpeg" alt="Sina 401 Logo" class="brand-logo">
+            <h1>Sina Store 401</h1>
+        </div>
+        <nav class="nav-links">
+            <a href="/">🏠 الرئيسية</a>
+            <a href="/marketers.html">📊 بوابة المسوقين</a>
+            <a href="/login.html">🔐 لوحة الإدارة</a>
+        </nav>
     </header>
 
-    <div class="cashier-container">
-        
-        <div class="tabs-menu">
-            <button class="tab-btn active" onclick="openTab(event, 'products-tab')">📦 إدارة المنتجات والمخزن</button>
-            <button class="tab-btn" onclick="openTab(event, 'marketers-requests-tab')">⏳ طلبات المسوقين المعلقة</button>
-        </div>
+    <main class="store-container">
+        <section class="filter-bar">
+            <input type="text" id="search-box" placeholder="🔍 ابحث عن إكسسوارات، شواحن، كابلات..." oninput="handleSearchAndFilter()">
+            <select id="category-filter" onchange="handleSearchAndFilter()">
+                <option value="all">كل الأقسام</option>
+                <option value="شواحن">شواحن وطاقة</option>
+                <option value="كابلات">كابلات ووصلات</option>
+                <option value="جرابات">جرابات وحماية</option>
+                <option value="سماعات">سماعات وصوتيات</option>
+            </select>
+        </section>
 
-        <div id="products-tab" class="tab-content active">
-            <div class="form-box">
-                <h3 style="color: var(--primary); margin-top:0; margin-bottom: 20px;">✨ إضافة وتحديث المنتجات بالمخزن السحابي</h3>
-                <form id="product-form" onsubmit="handleFormSubmit(event)">
-                    <div class="grid-inputs">
-                        <div class="form-group">
-                            <label>اسم المنتج الفاخر</label>
-                            <input type="text" id="p-name" class="form-control" placeholder="مثال: سماعة بلوتوث M10 Pro الأصلي" required>
-                        </div>
-                        <div class="form-group">
-                            <label>القسم</label>
-                            <select id="p-category" class="form-control" style="background:#0a0a0a;">
-                                <option value="عام">عام وإلكترونيات</option>
-                                <option value="ساعات ذكية">ساعات ذكية</option>
-                                <option value="سماعات">سماعات بلوتوث</option>
-                                <option value="شواحن">شواحن وكوابل</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>جملة سعر الشراء (ج.م)</label>
-                            <input type="number" id="p-purchasing" class="form-control" placeholder="0" required>
-                        </div>
-                        <div class="form-group">
-                            <label>سعر البيع للجمهور (ج.م)</label>
-                            <input type="number" id="p-selling" class="form-control" placeholder="0" required>
-                        </div>
-                        <div class="form-group">
-                            <label>عمولة المسوق الصافية (ج.م)</label>
-                            <input type="number" id="p-commission" class="form-control" placeholder="0" required>
-                        </div>
-                        <div class="form-group">
-                            <label>الكمية المتوفرة بالمخزن</label>
-                            <input type="number" id="p-stock" class="form-control" placeholder="0" required>
-                        </div>
-                        
-                        <div class="form-group full-width">
-                            <label>📷 تحميل صور المنتج مباشرة من موبايلك (يمكنك اختيار عدة صور)</label>
-                            <div class="file-drop-zone" onclick="document.getElementById('p-file-input').click()">
-                                <span style="color:var(--text-muted);">اضغط هنا لاختيار الصور من الاستوديو 📱 (سيتم ضغطها تلقائياً لحفظ المساحة)</span>
-                                <input type="file" id="p-file-input" style="display:none;" accept="image/*" multiple onchange="processAndCompressImages(this)">
-                            </div>
-                            <div class="image-preview-container" id="preview-area"></div>
-                        </div>
-
-                        <div class="form-group full-width">
-                            <label>وصف وتفاصيل المنتج الفنية</label>
-                            <textarea id="p-desc" class="form-control" rows="3" style="border-radius:15px;" placeholder="اكتب مواصفات المنتج ومحتويات العلبة..."></textarea>
-                        </div>
-                    </div>
-                    <button type="submit" class="btn-primary" style="margin-top:25px; padding:14px;">💾 حفظ المنتج وتثبيته في قاعدة البيانات</button>
-                </form>
+        <section class="tracking-section" style="margin-bottom: 20px; background: #1e1e1e; padding: 15px; border-radius: 8px;">
+            <h3>📦 تتبع حالة شحنتك</h3>
+            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                <input type="text" id="track-phone" placeholder="أدخل رقم الهاتف المسجل به الطلب" style="flex: 1; padding: 8px; border-radius: 4px; border: 1px solid #333; background: #111; color: #fff;">
+                <button class="btn-primary" onclick="trackMyOrder()" style="padding: 8px 15px;">بحث</button>
             </div>
+            <div id="track-output"></div>
+        </section>
 
-            <div class="table-wrap">
-                <h3 style="color:var(--primary); margin:0 0 20px 0;">📦 جرد وجدول المنتجات السحابية الحالية</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>المنتج</th>
-                            <th>القسم</th>
-                            <th>الشراء</th>
-                            <th>البيع</th>
-                            <th>العمولة</th>
-                            <th>المخزون</th>
-                            <th>التحكم</th>
-                        </tr>
-                    </thead>
-                    <tbody id="products-table-body">
-                        <tr><td colspan="7" style="text-align:center; color:var(--text-muted);">جاري تحميل منتجات المخزن...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+        <section class="products-grid" id="products-container">
+            <p style="grid-column: 1/-1; text-align:center;">🔄 جاري تحميل أحدث المنتجات من المخزن السحابي...</p>
+        </section>
+    </main>
 
-        <div id="marketers-requests-tab" class="tab-content">
-            <div class="table-wrap">
-                <h3 style="color:var(--primary); margin:0 0 20px 0;">⏳ طلبات الانضمام المعلقة بانتظار موافقة إبراهيم</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>اسم المسوق الجديد</th>
-                            <th>رقم الهاتف</th>
-                            <th>حالة الطلب الحالي</th>
-                            <th>الإجراء والقبول الإداري</th>
-                        </tr>
-                    </thead>
-                    <tbody id="requests-table-body">
-                        <tr><td colspan="4" style="text-align:center; color:var(--text-muted);">جاري فحص الطلبات المعلقة...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+    <div id="toast-notification" class="toast"></div>
 
-    </div>
-
-    <script>
-        let mainImageBase64 = "";
-        let extraImagesBase64Array = [];
-
-        function openTab(evt, tabName) {
-            const contents = document.getElementsByClassName("tab-content");
-            for (let i = 0; i < contents.length; i++) contents[i].classList.remove("active");
-            const btns = document.getElementsByClassName("tab-btn");
-            for (let i = 0; i < btns.length; i++) btns[i].classList.remove("active");
-            document.getElementById(tabName).classList.add("active");
-            evt.currentTarget.classList.add("active");
-        }
-
-        // محرك ضغط الصور الذكي تلقائياً من الموبايل
-        function processAndCompressImages(input) {
-            const files = input.files;
-            const previewArea = document.getElementById('preview-area');
-            previewArea.innerHTML = '';
-            extraImagesBase64Array = [];
-            mainImageBase64 = "";
-
-            if (files.length === 0) return;
-
-            Array.from(files).forEach((file, index) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = function (event) {
-                    const img = new Image();
-                    img.src = event.target.result;
-                    img.onload = function () {
-                        const canvas = document.createElement('canvas');
-                        const ctx = canvas.getContext('2d');
-                        const max_size = 700;
-                        let width = img.width, height = img.height;
-
-                        if (width > height) {
-                            if (width > max_size) { height *= max_size / width; width = max_size; }
-                        } else {
-                            if (height > max_size) { width *= max_size / height; height = max_size; }
-                        }
-
-                        canvas.width = width; canvas.height = height;
-                        ctx.drawImage(img, 0, 0, width, height);
-
-                        const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
-
-                        if(index === 0) { mainImageBase64 = compressedBase64; } 
-                        else { extraImagesBase64Array.push(compressedBase64); }
-
-                        previewArea.innerHTML += `
+    <script src="/static/js/store.js"></script>
+</body>
+</html>
