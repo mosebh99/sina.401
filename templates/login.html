@@ -7,258 +7,108 @@
     <link rel="icon" type="image/png" href="/logo.png.jpeg">
     <link rel="stylesheet" href="/static/css/style.css">
     <style>
-        /* ستايل ملوكي خاص ببوابة الدخول والعبور المشفرة */
-        .auth-container {
-            max-width: 420px;
-            margin: 80px auto;
-            padding: 0 20px;
-            perspective: 1000px; /* لتهيئة تأثير القلْب ثلاثي الأبعاد */
-        }
-
+        .auth-container { max-width: 420px; margin: 80px auto; padding: 0 20px; perspective: 1000px; }
         .auth-card {
-            background: rgba(20, 20, 20, 0.4);
-            border: 1px solid rgba(212, 175, 55, 0.25);
-            padding: 40px 30px;
-            border-radius: 24px;
-            backdrop-filter: blur(15px);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
+            background: rgba(20, 20, 20, 0.4); border: 1px solid rgba(212, 175, 55, 0.25);
+            padding: 40px 30px; border-radius: 24px; backdrop-filter: blur(15px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5); position: relative;
         }
-
-        .auth-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .auth-header .lock-icon {
-            font-size: 40px;
-            margin-bottom: 10px;
-            display: inline-block;
-            animation: pulse 2s infinite;
-        }
-
-        .auth-header h2 {
-            font-size: 24px;
-            font-weight: 800;
-            color: #fff;
-            margin: 0;
-        }
-
-        .auth-header p {
-            font-size: 13px;
-            color: var(--text-muted);
-            margin: 5px 0 0 0;
-        }
-
-        /* تنسيق الحقول الذكية والأيقونات داخلها */
-        .input-group {
-            position: relative;
-            margin-bottom: 20px;
-        }
-
-        .input-group .input-icon {
-            position: absolute;
-            top: 50%;
-            right: 15px;
-            transform: translateY(-50%);
-            color: rgba(212, 175, 55, 0.6);
-            font-size: 16px;
-            pointer-events: none;
-            transition: var(--transition);
-        }
-
+        .auth-header { text-align: center; margin-bottom: 30px; }
+        .auth-header h2 { font-size: 24px; font-weight: 800; color: #fff; margin: 0; }
+        .auth-header p { font-size: 13px; color: var(--text-muted); margin: 5px 0 0 0; }
+        .input-group { position: relative; margin-bottom: 20px; }
+        .input-group .input-icon { position: absolute; top: 50%; right: 15px; transform: translateY(-50%); color: rgba(212, 175, 55, 0.6); pointer-events: none; }
         .auth-input {
-            width: 100%;
-            padding: 14px 45px 14px 40px; /* مساحات للأيقونات اليمين واليسار */
-            background: rgba(10, 10, 10, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            color: #fff;
-            border-radius: 50px;
-            font-size: 14px;
-            outline: none;
-            box-sizing: border-box;
-            transition: var(--transition);
+            width: 100%; padding: 14px 45px 14px 40px; background: rgba(10, 10, 10, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08); color: #fff; border-radius: 50px; font-size: 14px; outline: none; box-sizing: border-box;
         }
-
-        .auth-input:focus {
-            border-color: var(--primary);
-            background: #000;
-            box-shadow: 0 0 15px rgba(212, 175, 55, 0.15);
-        }
-
-        /* زر إظهار الباسورد المطور (العين) */
-        .toggle-password {
-            position: absolute;
-            top: 50%;
-            left: 15px;
-            transform: translateY(-50%);
-            color: var(--text-muted);
-            cursor: pointer;
-            font-size: 16px;
-            user-select: none;
-            transition: var(--transition);
-        }
-        .toggle-password:hover {
-            color: var(--primary);
-        }
-
+        .auth-input:focus { border-color: var(--primary); background: #000; box-shadow: 0 0 15px rgba(212, 175, 55, 0.15); }
+        .toggle-password { position: absolute; top: 50%; left: 15px; transform: translateY(-50%); color: var(--text-muted); cursor: pointer; }
         .btn-submit-auth {
-            background: linear-gradient(135deg, var(--primary) 0%, #b89020 100%);
-            color: #000;
-            border: none;
-            padding: 14px;
-            border-radius: 50px;
-            font-weight: 700;
-            font-size: 15px;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 10px;
-            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2);
-            transition: var(--transition);
+            background: linear-gradient(135deg, var(--primary) 0%, #b89020 100%); color: #000;
+            border: none; padding: 14px; border-radius: 50px; font-weight: 700; width: 100%; cursor: pointer; margin-top: 10px;
         }
-
-        .btn-submit-auth:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
-            filter: brightness(1.1);
-        }
-
-        /* روابط التنقل والتبديل السلسة أسفل الكارت */
-        .auth-footer-links {
-            text-align: center;
-            margin-top: 25px;
-            font-size: 13px;
-            color: var(--text-muted);
-        }
-
-        .auth-footer-links a {
-            color: var(--primary);
-            text-decoration: none;
-            font-weight: 600;
-            margin-right: 5px;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .auth-footer-links a:hover {
-            text-decoration: underline;
-            color: #fff;
-        }
-
-        /* أنيميشن التوهج النبضي للقفل */
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 0.9; }
-            50% { transform: scale(1.05); opacity: 1; }
-            100% { transform: scale(1); opacity: 0.9; }
-        }
-
-        /* إخفاء واجهة طلبات الانضمام افتراضياً للتبديل بينهما */
-        .hidden-form {
-            display: none;
-        }
+        .auth-footer-links { text-align: center; margin-top: 25px; font-size: 13px; color: var(--text-muted); }
+        .auth-footer-links a { color: var(--primary); text-decoration: none; font-weight: 600; margin-right: 5px; cursor: pointer; }
+        .hidden-form { display: none; }
     </style>
 </head>
 <body>
 
     <header>
         <h1><a href="/">✨ Sina 401</a></h1>
-        <div class="nav-links">
-            <a href="/">🏠 العودة للمتجر الرئيسية</a>
-        </div>
+        <div class="nav-links"><a href="/">🏠 العودة للمتجر الرئيسية</a></div>
     </header>
 
     <div class="auth-container">
         
         <div class="auth-card" id="login-box">
             <div class="auth-header">
-                <span class="lock-icon">🔐</span>
-                <h2>لوحة العبور الآمنة</h2>
+                <h2 style="color:var(--primary)">🔐 لوحة العبور الآمنة</h2>
                 <p>سجل دخولك للوصول إلى قاعدة بيانات Sina 401</p>
             </div>
-            
             <form id="admin-login-form">
                 <div class="input-group">
                     <span class="input-icon">👤</span>
                     <input type="text" id="adm-user" class="auth-input" placeholder="اسم المستخدم أو كود المسوق" required>
                 </div>
-                
                 <div class="input-group">
                     <span class="input-icon">🔒</span>
                     <input type="password" id="adm-pass" class="auth-input" placeholder="كلمة المرور السرية" required>
                     <span class="toggle-password" onclick="togglePassVisibility('adm-pass')">👁️</span>
                 </div>
-                
                 <button type="submit" id="btn-login-text" class="btn-submit-auth">تحقق آمن وعبور للنظام</button>
             </form>
-            
             <div class="auth-footer-links">
-                <span>مسوق جديد؟</span>
-                <a onclick="switchForm('register')">أنشئ حساب طلب انضمام الآن</a>
+                <span>مسوق جديد؟</span> <a onclick="switchForm('register')">تقدم بطلب انضمام الآن</a>
             </div>
         </div>
 
         <div class="auth-card hidden-form" id="register-box">
             <div class="auth-header">
-                <span class="lock-icon">💼</span>
-                <h2>طلب انضمام لمسوق جديد</h2>
-                <p>املا بياناتك للانضمام لفريق سينا ستور ومراجعة طلبك</p>
+                <h2 style="color:var(--primary)">💼 طلب انضمام لمسوق جديد</h2>
+                <p>املا بياناتك للانضمام لفريق سينا ومراجعة طلبك</p>
             </div>
-            
             <form id="marketer-register-form">
                 <div class="input-group">
                     <span class="input-icon">👤</span>
                     <input type="text" id="reg-name" class="auth-input" placeholder="الاسم الكامل للمسوق" required>
                 </div>
-
                 <div class="input-group">
                     <span class="input-icon">📞</span>
-                    <input type="tel" id="reg-phone" class="auth-input" placeholder="رقم الهاتف (للتواصل والعمولات)" required>
+                    <input type="tel" id="reg-phone" class="auth-input" placeholder="رقم الهاتف الشغال" required>
                 </div>
-                
                 <div class="input-group">
                     <span class="input-icon">🔒</span>
                     <input type="password" id="reg-pass" class="auth-input" placeholder="اختر كلمة مرور سرية لحسابك" required>
                     <span class="toggle-password" onclick="togglePassVisibility('reg-pass')">👁️</span>
                 </div>
-                
                 <button type="submit" id="btn-reg-text" class="btn-submit-auth">إرسال طلب الانضمام للمراجعة</button>
             </form>
-            
             <div class="auth-footer-links">
-                <span>لديك حساب بالفعل؟</span>
-                <a onclick="switchForm('login')">تسجيل الدخول</a>
+                <span>لديك حساب بالفعل؟</span> <a onclick="switchForm('login')">تسجيل الدخول</a>
             </div>
         </div>
 
     </div>
 
     <script>
-        // دالة التبديل السلس بين كارت الدخول وكارت إنشاء الحساب
         function switchForm(target) {
-            const loginBox = document.getElementById('login-box');
-            const registerBox = document.getElementById('register-box');
-            
             if(target === 'register') {
-                loginBox.classList.add('hidden-form');
-                registerBox.classList.remove('hidden-form');
+                document.getElementById('login-box').classList.add('hidden-form');
+                document.getElementById('register-box').classList.remove('hidden-form');
             } else {
-                registerBox.classList.add('hidden-form');
-                loginBox.classList.remove('hidden-form');
+                document.getElementById('register-box').classList.add('hidden-form');
+                document.getElementById('login-box').classList.remove('hidden-form');
             }
         }
 
-        // دالة إظهار وإخفاء كلمة المرور التفاعلية (العين)
         function togglePassVisibility(inputId) {
             const input = document.getElementById(inputId);
-            if(input.type === "password") {
-                input.type = "text";
-            } else {
-                input.type = "password";
-            }
+            input.type = input.type === "password" ? "text" : "password";
         }
 
-        // دالة إرسال بيانات الدخول الحالية المتوافقة تماماً وبأمان مع البايثون الحالي عندك
+        // إرسال بيانات الدخول الموحدة الفعلي للـ Backend الجديد
         document.getElementById('admin-login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btn-login-text');
@@ -269,55 +119,39 @@
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({
-                        username: document.getElementById('adm-user').value,
-                        password: document.getElementById('adm-pass').value
+                        username: document.getElementById('adm-user').value.trim(),
+                        password: document.getElementById('adm-pass').value.trim()
                     })
                 });
                 const data = await res.json();
-                if(res.ok) {
-                    window.location.href = data.redirect || '/cashier.html';
-                } else {
-                    alert('❌ خطأ في العبور: ' + (data.message || 'بيانات الدخول غير صحيحة!'));
-                    btn.innerText = "تحقق آمن وعبور للنظام";
-                }
-            } catch(err) {
-                alert('❌ فشل الاتصال بالسيرفر السحابي.');
-                btn.innerText = "تحقق آمن وعبور للنظام";
-            }
+                if(res.ok) { window.location.href = data.redirect; } 
+                else { alert('❌ خطأ في العبور: ' + data.message); btn.innerText = "تحقق آمن وعبور للنظام"; }
+            } catch(err) { alert('❌ فشل الاتصال بالسيرفر.'); btn.innerText = "تحقق آمن وعبور للنظام"; }
         });
 
-        // دالة تقديم طلب المسوق الجديد (مجهزة ومربوطة تمهيداً لخطوة الباك-إند)
+        // تقديم طلب المسوق الجديد الفعلي وحفظه كـ "معلق" في سوبابيس
         document.getElementById('marketer-register-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btn-reg-text');
-            btn.innerText = "⏳ جاري إرسال الطلب للسيرفر...";
+            btn.innerText = "⏳ جاري إرسال الطلب...";
             
-            // جهزنا مسار الـ API التخيلي لحين برمجته في خطوة تجميع السيرفر
             try {
                 const res = await fetch('/api/marketers/apply', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({
-                        name: document.getElementById('reg-name').value,
-                        phone: document.getElementById('reg-phone').value,
-                        password: document.getElementById('reg-pass').value
+                        name: document.getElementById('reg-name').value.trim(),
+                        phone: document.getElementById('reg-phone').value.trim(),
+                        password: document.getElementById('reg-pass').value.trim()
                     })
                 });
-                
+                const data = await res.json();
                 if(res.ok) {
-                    alert('🎉 تم تقديم طلبك بنجاح يا فنان! طلبك الآن معلق بانتظار مراجعة وقبول الإدارة (إبراهيم) وتخصيص كودك التسويقي.');
+                    alert('🎉 تم تقديم طلبك بنجاح! حسابك معلق بانتظار مراجعة وقبول الإدارة وتخصيص كودك التسويقي.');
                     document.getElementById('marketer-register-form').reset();
                     switchForm('login');
-                } else {
-                    // للتوافق المؤقت لكي لا تتعطل الصفحة لحين بناء الباك إند
-                    alert('🎉 تم إرسال الطلب (محاكاة مؤقتة)! سيتم تفعيل حسابك بمجرد ربط السيرفر بالكامل في الخطوة النهائية.');
-                    switchForm('login');
-                }
-            } catch(err) {
-                // تيسيراً للتجربة لحين بناء الباك إند
-                alert('🎉 تم حفظ طلب الانضمام كمسوق مؤقتاً! سيتم تفعيله بالكامل فور تعديل ملف البايثون في الخطوة الأخيرة.');
-                switchForm('login');
-            }
+                } else { alert('❌ خطأ: ' + data.message); }
+            } catch(err) { alert('❌ حدث خطأ في الشبكة.'); }
             btn.innerText = "إرسال طلب الانضمام للمراجعة";
         });
     </script>
