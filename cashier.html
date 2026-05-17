@@ -111,20 +111,18 @@
     </div>
 
     <script>
-        // 1. نظام التحقق من كلمة السر المضافة سابقاً
-        // كلمة السر الافتراضية هنا هي "1234" وتقدر تغيرها براحتك من الكود
+        // 1. نظام التحقق من كلمة السر المحدثة بنجاح
         function checkAdminPassword() {
             const pass = document.getElementById('admin-password-field').value;
-            if(pass === "1234") { 
+            if(pass === "010656534") { 
                 document.getElementById('auth-overlay').style.display = 'none';
                 document.getElementById('main-admin-content').style.display = 'block';
-                loadIncomingOrders(); // تحميل الطلبات فوراً بعد الدخول الصحيح
+                loadIncomingOrders(); 
             } else {
                 document.getElementById('auth-error-msg').style.display = 'block';
             }
         }
 
-        // متغير لحفظ الصورة المضغوطة بصيغة النص (Base64) لإرسالها خفيفة للسيرفر
         let compressedImageBase64 = "logo.png"; 
 
         // 2. دالة ضغط وتصغير حجم الصورة الملتقطة من الفون لحماية السيرفر
@@ -143,7 +141,6 @@
                     const canvas = document.createElement('canvas');
                     const ctx = canvas.getContext('2d');
                     
-                    // تحديد حد أقصى للأبعاد لتصغير الحجم (مثلاً 500 بكسل)
                     const MAX_WIDTH = 500;
                     const MAX_HEIGHT = 500;
                     let width = img.width;
@@ -159,10 +156,8 @@
                     canvas.height = height;
                     ctx.drawImage(img, 0, 0, width, height);
                     
-                    // تحويل الصورة وضغط جودتها بنسبة 60% لتوفير مساحة السيرفر تماماً
                     compressedImageBase64 = canvas.toDataURL('image/jpeg', 0.6);
                     
-                    // عرض المعاينة للمدير
                     const preview = document.getElementById('image-preview');
                     preview.src = compressedImageBase64;
                     preview.style.display = 'block';
@@ -181,7 +176,7 @@
                 category: document.getElementById('p-category').value,
                 selling_price: parseFloat(document.getElementById('p-price').value),
                 stock_quantity: parseInt(document.getElementById('p-stock').value),
-                image_url: compressedImageBase64, // هنا بنرسل الصورة وهي مضغوطة وخفيفة جداً
+                image_url: compressedImageBase64, 
                 description: document.getElementById('p-desc').value
             };
 
