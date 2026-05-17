@@ -3,399 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>عرض المنتج الفاخر | Sina 401</title>
-    <link rel="icon" type="image/png" href="/logo.png.jpeg">
+    <title>عرض تفاصيل المنتج | Sina 401</title>
+    <link rel="icon" type="image/png" href="/static/css/logo.png.jpeg">
     <link rel="stylesheet" href="/static/css/style.css">
     <style>
-        /* التنسيقات الفاخرة الخاصة بصفحة التفاصيل الاحترافية */
-        .details-container {
-            max-width: 1100px;
-            margin: 40px auto;
-            padding: 0 20px;
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 50px;
-            align-items: start;
-        }
-
-        /* حاوية معرض الصور المتطور */
-        .gallery-box {
-            position: sticky;
-            top: 100px;
-            background: rgba(20, 20, 20, 0.4);
-            border: 1px solid var(--card-border);
-            padding: 20px;
-            border-radius: 24px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
-        }
-
-        .main-img-wrapper {
-            width: 100%;
-            height: 420px;
-            overflow: hidden;
-            border-radius: 16px;
-            background: #111;
-            border: 1px solid rgba(255, 255, 255, 0.03);
-            position: relative;
-        }
-
-        .main-img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        /* تأثير الزووم الفخم عند تمرير الماوس */
-        .main-img-wrapper:hover .main-img {
-            transform: scale(1.06);
-        }
-
-        .thumb-images {
-            display: flex;
-            gap: 12px;
-            margin-top: 15px;
-            overflow-x: auto;
-            padding-bottom: 5px;
-        }
-
-        .thumb-images img {
-            width: 75px;
-            height: 75px;
-            object-fit: cover;
-            border-radius: 10px;
-            cursor: pointer;
-            border: 2px solid transparent;
-            background: #111;
-            transition: var(--transition);
-        }
-
-        .thumb-images img:hover {
-            border-color: var(--primary);
-            transform: translateY(-2px);
-        }
-
-        /* حاوية لوحة تفاصيل المنتج */
-        .info-box {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .info-box h2 {
-            font-size: 32px;
-            font-weight: 800;
-            margin: 0;
-            color: #fff;
-            line-height: 1.3;
-        }
-
-        .category-badge {
-            align-self: flex-start;
-            background: rgba(212, 175, 55, 0.12);
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            color: var(--primary);
-            padding: 4px 14px;
-            border-radius: 30px;
-            font-size: 13px;
-            font-weight: 600;
-        }
-
-        .product-status {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .status-available { color: var(--success); }
-        .status-low { color: var(--danger); }
-
-        .product-description-text {
-            font-size: 15px;
-            line-height: 1.7;
-            color: var(--text-muted);
-            white-space: pre-line;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            padding-top: 20px;
-        }
-
-        .detail-price-box {
-            font-size: 28px;
-            font-weight: 800;
-            color: var(--primary);
-            background: rgba(212, 175, 55, 0.05);
-            padding: 15px 25px;
-            border-radius: 14px;
-            border-right: 4px solid var(--primary);
-            display: inline-block;
-            margin: 10px 0;
-        }
-
-        /* العداد المطور للكمية المطلوبة */
-        .quantity-selector-block {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-top: 5px;
-        }
-
-        .quantity-label {
-            font-size: 15px;
-            font-weight: 600;
-            color: #fff;
-        }
-
-        .quantity-counter {
-            display: flex;
-            align-items: center;
-            background: #141414;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 50px;
-            padding: 4px;
-        }
-
-        .quantity-counter button {
-            background: transparent;
-            border: none;
-            color: #fff;
-            width: 36px;
-            height: 36px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            border-radius: 50px;
-            transition: var(--transition);
-        }
-
-        .quantity-counter button:hover {
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--primary);
-        }
-
-        .quantity-counter input {
-            width: 50px;
-            text-align: center;
-            background: transparent;
-            border: none;
-            color: #fff;
-            font-size: 16px;
-            font-weight: 700;
-            outline: none;
-        }
-
-        /* مجموعة أزرار الأكشن الاحترافية */
-        .actions-wrapper {
-            display: flex;
-            gap: 15px;
-            margin-top: 15px;
-            flex-wrap: wrap;
-        }
-
-        .btn-action-cart {
-            flex: 1;
-            min-width: 200px;
-            margin: 0;
-        }
-
-        .btn-action-whatsapp {
-            flex: 1;
-            min-width: 200px;
-            background: linear-gradient(135deg, #25d366 0%, #1ebd58 100%) !important;
-            color: white !important;
-            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.2) !important;
-            border: none;
-            padding: 14px;
-            border-radius: 50px;
-            font-weight: 700;
-            font-size: 15px;
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-action-whatsapp:hover {
-            transform: scale(1.02);
-            box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4) !important;
-            filter: brightness(1.1);
-        }
-
-        /* التجاوب التام للموبايل */
-        @media (max-width: 768px) {
-            .details-container {
-                grid-template-columns: 1fr;
-                gap: 30px;
-                margin: 20px auto;
-            }
-            .gallery-box {
-                position: relative;
-                top: 0;
-                padding: 15px;
-                border-radius: 16px;
-            }
-            .main-img-wrapper {
-                height: 300px;
-            }
-            .info-box h2 {
-                font-size: 24px;
-            }
-            .actions-wrapper {
-                flex-direction: column;
-            }
-            .btn-action-cart, .btn-action-whatsapp {
-                width: 100%;
-            }
-        }
+        .details-container { max-width: 900px; margin: 40px auto; padding: 20px; display: flex; gap: 30px; flex-wrap: wrap; }
+        .gallery-box { flex: 1; min-width: 300px; }
+        .info-box { flex: 1; min-width: 300px; }
+        .main-img { width: 100%; max-height: 380px; object-fit: cover; border-radius: 12px; border: 1px solid var(--primary); background: #000; }
     </style>
 </head>
 <body>
 
     <header>
         <h1><a href="/">✨ Sina 401</a></h1>
-        <div class="nav-links">
-            <a href="/">🏠 العودة للمتجر الرئيسي</a>
-        </div>
+        <div class="nav-links"><a href="/">⬅️ العودة للمتجر</a></div>
     </header>
 
     <div class="details-container" id="product-detail-view">
-        <p style="text-align: center; grid-column: 1/-1; color: var(--text-muted); font-size: 16px; padding: 40px 0;">
-            ✨ جاري جلب تفاصيل المنتج ومزامنة المخزون السحابي...
-        </p>
+        <p style="text-align:center; width:100%; color:var(--text-muted);">جاري جلب تفاصيل السلعة من المخزن السحابي...</p>
     </div>
 
+    <script src="/static/js/store.js"></script>
     <script>
-        // دالة سحب معرف المنتج من الرابط المتوافقة مع بايثون
-        function getProductId() {
-            const params = new URLSearchParams(window.location.search);
-            return params.get('id');
-        }
-
-        // دالة زيادة ونقصان الكمية التفاعلية
-        function updateQty(amount) {
-            const input = document.getElementById('product-qty-input');
-            if(!input) return;
-            let current = parseInt(input.value) || 1;
-            let newValue = current + amount;
-            if(newValue < 1) newValue = 1;
-            input.value = newValue;
-        }
-
-        // دالة جلب البيانات السحابية وضخها بالهيكل الاحترافي الجديد
-        async function loadProductDetail() {
-            const id = getProductId();
-            if(!id) {
-                document.getElementById('product-detail-view').innerHTML = "❌ خطأ: لم يتم تحديد معرف منتج صحيح.";
-                return;
-            }
-
+        const productId = window.location.pathname.split('/').pop();
+        async function loadProductDetails() {
             try {
-                const res = await fetch(`/api/products`);
-                const products = await res.json();
-                const p = products.find(item => item.id == id);
+                const res = await fetch(`/api/products/${productId}`);
+                if(!res.ok) throw new Error();
+                const p = await res.json();
 
-                if(!p) {
-                    document.getElementById('product-detail-view').innerHTML = "❌ عذراً، هذا المنتج غير متاح في المخزن حالياً.";
-                    return;
-                }
-
-                // تجهيز صور المعرض الإضافية إذا وجدت
-                let extraImgs = [];
-                if(p.extra_images) {
-                    try { extraImgs = typeof p.extra_images === 'string' ? JSON.parse(p.extra_images) : p.extra_images; } catch(e){}
-                }
-
-                let thumbsHtml = `<img src="${p.image_url || '/static/css/logo.png.jpeg'}" onclick="document.getElementById('large-img').src='${p.image_url || '/static/css/logo.png.jpeg'}'">`;
-                extraImgs.forEach(url => {
-                    thumbsHtml += `<img src="${url}" onclick="document.getElementById('large-img').src='${url}'">`;
-                });
-
-                // فحص حالة المخزن وإظهار شريط الحالة بناءً على الأعمدة الجديدة
-                let stockStatusHtml = `<span class="product-status status-available">🟢 متوفر في المخزن السحابي وجاهز للشحن</span>`;
-                if(p.stock_quantity !== undefined && p.stock_quantity !== null) {
-                    if (p.stock_quantity <= 0) {
-                        stockStatusHtml = `<span class="product-status status-low">❌ نفد المخزون مؤقتاً</span>`;
-                    } else if(p.stock_quantity <= 5) {
-                        stockStatusHtml = `<span class="product-status status-low">⚠️ متبقي ${p.stock_quantity} قطع فقط في المخزن - سارع بالطلب!</span>`;
-                    }
-                }
-
-                // حقن كود الواجهة العالمية المحدثة
                 document.getElementById('product-detail-view').innerHTML = `
                     <div class="gallery-box">
-                        <div class="main-img-wrapper">
-                            <img id="large-img" src="${p.image_url || '/static/css/logo.png.jpeg'}" class="main-img" alt="${p.name}">
-                        </div>
-                        <div class="thumb-images">${thumbsHtml}</div>
+                        <img id="large-img" src="${p.image_url || '/static/css/logo.png.jpeg'}" class="main-img" onerror="this.src='/static/css/logo.png.jpeg'">
                     </div>
-                    
                     <div class="info-box">
-                        <span class="category-badge">${p.category || 'عام'}</span>
-                        <h2>${p.name}</h2>
-                        
-                        ${stockStatusHtml}
-                        
-                        <div class="detail-price-box">
-                            <span>السعر:</span> ${p.selling_price} ج.م
-                        </div>
-                        
-                        <div class="product-description-text">
-                            <strong>وصف وتفاصيل المنتج:</strong><br>
-                            ${p.description || 'لا توجد تفاصيل إضافية مضافة لهذا المنتج حالياً، المنتج أصلي ومكفول بضمان سينا ستور.'}
-                        </div>
-                        
-                        <div class="quantity-selector-block">
-                            <span class="quantity-label">الكمية المطلوبة:</span>
-                            <div class="quantity-counter">
-                                <button onclick="updateQty(-1)">-</button>
-                                <input type="number" id="product-qty-input" value="1" readonly>
-                                <button onclick="updateQty(1)">+</button>
-                            </div>
-                        </div>
-
-                        <div class="actions-wrapper">
-                            <button class="btn-primary btn-action-cart" onclick="addToCartFromDetail('${p.name}', ${p.selling_price}, '${p.image_url || ''}')">🛒 إضافة إلى السلة</button>
-                            <button class="btn-action-whatsapp" onclick="triggerWhatsAppOrder('${p.name}')">
-                                💬 شراء مباشر عبر واتساب
-                            </button>
-                        </div>
+                        <h2 style="color: var(--primary); margin-top: 0;">${p.name}</h2>
+                        <p style="color: var(--text-muted); font-size: 14px;">القسم: ${p.category || 'عام'}</p>
+                        <p style="line-height: 1.6; color: #ccc; white-space: pre-line;">${p.description || 'لا توجد تفاصيل إضافية لهذا المنتج.'}</p>
+                        <div style="font-size: 22px; color: var(--primary); font-weight: bold; margin: 20px 0;">السعر: ${p.selling_price || 0} ج.م</div>
+                        <button class="btn-primary" onclick="window.location.href='https://wa.me/201065653401?text=أريد طلب منتج: ${p.name}'" style="background:#25d366; color:white; border-radius:50px; padding:12px 25px; border:none; cursor:pointer; font-weight:bold;">شراء مباشر عبر واتساب 💬</button>
                     </div>
                 `;
             } catch(e) {
-                document.getElementById('product-detail-view').innerHTML = "❌ حدث خطأ غير متوقع أثناء سحب البيانات السحابية.";
+                document.getElementById('product-detail-view').innerHTML = "<p style='text-align:center; width:100%; color:#ef4444;'>❌ خطأ في سحب البيانات أو أن المنتج غير موجود.</p>";
             }
         }
-
-        // دالة توليد رسالة واتساب الذكية بالكمية المحددة
-        function triggerWhatsAppOrder(productName) {
-            const qtyInput = document.getElementById('product-qty-input');
-            const qty = qtyInput ? qtyInput.value : 1;
-            const message = encodeURIComponent(`مرحباً سينا ستور، أريد طلب منتج: ${productName}\nالكمية المطلوبة: ${qty} قطعة.`);
-            window.location.href = `https://wa.me/201065653401?text=${message}`;
-        }
-
-        // دالة الإضافة إلى السلة الذكية المحلية لربطها بالمتجر الرئيسي
-        function addToCartFromDetail(name, price, img) {
-            let cart = JSON.parse(localStorage.getItem('sinaa_cart')) || [];
-            const qtyInput = document.getElementById('product-qty-input');
-            const qty = qtyInput ? parseInt(qtyInput.value) : 1;
-
-            let existing = cart.find(item => item.name === name);
-            if(existing) {
-                existing.qty += qty;
-            } else {
-                cart.push({ name: name, price: price, img: img, qty: qty });
-            }
-            localStorage.setItem('sinaa_cart', JSON.stringify(cart));
-            alert(`🎉 تم إضافة (${qty}) قطعة من [${name}] إلى سلتك بنجاح!`);
-        }
-
-        // تشغيل الجلب الفوري عند تحميل الصفحة
-        window.addEventListener('DOMContentLoaded', loadProductDetail);
+        window.addEventListener('DOMContentLoaded', loadProductDetails);
     </script>
 </body>
 </html>
