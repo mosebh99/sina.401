@@ -3,202 +3,164 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة التحكم الشاملة | سينا ستور</title>
-    <link rel="icon" type="image/png" href="logo.png">
+    <title>لوحة التحكم | Sina 401</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0d0d0d; color: white; margin: 0; padding: 20px; box-sizing: border-box; }
-        h1, h2 { color: #d4af37; border-bottom: 1px solid #2a2a2a; padding-bottom: 10px; }
-        
-        /* نظام الحماية */
-        #auth-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:#0d0d0d; z-index: 9999; display: flex; justify-content: center; align-items: center; padding: 20px; }
-        .auth-card { background:#141414; border: 2px solid #d4af37; border-radius:16px; padding:30px; width:100%; max-width:400px; text-align:center; }
-        
-        .admin-container { max-width: 1200px; margin: 0 auto; display: none; }
-        .grid-layout { display: grid; grid-template-columns: 1fr; gap: 20px; }
-        @media (min-width: 900px) { .grid-layout { grid-template-columns: 350px 1fr; } }
-        
-        .card { background: #141414; border: 1px solid #333; border-radius: 12px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); height: fit-content; }
-        .form-group { display: flex; flex-direction: column; margin-bottom: 12px; text-align: right; }
-        .form-group label { font-size: 12px; color: #a3a3a3; margin-bottom: 5px; }
-        .form-group input, .form-group textarea, .form-group select { padding: 10px; background: #080808; border: 1px solid #444; border-radius: 6px; color: white; font-family: inherit; text-align: right; }
-        
-        .submit-btn { width: 100%; padding: 12px; background: #22c55e; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .cancel-btn { width: 100%; padding: 10px; background: #333; color: white; border: none; border-radius: 6px; cursor: pointer; margin-top: 5px; display: none; }
-
-        /* جدول المنتجات */
-        .product-item { display: flex; align-items: center; gap: 15px; background: #1a1a1a; padding: 10px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #2a2a2a; }
-        .product-item img { width: 50px; height: 50px; border-radius: 4px; object-fit: cover; }
-        .product-info { flex-grow: 1; }
-        .product-info h4 { margin: 0; font-size: 14px; color: #d4af37; }
-        .product-info span { font-size: 12px; color: #a3a3a3; }
-        .btn-group { display: flex; gap: 5px; }
-        .btn-edit { background: #d4af37; color: black; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 11px; }
-        .btn-delete { background: #dc2626; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 11px; }
-
-        .file-box { border: 1px dashed #d4af37; padding: 10px; border-radius: 6px; text-align: center; cursor: pointer; margin-bottom: 10px; }
-        #preview { max-width: 100px; margin-top: 10px; border-radius: 4px; display: none; margin-inline: auto; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #0d0d0d; color: white; padding: 20px; direction: rtl; }
+        .admin-container { max-width: 1100px; margin: 0 auto; display: none; }
+        h2, h3 { color: #d4af37; border-bottom: 1px solid #222; padding-bottom: 8px; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 20px; }
+        input, select, textarea { padding: 10px; background: #141414; border: 1px solid #333; color: white; border-radius: 5px; font-family: inherit; }
+        button { background: #d4af37; color: black; border: none; padding: 10px 20px; font-weight: bold; border-radius: 5px; cursor: pointer; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; background: #141414; font-size: 14px; }
+        th, td { border: 1px solid #2a2a2a; padding: 10px; text-align: center; }
+        th { background: #1a160d; color: #d4af37; }
+        .status-select { background: #000; color: #22c55e; border: 1px solid #22c55e; padding: 4px; border-radius: 4px; }
     </style>
 </head>
 <body>
 
-    <div id="auth-overlay">
-        <div class="auth-card">
-            <h2 style="color:#d4af37;">🔐 دخول المدير</h2>
-            <input type="password" id="pass-field" placeholder="كلمة السر" style="width:100%; padding:12px; margin-bottom:15px; background:#000; border:1px solid #d4af37; color:white; text-align:center; border-radius:8px;">
-            <button onclick="checkPass()" class="submit-btn">فتح اللوحة</button>
-        </div>
+    <div id="auth-box" style="text-align: center; margin-top: 100px;">
+        <h2 style="color:#d4af37">🔑 دخول لوحة إدارة لوحة Sina 401</h2>
+        <input type="password" id="pass-field" placeholder="ادخل كلمة المرور السرية" style="width: 250px; text-align: center;"><br><br>
+        <button onclick="checkPass()">دخول اللوحة</button>
     </div>
 
-    <div class="admin-container" id="admin-page">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-            <h1>👑 الإدارة الشاملة للمتجر</h1>
-            <a href="/" style="color:#d4af37; text-decoration:none;">⬅️ المتجر</a>
+    <div class="admin-container" id="admin-main">
+        <h2>👑 لوحة الإدارة العامة وجرد أرباح السيستم</h2>
+        
+        <h3>📦 إضافة منتج جديد للمخزن</h3>
+        <div class="form-grid">
+            <input type="text" id="p-name" placeholder="اسم المنتج السيناوي" required>
+            <select id="p-cat">
+                <option value="عام">عام</option>
+                <option value="زيوت طبيعية">زيوت طبيعية 🫒</option>
+                <option value="أعشاب طبيعية">أعشاب سيناوية 🌱</option>
+                <option value="عسل">عسل طبيعي 🍯</option>
+            </select>
+            <input type="number" id="p-selling" placeholder="سعر البيع للجمهور (ج.م)" required>
+            <input type="number" id="p-purchasing" placeholder="سعر الشراء/التكلفة (ج.م)">
+            <input type="number" id="p-comm" placeholder="عمولة المسوق (ج.م)">
+            <input type="number" id="p-stock" placeholder="الكمية المتوفرة بالمخزن">
+            <input type="text" id="p-img" placeholder="رابط صورة المنتج">
         </div>
+        <textarea id="p-desc" placeholder="تفاصيل ووصف المنتج السيناوي المميز..." style="width:100%; height:60px; box-sizing:border-box; margin-bottom:15px;"></textarea>
+        <button onclick="saveProduct()">➕ حفظ وإضافة المنتج حياً</button>
 
-        <div class="grid-layout">
-            <div class="card">
-                <h2 id="form-title">➕ إضافة منتج جديد</h2>
-                <form id="product-form" onsubmit="saveProduct(event)">
-                    <input type="hidden" id="edit-id">
-                    <div class="form-group"><label>اسم المنتج:</label><input type="text" id="name" required></div>
-                    <div class="form-group"><label>السعر (ج.م):</label><input type="number" id="price" required></div>
-                    <div class="form-group"><label>الكمية:</label><input type="number" id="stock" required></div>
-                    <div class="form-group">
-                        <label>صورة المنتج:</label>
-                        <div class="file-box" onclick="document.getElementById('file').click()">
-                            <span id="file-status">📸 اختر صورة</span>
-                            <input type="file" id="file" accept="image/*" style="display:none;" onchange="compressImg(event)">
-                            <img id="preview">
-                        </div>
-                    </div>
-                    <div class="form-group"><label>وصف المنتج:</label><textarea id="desc" rows="3" required></textarea></div>
-                    
-                    <button type="submit" class="submit-btn" id="save-btn">نشر المنتج سحابياً</button>
-                    <button type="button" class="cancel-btn" id="cancel-btn" onclick="resetForm()">إلغاء التعديل</button>
-                </form>
-            </div>
+        <h3>📊 جرد المنتجات الحالي بالمحل</h3>
+        <table id="prods-table">
+            <thead>
+                <tr><th>الاسم</th><th>القسم</th><th>سعر البيع</th><th>التكلفة</th><th>العمولة</th><th>المخزون</th><th>إجراء</th></tr>
+            </thead>
+            <tbody></tbody>
+        </table>
 
-            <div class="card">
-                <h2>📦 إدارة المخزن (تعديل / مسح)</h2>
-                <div id="product-list">
-                    <p style="color:#666;">جاري التحميل...</p>
-                </div>
-            </div>
-        </div>
+        <h3 style="margin-top: 40px;">🚚 طلبات الشحن الحالية الواردة من الموقع</h3>
+        <table id="orders-table">
+            <thead>
+                <tr><th>رقم الطلب</th><th>اسم العميل</th><th>رقم الهاتف</th><th>العنوان</th><th>المنتجات والعدد</th><th>الإجمالي</th><th>كود المسوق</th><th>حالة الشحن والتتبع</th></tr>
+            </thead>
+            <tbody></tbody>
+        </table>
     </div>
 
     <script>
-        const ADMIN_PASS = "010656534";
-        let products = [];
-        let currentImgBase64 = "logo.png";
+        const MASTER_PASS = "010656534"; // باسووردك المعتمد
 
         function checkPass() {
-            if(document.getElementById('pass-field').value === ADMIN_PASS) {
-                document.getElementById('auth-overlay').style.display = 'none';
-                document.getElementById('admin-page').style.display = 'block';
-                loadProducts();
-            } else { alert("خطأ في كلمة السر!"); }
+            const input = document.getElementById('pass-field').value;
+            if(input === MASTER_PASS) {
+                document.getElementById('auth-box').style.display = 'none';
+                document.getElementById('admin-main').style.display = 'block';
+                loadAdminData();
+            } else { alert("❌ كلمة المرور غير صحيحة يا غالي!"); }
         }
 
-        // ضغط الصورة من الموبايل
-        function compressImg(e) {
-            const file = e.target.files[0];
-            if(!file) return;
-            document.getElementById('file-status').innerText = "⏳ جاري المعالجة...";
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                const img = new Image();
-                img.src = event.target.result;
-                img.onload = function() {
-                    const canvas = document.createElement('canvas');
-                    const scale = 500 / img.width;
-                    canvas.width = 500;
-                    canvas.height = img.height * scale;
-                    canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
-                    currentImgBase64 = canvas.toDataURL('image/jpeg', 0.6);
-                    document.getElementById('preview').src = currentImgBase64;
-                    document.getElementById('preview').style.display = 'block';
-                    document.getElementById('file-status').innerText = "✅ تم الضغط";
-                }
-            };
-            reader.readAsDataURL(file);
+        async function loadAdminData() {
+            loadProducts();
+            loadOrders();
         }
 
         async function loadProducts() {
             const res = await fetch('/api/products');
-            products = await res.json();
-            const list = document.getElementById('product-list');
-            list.innerHTML = '';
-            products.forEach(p => {
-                list.innerHTML += `
-                    <div class="product-item">
-                        <img src="${p.image_url}" onerror="this.src='logo.png'">
-                        <div class="product-info">
-                            <h4>${p.name}</h4>
-                            <span>السعر: ${p.selling_price} ج.م | مخزن: ${p.stock_quantity}</span>
-                        </div>
-                        <div class="btn-group">
-                            <button class="btn-edit" onclick="editProduct(${p.id})">تعديل</button>
-                            <button class="btn-delete" onclick="deleteProduct(${p.id})">مسح</button>
-                        </div>
-                    </div>
+            const data = await res.json();
+            const tbody = document.querySelector('#prods-table tbody');
+            tbody.innerHTML = '';
+            data.forEach(p => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${p.name}</strong></td>
+                        <td>${p.category}</td>
+                        <td style="color:#22c55e">${p.selling_price} ج.م</td>
+                        <td style="color:red">${p.purchasing_price || 0} ج.م</td>
+                        <td style="color:#d4af37">${p.commission || 0} ج.m</td>
+                        <td>${p.stock_quantity} قطع</td>
+                        <td><button style="background:red; color:white; padding:4px 8px; font-size:11px;" onclick="deleteProd(${p.id})">مسح</button></td>
+                    </tr>
                 `;
             });
         }
 
-        async function saveProduct(e) {
-            e.preventDefault();
-            const id = document.getElementById('edit-id').value;
-            const data = {
-                name: document.getElementById('name').value,
-                selling_price: document.getElementById('price').value,
-                stock_quantity: document.getElementById('stock').value,
-                description: document.getElementById('desc').value,
-                image_url: currentImgBase64
+        async function saveProduct() {
+            const payload = {
+                name: document.getElementById('p-name').value,
+                category: document.getElementById('p-cat').value,
+                selling_price: parseFloat(document.getElementById('p-selling').value || 0),
+                purchasing_price: parseFloat(document.getElementById('p-purchasing').value || 0),
+                commission: parseFloat(document.getElementById('p-comm').value || 0),
+                stock_quantity: parseInt(document.getElementById('p-stock').value || 0),
+                image_url: document.getElementById('p-img').value || "logo.png",
+                description: document.getElementById('p-desc').value
             };
+            if(!payload.name || !payload.selling_price) { alert("اكتب اسم المنتج وسعر البيع!"); return; }
 
-            const url = id ? `/api/products/${id}` : '/api/products';
-            const method = id ? 'PUT' : 'POST';
-
-            await fetch(url, {
-                method: method,
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(data)
-            });
-
-            alert("تم الحفظ سحابياً بنجاح!");
-            resetForm();
-            loadProducts();
+            const res = await fetch('/api/products', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
+            if(res.ok) { alert("👍 تم حفظ المنتج ورفعه على موقعك بنجاح!"); loadProducts(); }
         }
 
-        async function deleteProduct(id) {
-            if(confirm("هل أنت متأكد من مسح هذا المنتج نهائياً؟")) {
+        async function deleteProd(id) {
+            if(confirm("هل تريد مسح المنتج نهائياً؟")) {
                 await fetch(`/api/products/${id}`, { method: 'DELETE' });
                 loadProducts();
             }
         }
 
-        function editProduct(id) {
-            const p = products.find(x => x.id === id);
-            document.getElementById('form-title').innerText = "📝 تعديل منتج";
-            document.getElementById('edit-id').value = p.id;
-            document.getElementById('name').value = p.name;
-            document.getElementById('price').value = p.selling_price;
-            document.getElementById('stock').value = p.stock_quantity;
-            document.getElementById('desc').value = p.description;
-            document.getElementById('save-btn').innerText = "حفظ التغييرات";
-            document.getElementById('cancel-btn').style.display = 'block';
-            window.scrollTo(0,0);
+        async function loadOrders() {
+            const res = await fetch('/api/orders');
+            const data = await res.json();
+            const tbody = document.querySelector('#orders-table tbody');
+            tbody.innerHTML = '';
+            data.forEach(o => {
+                let pText = o.products.map(x => `${x.name} (${x.qty} قطع)`).join(' + ');
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${o.id}</td>
+                        <td>${o.customer_name}</td>
+                        <td>${o.customer_phone}</td>
+                        <td>${o.customer_address}</td>
+                        <td>${pText}</td>
+                        <td style="color:#22c55e; font-weight:bold;">${o.total} ج.م</td>
+                        <td style="color:#d4af37; font-weight:bold;">${o.marketer_id || 'بدون مسوق'}</td>
+                        <td>
+                            <select class="status-select" onchange="changeStatus(${o.id}, this)">
+                                <option ${o.status==='قيد المراجعة ⏳'?'selected':''}>قيد المراجعة ⏳</option>
+                                <option ${o.status==='جاري الشحن 🚚'?'selected':''}>جاري الشحن 🚚</option>
+                                <option ${o.status==='تم التسليم ✅'?'selected':''}>تم التسليم ✅</option>
+                                <option ${o.status==='مرتجع/ملغي ❌'?'selected':''}>مرتجع/ملغي ❌</option>
+                            </select>
+                        </td>
+                    </tr>
+                `;
+            });
         }
 
-        function resetForm() {
-            document.getElementById('product-form').reset();
-            document.getElementById('edit-id').value = '';
-            document.getElementById('form-title').innerText = "➕ إضافة منتج جديد";
-            document.getElementById('save-btn').innerText = "نشر المنتج سحابياً";
-            document.getElementById('cancel-btn').style.display = 'none';
-            document.getElementById('preview').style.display = 'none';
-            currentImgBase64 = "logo.png";
+        async function changeStatus(id, selectElement) {
+            const newStatus = selectElement.value;
+            await fetch(`/api/orders/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: newStatus })
+            });
+            alert("✅ تم تحديث حالة الشحنة وستظهر للزبون والمسوق فوراً!");
         }
     </script>
 </body>
