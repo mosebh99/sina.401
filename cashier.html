@@ -3,119 +3,118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة التحكم | Sina Store</title>
+    <title>لوحة التحكم المطورة | Sina Store</title>
     <link rel="icon" type="image/png" href="logo.png.jpeg">
     <style>
         :root { --primary: #d4af37; --bg: #0d0d0d; --card-bg: #141414; --text: #ffffff; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 20px; }
-        .container { max-width: 800px; margin: 0 auto; }
+        .container { max-width: 900px; margin: 0 auto; }
         h1, h2 { color: var(--primary); text-align: center; }
         .form-box { background: var(--card-bg); border: 1px solid var(--primary); padding: 20px; border-radius: 10px; margin-bottom: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        .grid-inputs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
         .form-group { margin-bottom: 15px; }
+        .full-width { grid-column: span 2; }
         label { display: block; margin-bottom: 5px; color: var(--primary); font-size: 14px; }
-        input, select, textarea { width: 100%; padding: 10px; background: #000; border: 1px solid #444; color: white; border-radius: 5px; box-sizing: border-box; font-family: inherit; }
+        input, select, textarea { width: 100%; padding: 10px; background: #000; border: 1px solid #333; color: #fff; border-radius: 5px; box-sizing: border-box; }
         input:focus, select:focus, textarea:focus { border-color: var(--primary); outline: none; }
-        .submit-btn { background: var(--primary); color: black; border: none; padding: 12px; width: 100%; font-size: 16px; font-weight: bold; border-radius: 5px; cursor: pointer; transition: 0.2s; }
-        .submit-btn:hover { background: #b8962e; }
-        .product-item { background: #1a1a1a; padding: 12px; margin-bottom: 10px; border-radius: 5px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #2a2a2a; }
-        .delete-btn { background: #dc2626; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
+        button { background: var(--primary); color: #000; border: none; padding: 12px 20px; font-weight: bold; border-radius: 5px; cursor: pointer; width: 100%; font-size: 16px; margin-top: 10px; }
+        button:hover { background: #b5942b; }
+        .product-card { background: var(--card-bg); border: 1px solid #222; padding: 15px; border-radius: 8px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .prod-info h3 { margin: 0 0 5px 0; color: var(--primary); }
+        .prod-info p { margin: 3px 0; font-size: 13px; color: #aaa; }
+        .badge { background: #222; padding: 2px 8px; border-radius: 4px; font-size: 11px; color: var(--primary); }
+        .btn-del { background: #dc2626; color: white; width: auto; padding: 5px 15px; font-size: 13px; }
+        .btn-del:hover { background: #b91c1c; }
     </style>
 </head>
 <body>
-
     <div class="container">
-        <h1>👑 لوحة تحكم سينا ستور</h1>
-        <p style="text-align: center;"><a href="/" style="color: var(--primary); text-decoration: none;">⬅️ العودة للمتجر الرئيسي</a></p>
-
+        <h1>Sina Store 401 🏪</h1>
+        <h2>لوحة إدارة المنتجات والمخزن المحدثة</h2>
+        
         <div class="form-box">
-            <h2>✨ إضافة منتج جديد للمخزن السحابي</h2>
-            <form id="product-form" onsubmit="saveProduct(event)">
-                <div class="form-group">
-                    <label>اسم المنتج *</label>
-                    <input type="text" id="p-name" required placeholder="مثال: زيت زيتون سيناوي بكر">
+            <form id="product-form" onsubmit="handleSave(event)">
+                <div class="grid-inputs">
+                    <div class="form-group full-width">
+                        <label>اسم المنتج *</label>
+                        <input type="text" id="p-name" required placeholder="مثال: سماعة بلوتوث P9">
+                    </div>
+                    <div class="form-group">
+                        <label>الفئة (القسم)</label>
+                        <select id="p-cat">
+                            <option value="سماعات">سماعات</option>
+                            <option value="شواحن وكابلات">شواحن وكابلات</option>
+                            <option value="جرابات وحمايات">جرابات وحمايات</option>
+                            <option value="ساعات ذكية">ساعات ذكية</option>
+                            <option value="عام">عام</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>سعر البيع للمستهلك (ج.م) *</label>
+                        <input type="number" id="p-price" required placeholder="0.00" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label>سعر الشراء (التكلفة) *</label>
+                        <input type="number" id="p-purchasing" required placeholder="0.00" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label>عمولة المسوق (ج.م) *</label>
+                        <input type="number" id="p-commission" required placeholder="0.00" step="0.01">
+                    </div>
+                    <div class="form-group full-width">
+                        <label>الالكمية المتاحة في المخزن *</label>
+                        <input type="number" id="p-stock" required placeholder="مثال: 50">
+                    </div>
+                    <div class="form-group full-width">
+                        <label>رابط صورة المنتج</label>
+                        <input type="text" id="p-img" placeholder="https://example.com/image.png">
+                    </div>
+                    <div class="form-group full-width">
+                        <label>وصف المنتج</label>
+                        <textarea id="p-desc" rows="3" placeholder="اكتب تفاصيل المنتج ومميزاته هنا..."></textarea>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>القسم *</label>
-                    <select id="p-cat">
-                        <option value="زيوت طبيعية">زيوت طبيعية 🫒</option>
-                        <option value="أعشاب طبيعية">أعشاب سيناوية 🌱</option>
-                        <option value="عسل">عسل طبيعي 🍯</option>
-                        <option value="عام">عام 🌿</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>سعر البيع للجمهور (ج.م) *</label>
-                    <input type="number" id="p-selling" required placeholder="السعر اللي هيظهر للزبون">
-                </div>
-                <div class="form-group">
-                    <label>سعر الجملة / التكلفة (ج.م)</label>
-                    <input type="number" id="p-purchasing" value="0">
-                </div>
-                <div class="form-group">
-                    <label>عمولة المسوق (ج.م)</label>
-                    <input type="number" id="p-comm" value="0">
-                </div>
-                <div class="form-group">
-                    <label>الكمية في المخزن</label>
-                    <input type="number" id="p-stock" value="100">
-                </div>
-                <div class="form-group">
-                    <label>رابط صورة المنتج (أو اتركها فارغة للوجو الافتراضي)</label>
-                    <input type="text" id="p-img" placeholder="https://...">
-                </div>
-                <div class="form-group">
-                    <label>وصف المنتج</label>
-                    <textarea id="p-desc" rows="3" placeholder="اكتب تفاصيل ومميزات المنتج هنا..."></textarea>
-                </div>
-                <button type="submit" class="submit-btn">🚀 نشر وتثبيت المنتج في المتجر</button>
+                <button type="submit">🚀 حفظ وتثبيت المنتج في السحاب</button>
             </form>
         </div>
 
-        <div class="form-box">
-            <h2>📦 المنتجات الحالية بالمخزن</h2>
-            <div id="products-list">جاري تحميل المخزن السحابي...</div>
-        </div>
+        <h2>📦 المنتجات الحالية بالمخزن</h2>
+        <div id="products-list"></div>
     </div>
 
     <script>
         async function loadProducts() {
             try {
                 const res = await fetch('/api/products');
-                const list = await res.json();
+                const prods = await res.json();
                 const container = document.getElementById('products-list');
-                container.innerHTML = '';
+                container.innerHTML = prods.length === 0 ? '<p style="text-align:center;color:#666;">لا توجد منتجات حالياً.</p>' : '';
                 
-                if (list.length === 0) {
-                    container.innerHTML = '<p style="color:#666; text-align:center;">المخزن فارغ حالياً.</p>';
-                    return;
-                }
-                
-                list.forEach(p => {
+                prods.forEach(p => {
                     container.innerHTML += `
-                        <div class="product-item">
-                            <div>
-                                <strong>${p.name}</strong> - <span style="color:var(--primary)">${p.selling_price} ج.م</span>
-                                <br><small style="color:#888;">القسم: ${p.category}</small>
+                        <div class="product-card">
+                            <div class="prod-info">
+                                <h3>${p.name} <span class="badge">${p.category}</span></h3>
+                                <p>💰 سعر البيع: ${p.selling_price} ج.م | 📉 التكلفة: ${p.purchasing_price || 0} ج.م</p>
+                                <p>💵 عمولة المسوق: ${p.commission || 0} ج.م | 📦 المخزون: ${p.stock_quantity || 0} قطع</p>
                             </div>
-                            <button class="delete-btn" onclick="deleteProduct(${p.id})">حذف ❌</button>
+                            <button class="btn-del" onclick="deleteProduct(${p.id})">حذف</button>
                         </div>
                     `;
                 });
             } catch (e) {
-                document.getElementById('products-list').innerText = 'خطأ في جلب المنتجات.';
+                console.error("خطأ في جلب المنتجات", e);
             }
         }
 
-        async function saveProduct(e) {
+        async function handleSave(e) {
             e.preventDefault();
-            
-            // تجميع البيانات بالأسماء الصحيحة التي يتوقعها السيرفر بالملّي
             const payload = {
                 name: document.getElementById('p-name').value,
                 category: document.getElementById('p-cat').value,
-                selling_price: parseFloat(document.getElementById('p-selling').value),
+                selling_price: parseFloat(document.getElementById('p-price').value),
                 purchasing_price: parseFloat(document.getElementById('p-purchasing').value),
-                commission: parseFloat(document.getElementById('p-comm').value),
+                commission: parseFloat(document.getElementById('p-commission').value),
                 stock_quantity: parseInt(document.getElementById('p-stock').value),
                 image_url: document.getElementById('p-img').value,
                 description: document.getElementById('p-desc').value
@@ -129,12 +128,12 @@
                 });
 
                 if (res.ok) {
-                    alert('🎉 تم حفظ المنتج وتثبيته في سوبابيس بنجاح!');
+                    alert('🎉 تم حفظ وتثبيت المنتج وتحديث المخزن بنجاح!');
                     document.getElementById('product-form').reset();
-                    loadProducts(); // تحديث القائمة
+                    loadProducts();
                 } else {
                     const errData = await res.json();
-                    alert('❌ فشل إضافة المنتج: ' + (errData.message || 'خطأ غير معروف'));
+                    alert('❌ فشل الإضافة: ' + (errData.message || 'خطأ غير معروف'));
                 }
             } catch (error) {
                 alert('❌ حدث خطأ في الاتصال بالسيرفر.');
@@ -142,19 +141,13 @@
         }
 
         async function deleteProduct(id) {
-            if (!confirm('هل أنت متأكد من حذف هذا المنتج نهائياً؟')) return;
+            if (!confirm('هل أنت متأكد من حذف هذا المنتج؟')) return;
             try {
                 const res = await fetch(`/api/products/${id}`, { method: 'DELETE' });
-                if (res.ok) {
-                    alert('✅ تم حذف المنتج بنجاح.');
-                    loadProducts();
-                }
-            } catch (e) {
-                alert('خطأ في الحذف.');
-            }
+                if (res.ok) { loadProducts(); }
+            } catch (e) { alert('خطأ في الحذف.'); }
         }
 
-        // تشغيل الجلب عند فتح الصفحة
         window.addEventListener('DOMContentLoaded', loadProducts);
     </script>
 </body>
