@@ -19,7 +19,7 @@ body {
     direction: rtl;
 }
 
-/* التنبيهات المنبثقة Toast */
+/* الإشعارات العائمة الاحترافية (Toast) */
 .toast {
     position: fixed;
     bottom: 20px;
@@ -34,7 +34,7 @@ body {
     animation: slideIn 0.3s ease-out;
 }
 
-/* الهيدر الملتصق الفاخر */
+/* الهيدر الملتصق الذكي */
 header {
     background: rgba(20, 20, 20, 0.95);
     backdrop-filter: blur(10px);
@@ -52,8 +52,7 @@ header h1 a {
     color: var(--primary);
     text-decoration: none;
     font-weight: 800;
-    font-size: 26px;
-    letter-spacing: 1px;
+    font-size: 24px;
 }
 
 .nav-links {
@@ -73,21 +72,21 @@ header h1 a {
     color: var(--primary);
 }
 
-/* البانر والتحريكات */
+/* بنر الواجهة */
 .hero-banner {
     background: linear-gradient(135deg, #141414 0%, #000000 100%);
-    padding: 60px 20px;
+    padding: 50px 20px;
     text-align: center;
     border-bottom: 1px solid #222;
 }
 
 .hero-banner h2 {
     color: var(--primary);
-    font-size: 32px;
+    font-size: 30px;
     margin-bottom: 10px;
 }
 
-/* الفلترة والترتيب */
+/* أشرطة البحث والتحكم */
 .controls-row {
     max-width: 1200px;
     margin: 20px auto;
@@ -109,20 +108,20 @@ header h1 a {
     transition: var(--transition);
 }
 
-.search-input { width: 300px; }
+.search-input { width: 280px; }
 .search-input:focus, .filter-select:focus {
     border-color: var(--primary);
     outline: none;
     box-shadow: 0 0 10px rgba(212,175,55,0.2);
 }
 
-/* شبكة كروت المنتجات الاحترافية */
+/* شبكة عرض المنتجات */
 .products-grid {
     max-width: 1200px;
     margin: 30px auto;
     padding: 0 20px;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 25px;
 }
 
@@ -133,7 +132,6 @@ header h1 a {
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    position: relative;
     transition: var(--transition);
 }
 
@@ -148,10 +146,6 @@ header h1 a {
     height: 220px;
     object-fit: cover;
     transition: var(--transition);
-}
-
-.product-card:hover img {
-    transform: scale(1.05);
 }
 
 .card-body {
@@ -169,13 +163,6 @@ header h1 a {
 .card-body h3 a {
     color: var(--text);
     text-decoration: none;
-}
-
-.card-body p {
-    color: var(--text-muted);
-    font-size: 13px;
-    line-height: 1.5;
-    flex-grow: 1;
 }
 
 .price-box {
@@ -200,10 +187,9 @@ header h1 a {
 
 .btn-primary:hover {
     background: var(--primary-hover);
-    transform: scale(1.02);
 }
 
-/* الأزرار العائمة */
+/* الزر العائم لواتساب */
 .floating-whatsapp {
     position: fixed;
     bottom: 30px;
@@ -220,19 +206,14 @@ header h1 a {
     color: white;
     font-size: 30px;
     text-decoration: none;
-    transition: var(--transition);
 }
-
-.floating-whatsapp:hover { transform: scale(1.1); }
 
 @keyframes slideIn {
     from { transform: translateY(100px); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
 }
 
-/* تهيئة تجربة الموبايل */
 @media (max-width: 768px) {
     .products-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 0 10px; }
     .search-input { width: 100%; }
-    header h1 { font-size: 20px; }
 }
