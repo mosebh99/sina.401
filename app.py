@@ -1,93 +1,199 @@
+import os
+import sqlite3
 from flask import Flask, jsonify, request, render_template
 
 app = Flask(__name__, template_folder='.')
 
-# قاعدة بيانات سحابية مؤقتة للمنتجات
-cloud_products = [
-    {
-        "id": 1,
-        "name": "زيت زيتون سيناوي بكر ممتاز",
-        "category": "زيوت طبيعية",
-        "selling_price": 250,
-        "stock_quantity": 15,
-        "image_url": "logo.png",
-        "description": "زيت زيتون طبيعي 100% من معاصر سيناء بجودة عالية وفائقة."
-    },
-    {
-        "id": 2,
-        "name": "عشب المرمية السيناوية الجبلية",
-        "category": "أعشاب طبيعية",
-        "selling_price": 85,
-        "stock_quantity": 30,
-        "image_url": "logo.png",
-        "description": "مرمية برية طبيعية مجففة ومقطوفة بعناية من جبال سيناء."
-    }
-]
+DB_FILE = "database.db"
 
-# مخزن الطلبات المطور (يحتوي على حالة الشحن واسم المسوق لو وجد)
-cloud_orders = [
-    {
-        "order_id": 101,
-        "product_name": "زيت زيتون سيناوي بكر ممتاز",
-        "quantity": 2,
-        "total": 500,
-        "customer_name": "أحمد علي",
-        "customer_phone": "01012345678",
-        "customer_address": "القاهرة - مدينة نصر",
-        "status": "تم الطلب", # الحالات: تم الطلب، جاري الشحن، تم التوصيل، ملغي
-        "marketer_id": "marketer_ahmed"
-    }
-]
+# --- دالة الاتصال بقاعدة البيانات وإنشاء الجداول لو مش موجودة ---
+def init_db():
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+    
+    # 1. جدول المنتجات (مع دعم حفظ الصور المضغوطة الطويلة جداً TEXT)
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS products (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            category TEXT NOT NULL,
+            selling_price REAL NOT NULL,
+            stock_quantity INTEGER NOT NULL,
+            image_url TEXT NOT NULL,
+            description TEXT NOT NULL
+        )
+    ''')
+    
+    # 2. جدول طلبات الشحن (لحفظ طلبات الزباين والمسوقين)
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS orders (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            customer_name TEXT NOT NULL,
+            customer_phone TEXT NOT NULL,
+            customer_address TEXT NOT NULL,
+            total_price REAL NOT NULL,
+            marketer_id TEXT,
+            products_json TEXT NOT NULL
+        )
+    ''')
+    
+    # إضافة منتجات تجريبية لو قاعدة البيانات لسه جديدة تماماً وفاضية
+    cursor.execute("SELECT COUNT(*) FROM products")
+    if cursor.fetchone()[0] == 0:
+        sample_products = [
+            ("زيت زيتون سيناوي بكر ممتاز", "زيوت طبيعية", 250.0, 15, "logo.png", "زيت زيتون طبيعي 100% من معاصر سيناء بجودة عالية وفائقة."),
+            ("عشب المرمية السيناوية الجبلية", "أعشاب طبيعية", 85.0, 30, "logo.png", "مرمية برية طبيعية مجففة ومقطوفة بعناية من جبال سيناء الطبيعية.")
+        ]
+        cursor.executemany('''
+            INSERT INTO products (name, category, selling_price, stock_quantity, image_url, description)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ''', sample_products)
+        
+    conn.commit()
+    conn.close()
 
+# تشغيل قاعدة البيانات فوراً عند إقلاع السيرفر
+init_db()
+
+# --- مسارات توجيه الصفحات الفردية ---
 @app.route('/')
-def index():
+def index(): 
     return render_template('index.html')
 
 @app.route('/cashier.html')
-def cashier():
+def cashier(): 
     return render_template('cashier.html')
 
-@app.route('/marketers.html')
-def marketers():
-    return render_template('marketers.html')
 
-@app.route('/login.html')
-def login_page():
-    return render_template('login.html')
+# =======================================================
+# 🛒 أولاً: لوحة تحكم المنتجات (جلب / إضافة / تعديل / مسح)
+# =======================================================
 
-# روابط الـ API
+# 1. جلب كل المنتجات من قاعدة البيانات الثابتة
 @app.route('/api/products', methods=['GET'])
 def get_products():
-    return jsonify(cloud_products), 200
+    conn = sqlite3.connect(DB_FILE)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM products ORDER BY id DESC")
+    rows = cursor.fetchall()
+    conn.close()
+    
+    products_list = []
+    for row in rows:
+        products_list.append({
+            "id": row["id"],
+            "name": row["name"],
+            "category": row["category"],
+            "selling_price": row["selling_price"],
+            "stock_quantity": row["stock_quantity"],
+            "image_url": row["image_url"],
+            "description": row["description"]
+        })
+    return jsonify(products_list), 200
 
-@app.route('/api/admin/orders', methods=['GET'])
-def get_admin_orders():
-    return jsonify(cloud_orders), 200
+# 2. إضافة منتج جديد وحفظه في ملف قاعدة البيانات
+@app.route('/api/products', methods=['POST'])
+def add_product():
+    data = request.get_json()
+    try:
+        conn = sqlite3.connect(DB_FILE)
+        cursor = conn.cursor()
+        cursor.execute('''
+            INSERT INTO products (name, category, selling_price, stock_quantity, image_url, description)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ''', (data['name'], data.get('category', 'عام'), float(data['selling_price']), int(data['stock_quantity']), data['image_url'], data['description']))
+        conn.commit()
+        conn.close()
+        return jsonify({"status": "success", "message": "Product added successfully"}), 201
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 400
 
+# 3. تعديل وتحديث بيانات منتج موجود بالمعرف بتاعه (ID)
+@app.route('/api/products/<int:p_id>', methods=['PUT'])
+def update_product(p_id):
+    data = request.get_json()
+    try:
+        conn = sqlite3.connect(DB_FILE)
+        cursor = conn.cursor()
+        cursor.execute('''
+            UPDATE products 
+            SET name=?, selling_price=?, stock_quantity=?, image_url=?, description=?
+            WHERE id=?
+        ''', (data['name'], float(data['selling_price']), int(data['stock_quantity']), data['image_url'], data['description'], p_id))
+        conn.commit()
+        conn.close()
+        return jsonify({"status": "success", "message": "Product updated successfully"}), 200
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 400
+
+# 4. مسح منتج نهائياً من المتجر
+@app.route('/api/products/<int:p_id>', methods=['DELETE'])
+def delete_product(p_id):
+    try:
+        conn = sqlite3.connect(DB_FILE)
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM products WHERE id=?", (p_id,))
+        conn.commit()
+        conn.close()
+        return jsonify({"status": "success", "message": "Product deleted successfully"}), 200
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 400
+
+
+# =======================================================
+# 📦 ثانياً: لوحة تحكم طلبات الشحن (تأكيد الطلبات / عرضها)
+# =======================================================
+
+# 1. استقبال طلب شراء جديد من سلة المشتريات وتخزينه فوراً للمدير
 @app.route('/api/orders', methods=['POST'])
 def create_order():
     data = request.get_json()
-    # إعطاء رقم تلقائي للطلب وتحديد الحالة الافتراضية
-    data['order_id'] = len(cloud_orders) + 101
-    data['status'] = "تم الطلب"
-    cloud_orders.append(data)
-    return jsonify({"status": "success", "order_id": data['order_id']}), 200
+    import json
+    try:
+        conn = sqlite3.connect(DB_FILE)
+        cursor = conn.cursor()
+        
+        # تحويل مصفوفة المنتجات لنص جيسون متوافق مع قواعد البيانات
+        products_json_str = json.dumps(data['products'], ensure_ascii=False)
+        
+        cursor.execute('''
+            INSERT INTO orders (customer_name, customer_phone, customer_address, total_price, marketer_id, products_json)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ''', (data['customer_name'], data['customer_phone'], data['customer_address'], float(data['total']), data.get('marketer_id'), products_json_str))
+        
+        conn.commit()
+        conn.close()
+        return jsonify({"status": "success", "message": "Order placed successfully"}), 201
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 400
 
-# رابط لتحديث حالة الشحن من صفحة الكاشير
-@app.route('/api/admin/orders/update-status', methods=['POST'])
-def update_order_status():
-    data = request.get_json()
-    order_id = int(data.get('order_id'))
-    new_status = data.get('status')
+# 2. جلب كل طلبات الشحن الحالية لتعرض في صفحة المدير
+@app.route('/api/orders', methods=['GET'])
+def get_orders():
+    import json
+    conn = sqlite3.connect(DB_FILE)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM orders ORDER BY id DESC")
+    rows = cursor.fetchall()
+    conn.close()
     
-    for order in cloud_orders:
-        if order['order_id'] == order_id:
-            order['status'] = new_status
-            return jsonify({"status": "success", "message": f"تم تحديث الحالة إلى {new_status}"}), 200
-            
-    return jsonify({"status": "error", "message": "الطلب غير موجود"}), 404
+    orders_list = []
+    for row in rows:
+        orders_list.append({
+            "id": row["id"],
+            "customer_name": row["customer_name"],
+            "customer_phone": row["customer_phone"],
+            "customer_address": row["customer_address"],
+            "total": row["total_price"],
+            "marketer_id": row["marketer_id"],
+            "products": json.loads(row["products_json"]) # فك النص ليعود كـ مصفوفة برمجية
+        })
+    return jsonify(orders_list), 200
 
+
+# تشغيل الخادم السحابي
 application = app
-
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
