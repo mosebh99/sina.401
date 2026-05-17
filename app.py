@@ -4,8 +4,12 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 from flask import Flask, jsonify, request, render_template, redirect, url_for
 
-# التعديل الصحيح: جعل Flask يقرأ من فولدر templates الطبيعي لمنع انهيار السيرفر
-app = Flask(__name__)
+# إعداد المسارات الصارمة لبيئة Vercel لتقرأ من مجلد templates و static بشكل صحيح
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
+STATIC_DIR = os.path.join(BASE_DIR, 'static')
+
+app = Flask(__name__, template_folder=TEMPLATE_DIR, static_folder=STATIC_DIR)
 
 # رابط الاتصال المباشر بقاعدة بيانات سوبابيس
 DATABASE_URL = os.environ.get('DATABASE_URL') or "postgresql://postgres:MoSebA01065653401@db.ellxxztpfpaqlbqsnyhb.supabase.co:5432/postgres"
@@ -13,7 +17,7 @@ DATABASE_URL = os.environ.get('DATABASE_URL') or "postgresql://postgres:MoSebA01
 def get_db_connection():
     return psycopg2.connect(DATABASE_URL, connect_timeout=10)
 
-# --- 🌐 مسارات الصفحات (تقرأ الآن تلقائياً من داخل مجلد templates) ---
+# --- 🌐 مسارات الصفحات ---
 
 @app.route('/')
 def index():
