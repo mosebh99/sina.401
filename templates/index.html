@@ -3,51 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sina Store 401 - المتجر الرئيسي</title>
+    <title>Sina 401 | متجر سينا لملحقات الموبايل</title>
+    <link rel="icon" type="image/png" href="/static/css/logo.png.jpeg">
     <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        .menu-dots { font-size: 28px; color: var(--primary); cursor: pointer; padding: 0 10px; user-select: none; }
+        .dropdown-menu { display: none; position: absolute; top: 60px; left: 20px; background: #1a1a1a; border: 1px solid #333; border-radius: 8px; width: 200px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); z-index: 1000; overflow: hidden; }
+        .dropdown-menu a { display: block; padding: 12px 15px; color: #fff; text-decoration: none; transition: 0.2s; text-align: right; font-size: 14px; }
+        .dropdown-menu a:hover { background: var(--primary); color: #000; }
+        .dropdown-menu.show { display: block; }
+    </style>
 </head>
 <body>
 
-    <header class="main-header">
-        <div class="logo-section">
-            <img src="/static/css/logo.png.jpeg" alt="Sina 401 Logo" class="brand-logo">
-            <h1>Sina Store 401</h1>
+    <div class="toast" id="toast-notification"></div>
+
+    <header>
+        <h1><a href="/">✨ Sina 401</a></h1>
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <span style="color: var(--primary); font-weight: bold; font-size: 14px;">🛒 السلة (<span id="cart-count">0</span>)</span>
+            <span class="menu-dots" onclick="toggleMenu(event)">⋮</span>
+            <div class="dropdown-menu" id="dots-menu">
+                <a href="/">🏠 المتجر الرئيسي</a>
+                <a href="/login.html">🔐 لوحة الإدارة والعبور</a>
+                <a href="/marketers.html">📊 بوابة المسوقين</a>
+            </div>
         </div>
-        <nav class="nav-links">
-            <a href="/">🏠 الرئيسية</a>
-            <a href="/marketers.html">📊 بوابة المسوقين</a>
-            <a href="/login.html">🔐 لوحة الإدارة</a>
-        </nav>
     </header>
 
-    <main class="store-container">
-        <section class="filter-bar">
-            <input type="text" id="search-box" placeholder="🔍 ابحث عن إكسسوارات، شواحن، كابلات..." oninput="handleSearchAndFilter()">
-            <select id="category-filter" onchange="handleSearchAndFilter()">
-                <option value="all">كل الأقسام</option>
-                <option value="شواحن">شواحن وطاقة</option>
-                <option value="كابلات">كابلات ووصلات</option>
-                <option value="جرابات">جرابات وحماية</option>
-                <option value="سماعات">سماعات وصوتيات</option>
-            </select>
-        </section>
+    <div class="hero-banner">
+        <h2>👑 الفخامة والتميز في مكان واحد</h2>
+        <p>اكتشف أقوى العروض والملحقات بضمان سينا ستور الأصلي</p>
+    </div>
 
-        <section class="tracking-section" style="margin-bottom: 20px; background: #1e1e1e; padding: 15px; border-radius: 8px;">
-            <h3>📦 تتبع حالة شحنتك</h3>
-            <div style="display: flex; gap: 10px; margin-top: 10px;">
-                <input type="text" id="track-phone" placeholder="أدخل رقم الهاتف المسجل به الطلب" style="flex: 1; padding: 8px; border-radius: 4px; border: 1px solid #333; background: #111; color: #fff;">
-                <button class="btn-primary" onclick="trackMyOrder()" style="padding: 8px 15px;">بحث</button>
-            </div>
-            <div id="track-output"></div>
-        </section>
+    <div class="controls-row">
+        <input type="text" id="search-box" class="search-input" placeholder="ابحث عن منتجك المفضل..." oninput="handleSearchAndFilter()">
+        
+        <select id="category-filter" class="filter-select" onchange="handleSearchAndFilter()">
+            <option value="all">كل الأقسام</option>
+            <option value="عام">عام وإلكترونيات</option>
+            <option value="ساعات ذكية">ساعات ذكية</option>
+            <option value="سماعات">سماعات بلوتوث</option>
+            <option value="شواحن">شواحن وكوابل</option>
+        </select>
 
-        <section class="products-grid" id="products-container">
-            <p style="grid-column: 1/-1; text-align:center;">🔄 جاري تحميل أحدث المنتجات من المخزن السحابي...</p>
-        </section>
-    </main>
+        <select id="sort-select" class="filter-select" onchange="handleSearchAndFilter()">
+            <option value="default">الترتيب الافتراضي</option>
+            <option value="price-low">السعر: من الأقل للأعلى</option>
+            <option value="price-high">السعر: من الأعلى للأقل</option>
+        </select>
+    </div>
 
-    <div id="toast-notification" class="toast"></div>
+    <div class="products-grid" id="products-container">
+        <p style="text-align: center; grid-column: 1/-1; color: var(--text-muted);">جاري تحميل المنتجات من المخزن السحابي...</p>
+    </div>
+
+    <div style="max-width: 500px; margin: 40px auto; padding: 20px; background:var(--card-bg); border-radius:12px; border:1px solid #222;">
+        <h3 style="color:var(--primary); text-align:center; margin-top:0; margin-bottom:15px;">📦 تتبع حالة شحنتك فوراً</h3>
+        <div style="display:flex; gap:10px;">
+            <input type="tel" id="track-phone" class="search-input" style="flex:1;" placeholder="رقم الهاتف المسجل بالطلب...">
+            <button class="btn-primary" style="width:auto; margin:0; padding:0 20px;" onclick="trackMyOrder()">تتبع الشحنة</button>
+        </div>
+        <div id="track-output"></div>
+    </div>
 
     <script src="/static/js/store.js"></script>
+    <script>
+        function toggleMenu(e) {
+            e.stopPropagation();
+            document.getElementById('dots-menu').classList.toggle('show');
+        }
+        window.onclick = function() { const m = document.getElementById('dots-menu'); if(m) m.classList.remove('show'); }
+    </script>
 </body>
 </html>
