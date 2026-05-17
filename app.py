@@ -7,91 +7,97 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 from flask import Flask, jsonify, request, render_template, redirect, url_for, session
 
-app = Flask(__name__, template_folder='templates', static_folder='static')
+# 🎯 ضبط المسارات الديناميكية لضمان قراءة المجلدات داخل بيئة Vercel Serverless
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+template_dir = os.path.join(BASE_DIR, 'templates')
+static_dir = os.path.join(BASE_DIR, 'static')
+
+app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
 
 # 🛡️ إعدادات الأمان والتشفير عبر الـ Environment Variables لمنع تسريب البيانات
 app.secret_key = os.environ.get('FLASK_SECRET_KEY') or "SinaaStoreSuperSecretKey2026_JWT"
 DATABASE_URL = os.environ.get('DATABASE_URL') or "postgresql://postgres:MoSebA01065653401@db.ellxxztpfpaqlbqsnyhb.supabase.co:5432/postgres"
 
-# إعدادات رفع الصور محلياً للتجهيز لـ Render
-UPLOAD_FOLDER = os.path.join('static', 'uploads')
+# إعدادات رفع الصور
+UPLOAD_FOLDER = os.path.join(static_dir, 'uploads')
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 def get_db_connection():
-    return psycopg2.connect(DATABASE_URL)
+    return psycopg2.connect(DATABASE_URL, connect_timeout=10)
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def init_db():
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    
-    # 1. جدول المنتجات المطور
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS products (
-            id SERIAL PRIMARY KEY,
-            name TEXT NOT NULL,
-            category TEXT DEFAULT 'عام',
-            selling_price REAL NOT NULL,
-            purchasing_price REAL DEFAULT 0,
-            commission REAL DEFAULT 0,
-            stock_quantity INTEGER DEFAULT 0,
-            image_url TEXT, 
-            images_json TEXT DEFAULT '[]', 
-            description TEXT,
-            is_featured BOOLEAN DEFAULT FALSE,
-            discount_price REAL DEFAULT 0,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    ''')
-    
-    # 2. جدول الطلبات المطور
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS orders (
-            id SERIAL PRIMARY KEY,
-            customer_name TEXT NOT NULL,
-            customer_phone TEXT NOT NULL,
-            customer_address TEXT NOT NULL,
-            total_price REAL NOT NULL,
-            marketer_id TEXT,
-            products_json TEXT NOT NULL,
-            status TEXT DEFAULT 'قيد المراجعة',
-            coupon_used TEXT,
-            payment_method TEXT DEFAULT 'الدفع عند الاستلام',
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    ''')
-    
-    # 3. جدول حسابات الأدمن لحماية لوحة التحكم
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS admins (
-            id SERIAL PRIMARY KEY,
-            username TEXT UNIQUE NOT NULL,
-            password_hash TEXT NOT NULL
-        )
-    ''')
-    
-    # إنشاء يوزر أدمن افتراضي إذا كان الجدول فارغاً
-    cursor.execute("SELECT * FROM admins WHERE username='admin'")
-    if not cursor.fetchone():
-        hashed = generate_password_hash("SinaaAdmin2026")
-        cursor.execute("INSERT INTO admins (username, password_hash) VALUES ('admin', %s)", (hashed,))
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # 1. جدول المنتجات
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS products (
+                id SERIAL PRIMARY KEY,
+                name TEXT NOT NULL,
+                category TEXT DEFAULT 'عام',
+                selling_price REAL NOT NULL,
+                purchasing_price REAL DEFAULT 0,
+                commission REAL DEFAULT 0,
+                stock_quantity INTEGER DEFAULT 0,
+                image_url TEXT, 
+                images_json TEXT DEFAULT '[]', 
+                description TEXT,
+                is_featured BOOLEAN DEFAULT FALSE,
+                discount_price REAL DEFAULT 0,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+        
+        # 2. جدول الطلبات
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS orders (
+                id SERIAL PRIMARY KEY,
+                customer_name TEXT NOT NULL,
+                customer_phone TEXT NOT NULL,
+                customer_address TEXT NOT NULL,
+                total_price REAL NOT NULL,
+                marketer_id TEXT,
+                products_json TEXT NOT NULL,
+                status TEXT DEFAULT 'قيد المراجعة',
+                coupon_used TEXT,
+                payment_method TEXT DEFAULT 'الدفع عند الاستلام',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+        
+        # 3. جدول حسابات الأدمن
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS admins (
+                id SERIAL PRIMARY KEY,
+                username TEXT UNIQUE NOT NULL,
+                password_hash TEXT NOT NULL
+            )
+        ''')
+        
+        cursor.execute("SELECT * FROM admins WHERE username='admin'")
+        if not cursor.fetchone():
+            hashed = generate_password_hash("SinaaAdmin2026")
+            cursor.execute("INSERT INTO admins (username, password_hash) VALUES ('admin', %s)", (hashed,))
 
-    conn.commit()
-    cursor.close()
-    conn.close()
+        conn.commit()
+        cursor.close()
+        conn.close()
+        print("🚀 Database connected and initialized successfully!")
+    except Exception as e:
+        print("❌ Database Connection/Init Error:", e)
 
-try:
-    init_db()
-except Exception as e:
-    print("Database Init Error:", e)
+# تشغيل فحص قاعدة البيانات عند بدء السيرفر
+init_db()
 
-# 🔐 Decorators لحماية الصفحات والـ APIs
+# 🔐 Decorators لحماية الصفحات
 def admin_required(f):
     def wrapper(*args, **kwargs):
         if not session.get('is_admin'):
@@ -112,7 +118,14 @@ def api_admin_required(f):
 
 @app.route('/')
 def index():
+    # التأكد من وجود الملف لتجنب أخطاء الفتح في Vercel
+    if not os.path.exists(os.path.join(template_dir, 'index.html')):
+        return "❌ خطأ في النظام: لم يتم العثور على ملفات الواجهة داخل مجلد templates.", 500
     return render_template('index.html')
+
+@app.route('/index.html')
+def index_html():
+    return redirect(url_for('index'))
 
 @app.route('/login.html')
 def login_page():
@@ -139,18 +152,21 @@ def api_login():
     username = data.get('username', '').strip().lower()
     password = data.get('password', '').strip()
     
-    conn = get_db_connection()
-    cursor = conn.cursor(cursor_factory=RealDictCursor)
-    cursor.execute("SELECT * FROM admins WHERE username=%s", (username,))
-    admin = cursor.fetchone()
-    cursor.close()
-    conn.close()
-    
-    if admin and check_password_hash(admin['password_hash'], password):
-        session['is_admin'] = True
-        session['username'] = username
-        return jsonify({"status": "success", "message": "تم تسجيل الدخول بنجاح"}), 200
-    return jsonify({"status": "error", "message": "بيانات الدخول غير صحيحة"}), 401
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        cursor.execute("SELECT * FROM admins WHERE username=%s", (username,))
+        admin = cursor.fetchone()
+        cursor.close()
+        conn.close()
+        
+        if admin and check_password_hash(admin['password_hash'], password):
+            session['is_admin'] = True
+            session['username'] = username
+            return jsonify({"status": "success", "message": "تم تسجيل الدخول بنجاح"}), 200
+        return jsonify({"status": "error", "message": "بيانات الدخول غير صحيحة"}), 401
+    except Exception as e:
+        return jsonify({"status": "error", "message": "فشل الاتصال بقاعدة البيانات"}), 500
 
 @app.route('/api/auth/logout')
 def api_logout():
@@ -258,7 +274,6 @@ def create_order():
             VALUES (%s, %s, %s, %s, %s, %s)
         ''', (data['customer_name'], data['customer_phone'], data['customer_address'], float(data['total_price']), data.get('marketer_id'), products_json_str))
         
-        # خصم الكميات من المخزن تلقائياً
         for item in data['products']:
             cursor.execute("UPDATE products SET stock_quantity = GREATEST(0, stock_quantity - %s) WHERE name = %s", (int(item.get('qty', 1)), item.get('name')))
             
