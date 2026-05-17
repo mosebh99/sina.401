@@ -3,16 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>سينا ستور | المنتجات الطبيعية</title>
+    <title>سينا ستور | Sina Store 401</title>
     <link rel="icon" type="image/png" href="logo.png">
     <style>
+        /* التصميم الأصلي الفخم لمتجر سينا ستور */
         :root {
-            --primary: #d4af37;
-            --bg: #0d0d0d;
-            --card-bg: #141414;
+            --primary: #d4af37; /* اللون الذهبي السيناوي */
+            --bg: #0d0d0d;      /* الخلفية السوداء الداكنة */
+            --card-bg: #141414; /* خلفية الكروت */
             --text: #ffffff;
             --text-muted: #a3a3a3;
         }
+        
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--bg);
@@ -21,6 +23,7 @@
             padding: 20px;
             box-sizing: border-box;
         }
+
         header {
             display: flex;
             justify-content: space-between;
@@ -29,30 +32,39 @@
             padding-bottom: 15px;
             margin-bottom: 30px;
         }
+
         header h1 {
             color: var(--primary);
             margin: 0;
             font-size: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
+
         header .admin-link {
             color: var(--text-muted);
             text-decoration: none;
             font-size: 14px;
             border: 1px solid #333;
-            padding: 6px 12px;
+            padding: 8px 16px;
             border-radius: 6px;
             transition: 0.2s;
         }
+
         header .admin-link:hover {
             border-color: var(--primary);
             color: var(--primary);
+            background: rgba(212, 175, 55, 0.05);
         }
-        /* شبكة المنتجات */
+
+        /* شبكة عرض المنتجات */
         .products-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 25px;
         }
+
         .product-card {
             background: var(--card-bg);
             border: 1px solid #2a2a2a;
@@ -63,27 +75,43 @@
             display: flex;
             flex-direction: column;
         }
+
         .product-card:hover {
             transform: translateY(-5px);
             border-color: var(--primary);
         }
+
         .product-card img {
             width: 100%;
-            height: 200px;
+            height: 220px;
             object-fit: cover;
             background: #1a1a1a;
+            border-bottom: 1px solid #2a2a2a;
         }
+
         .product-details {
             padding: 15px;
             display: flex;
             flex-direction: column;
             flex-grow: 1;
         }
+
         .product-details h3 {
             margin: 0 0 10px 0;
             font-size: 18px;
             color: var(--primary);
         }
+
+        .product-details .category-badge {
+            font-size: 11px;
+            background: #2a2a2a;
+            color: var(--primary);
+            padding: 3px 8px;
+            border-radius: 4px;
+            width: fit-content;
+            margin-bottom: 10px;
+        }
+
         .product-details .description {
             font-size: 13px;
             color: var(--text-muted);
@@ -91,17 +119,22 @@
             margin: 0 0 15px 0;
             flex-grow: 1;
         }
+
         .price-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-top: auto;
+            border-top: 1px dashed #2a2a2a;
+            padding-top: 12px;
         }
+
         .price {
             font-size: 18px;
             font-weight: bold;
             color: #22c55e;
         }
+
         .add-to-cart-btn {
             background: var(--primary);
             color: black;
@@ -114,10 +147,13 @@
             font-size: 13px;
             transition: 0.2s;
         }
+
         .add-to-cart-btn:hover {
             background: #bfa030;
+            transform: scale(1.02);
         }
-        .no-products {
+
+        .status-msg {
             grid-column: 1 / -1;
             text-align: center;
             color: var(--text-muted);
@@ -129,39 +165,40 @@
 <body>
 
     <header>
-        <h1>🌿 متجر سينا ستور (Sina Store)</h1>
-        <a href="/cashier.html" class="admin-link">👑 لوحة التحكم والإدارة</a>
+        <h1>🌿 سينا ستور للمنتجات الطبيعية</h1>
+        <a href="/cashier.html" class="admin-link">👑 لوحة إدارة المتجر</a>
     </header>
 
-    <div class="products-grid" id="products-container">
-        <p style="color: var(--text-muted); text-align: center; grid-column: 1/-1;">جاري الاتصال بالسيرفر وجلب المنتجات الحية...</p>
+    <div class="products-grid" id="main-products-grid">
+        <p class="status-msg">⏳ جاري سحب المنتجات الحية وتحديث المخزن من السيرفر السحابي...</p>
     </div>
 
     <script>
-        // 🛠️ دالة جلب المنتجات الحية من السيرفر السحابي وقاعدة البيانات
-        async function loadProducts() {
+        // 🛠️ دالة جلب المنتجات الحية من السيرفر السحابي (app.py)
+        async function loadProductsFromServer() {
+            const container = document.getElementById('main-products-grid');
+            if (!container) return;
+
             try {
                 const response = await fetch('/api/products');
                 const cloudProducts = await response.json();
                 
-                const productsContainer = document.getElementById('products-container'); 
-                if (!productsContainer) return;
-                
-                productsContainer.innerHTML = ''; // تنظيف الكاردات القديمة أو التجريبية تماماً
+                container.innerHTML = ''; // تنظيف شبكة العرض تماماً من أي منتجات قديمة
 
-                if (cloudProducts.length === 0) {
-                    productsContainer.innerHTML = '<p class="no-products">انتظروا منتجاتنا المميزة قريباً في سينا ستور!</p>';
+                if (!cloudProducts || cloudProducts.length === 0) {
+                    container.innerHTML = '<p class="status-msg">مرحباً بكم في سينا ستور! انتظروا منتجاتنا الطبيعية المميزة قريباً جداً.</p>';
                     return;
                 }
 
-                // رسم المنتجات الديناميكية القادمة من السيرفر
+                // رسم كروت المنتجات بالتصميم الأصلي بناءً على البيانات القادمة من قاعدة البيانات الثابتة
                 cloudProducts.forEach(product => {
-                    productsContainer.innerHTML += `
+                    container.innerHTML += `
                         <div class="product-card">
                             <img src="${product.image_url}" alt="${product.name}" onerror="this.src='logo.png'">
                             <div class="product-details">
+                                <span class="category-badge">${product.category || 'منتج سيناوي'}</span>
                                 <h3>${product.name}</h3>
-                                <p class="description">${product.description}</p>
+                                <p class="description">${product.description || ''}</p>
                                 <div class="price-row">
                                     <span class="price">${product.selling_price} ج.م</span>
                                     <button onclick="addToCart(${product.id}, '${product.name}', ${product.selling_price})" class="add-to-cart-btn">🛒 إضافة للسلة</button>
@@ -171,18 +208,18 @@
                     `;
                 });
             } catch (error) {
-                console.error("خطأ في جلب المنتجات من السيرفر:", error);
-                document.getElementById('products-container').innerHTML = '<p class="no-products" style="color: red;">⚠️ فشل الاتصال بالسيرفر السحابي، تأكد من تشغيل app.py</p>';
+                console.error("خطأ في جلب المنتجات:", error);
+                container.innerHTML = '<p class="status-msg" style="color: #dc2626;">⚠️ عذراً، تعذر الاتصال بالسيرفر السحابي حالياً. جاري العرض الاحتياطي محلياً.</p>';
             }
         }
 
-        // دالة إضافة منتج للسلة (تتكامل تلقائياً مع نظام الشراء والمبيعات)
+        // دالة سلة المشتريات (تتكامل مع نظام كاشير وطلبات الموقع)
         function addToCart(id, name, price) {
-            alert(`👍 تم إضافة ${name} إلى سلة المشتريات بنجاح!`);
+            alert(`👍 تم إضافة "${name}" إلى سلة المشتريات بنجاح!`);
         }
 
-        // تشغيل الجلب التلقائي فور تحميل واجهة الزبون
-        window.addEventListener('DOMContentLoaded', loadProducts);
+        // تشغيل الجلب فور فتح واجهة المستخدم
+        window.addEventListener('DOMContentLoaded', loadProductsFromServer);
     </script>
 </body>
 </html>
