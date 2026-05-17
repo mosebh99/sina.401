@@ -21,7 +21,6 @@
             padding: 0;
             box-sizing: border-box;
         }
-        /* الهيدر */
         header {
             background: var(--card-bg);
             padding: 15px 20px;
@@ -34,17 +33,15 @@
         .nav-links a {
             color: var(--text);
             text-decoration: none;
-            margin-right: 15px;
-            font-size: 14px;
             border: 1px solid #333;
             padding: 6px 12px;
             border-radius: 6px;
+            font-size: 14px;
         }
         .nav-links a:hover { border-color: var(--primary); color: var(--primary); }
-
         .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
         
-        /* قايمة المسوقين */
+        /* صندوق المسوقين */
         .marketer-box {
             background: #1a160d;
             border: 1px solid var(--primary);
@@ -54,6 +51,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+            flex-wrap: wrap;
             gap: 15px;
         }
         .marketer-box input {
@@ -64,7 +62,6 @@
             border-radius: 4px;
             text-align: center;
         }
-
         /* شبكة المنتجات */
         .products-grid {
             display: grid;
@@ -83,100 +80,84 @@
         .product-card img { width: 100%; height: 220px; object-fit: cover; }
         .product-info { padding: 15px; display: flex; flex-direction: column; flex-grow: 1; }
         .product-info h3 { color: var(--primary); margin: 0 0 10px 0; font-size: 18px; }
-        .product-info p { color: var(--text-muted); font-size: 13px; line-height: 1.4; margin: 0 0 15px 0; flex-grow: 1; }
+        .product-info p { color: var(--text-muted); font-size: 13px; margin: 0 0 15px 0; flex-grow: 1; }
         .price-row { display: flex; justify-content: space-between; align-items: center; }
         .price { color: #22c55e; font-weight: bold; font-size: 18px; }
         .buy-btn { background: var(--primary); color: black; border: none; padding: 8px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; }
-
-        /* سلة المشتريات الثابتة أسفل الصفحة */
-        .cart-bar {
-            position: fixed;
-            bottom: 0; left: 0; width: 100%;
-            background: #141414;
-            border-top: 2px solid var(--primary);
-            padding: 15px;
-            box-sizing: border-box;
-            display: none;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 999;
-        }
         
-        /* شاشة إتمام الطلب المعلقة */
+        /* السلة الشاشات */
+        .cart-bar {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: #141414; border-top: 2px solid var(--primary);
+            padding: 15px; box-sizing: border-box;
+            display: none; justify-content: space-between; align-items: center; z-index: 999;
+        }
         .order-modal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9);
-            display: none; justify-content: center; align-items: center;
-            z-index: 1000;
+            background: rgba(0,0,0,0.9); display: none; justify-content: center; align-items: center; z-index: 1000;
         }
         .order-card { background: #141414; border: 1px solid var(--primary); padding: 25px; border-radius: 12px; width: 90%; max-width: 450px; text-align: right; }
         .order-card input { width: 100%; padding: 10px; margin-bottom: 12px; background: #000; border: 1px solid #444; color: white; border-radius: 6px; box-sizing: border-box; }
-        .submit-order-btn { width: 100%; padding: 12px; background: #22c55e; color: white; border: none; font-weight: bold; border-radius: 6px; cursor: pointer; }
     </style>
 </head>
 <body>
 
     <header>
         <h1>🌿 متجر سينا ستور الأصلي</h1>
-        <div class="nav-links">
-            <a href="/cashier.html">👑 لوحة المدير والكاشير</a>
-        </div>
+        <div class="nav-links"><a href="/cashier.html">👑 لوحة المدير</a></div>
     </header>
 
     <div class="container">
         <div class="marketer-box">
             <div>
-                <span style="color: var(--primary); font-weight: bold;">🔗 نظام التسويق بالعمولة:</span>
-                <span style="font-size: 13px; color: var(--text-muted); margin-right: 10px;">ادخل كود المسوق الخاص بك لتسجيل عمولتك</span>
+                <strong style="color: var(--primary);">🔗 نظام التسويق بالعمولة:</strong>
+                <span style="font-size: 13px; color: var(--text-muted); margin-right: 5px;">ادخل كود المسوق الخاص بك لتسجيل عمولتك</span>
             </div>
-            <input type="text" id="marketer-id-field" placeholder="اكتب كود المسوق هنا" onchange="updateMarketer()">
+            <input type="text" id="marketer-id" placeholder="كود المسوق" onchange="saveMarketer()">
         </div>
 
         <h2>📦 منتجاتنا السيناوية الطبيعية</h2>
-        <div class="products-grid" id="main-products-grid">
-            <p style="color: var(--text-muted); text-align: center; grid-column: 1/-1;">جاري سحب المنتجات من السيرفر السحابي...</p>
+        <div class="products-grid" id="products-grid-view">
+            <p style="color: var(--text-muted); text-align: center; grid-column: 1/-1;">جاري سحب المنتجات من السيرفر...</p>
         </div>
     </div>
 
-    <div class="cart-bar" id="cart-bar">
-        <span id="cart-summary" style="font-weight: bold; color: var(--primary);">عدد المنتجات: 0 | الإجمالي: 0 ج.م</span>
-        <button onclick="openOrderModal()" class="buy-btn" style="background: #22c55e; color: white; padding: 10px 20px;">📦 تأكيد وشحن الطلب الآن</button>
+    <div class="cart-bar" id="cart-bar-view">
+        <span id="cart-text" style="font-weight: bold; color: var(--primary);">عدد المنتجات: 0</span>
+        <button onclick="showModal()" class="buy-btn" style="background: #22c55e; color: white;">📦 تأكيد وشحن الطلب</button>
     </div>
 
-    <div class="order-modal" id="order-modal">
+    <div class="order-modal" id="order-modal-view">
         <div class="order-card">
-            <h3 style="color: var(--primary); margin-top: 0;">📝 بيانات استلام الشحنة</h3>
-            <input type="text" id="c-name" placeholder="اسم المستلم بالكامل" required>
-            <input type="tel" id="c-phone" placeholder="رقم الموبايل للتواصل" required>
-            <input type="text" id="c-address" placeholder="عنوان الشحن بالتفصيل (المحافظة/المدينة/الشارع)" required>
-            <button onclick="submitOrderToServer()" class="submit-order-btn">🚀 إرسال الطلب للمدير للشحن</button>
-            <button onclick="closeOrderModal()" style="width:100%; background: #333; color: white; border: none; padding: 8px; margin-top: 5px; border-radius: 6px; cursor: pointer;">إلغاء</button>
+            <h3 style="color: var(--primary); margin-top:0;">📝 بيانات استلام الشحنة</h3>
+            <input type="text" id="cust-name" placeholder="اسم المستلم بالكامل">
+            <input type="tel" id="cust-phone" placeholder="رقم الموبايل">
+            <input type="text" id="cust-addr" placeholder="عنوان الشحن بالتفصيل">
+            <button onclick="sendOrder()" class="buy-btn" style="background: #22c55e; color: white; width:100%; padding:10px;">🚀 إرسال الطلب</button>
+            <button onclick="hideModal()" style="width:100%; background:#333; color:#fff; border:none; padding:8px; margin-top:5px; border-radius:6px; cursor:pointer;">إلغاء</button>
         </div>
     </div>
 
     <script>
-        let cart = [];
-        let currentMarketer = "";
+        let myCart = [];
+        let marketerCode = "";
 
-        function updateMarketer() {
-            currentMarketer = document.getElementById('marketer-id-field').value;
-            if(currentMarketer) alert(`✅ تم ربط الطلب بكود المسوق: ${currentMarketer}`);
+        function saveMarketer() {
+            marketerCode = document.getElementById('marketer-id').value;
+            if(marketerCode) alert("✅ تم ربط المسوق بنجاح");
         }
 
-        // سحب المنتجات الحية من قاعدة البيانات
-        async function loadStoreProducts() {
-            const grid = document.getElementById('main-products-grid');
+        async function getCloudProducts() {
+            const grid = document.getElementById('products-grid-view');
             try {
-                const res = await fetch('/api/products');
-                const products = await res.json();
+                const r = await fetch('/api/products');
+                const pList = await r.json();
                 grid.innerHTML = '';
-
-                if(products.length === 0) {
-                    grid.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:#666;">لا توجد منتجات في المعرض حالياً، أضف منتجات من لوحة المدير.</p>';
+                if(pList.length === 0) {
+                    grid.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:#666;">المخزن فارغ حالياً.</p>';
                     return;
                 }
-
-                products.forEach(p => {
+                pList.forEach(p => {
                     grid.innerHTML += `
                         <div class="product-card">
                             <img src="${p.image_url}" onerror="this.src='logo.png'">
@@ -185,74 +166,50 @@
                                 <p>${p.description || ''}</p>
                                 <div class="price-row">
                                     <span class="price">${p.selling_price} ج.م</span>
-                                    <button class="buy-btn" onclick="addToCart(${p.id}, '${p.name}', ${p.selling_price})">🛒 إضافة للسلة</button>
+                                    <button class="buy-btn" onclick="hitCart(${p.id}, '${p.name}', ${p.selling_price})">🛒 إضافة للسلة</button>
                                 </div>
                             </div>
                         </div>
                     `;
                 });
-            } catch (e) {
-                grid.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:red;">⚠️ خطأ في الاتصال بقاعدة البيانات.</p>';
+            } catch(e) { grid.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:red;">خطأ اتصال.</p>'; }
+        }
+
+        function hitCart(id, name, price) {
+            myCart.push({ id, name, price });
+            const bar = document.getElementById('cart-bar-view');
+            if(myCart.length > 0) {
+                bar.style.display = 'flex';
+                let total = myCart.reduce((s, i) => s + i.price, 0);
+                document.getElementById('cart-text').innerText = `المنتجات: ${myCart.length} | الإجمالي: ${total} ج.م`;
             }
         }
+        function showModal() { document.getElementById('order-modal-view').style.display = 'flex'; }
+        function hideModal() { document.getElementById('order-modal-view').style.display = 'none'; }
 
-        function addToCart(id, name, price) {
-            cart.push({ id, name, price });
-            updateCartUI();
-        }
-
-        function updateCartUI() {
-            const bar = document.getElementById('cart-bar');
-            if(cart.length > 0) {
-                bar.style.display = 'flex';
-                let total = cart.reduce((sum, item) => sum + item.price, 0);
-                document.getElementById('cart-summary').innerText = `عدد المنتجات في السلة: ${cart.length} | الإجمالي: ${total} ج.م`;
-            } else { bar.style.display = 'none'; }
-        }
-
-        function openOrderModal() { document.getElementById('order-modal').style.display = 'flex'; }
-        function closeOrderModal() { document.getElementById('order-modal').style.display = 'none'; }
-
-        // إرسال الطلب للسيرفر وحفظه في جدول الطلبات الثابت
-        async function submitOrderToServer() {
-            const name = document.getElementById('c-name').value;
-            const phone = document.getElementById('c-phone').value;
-            const address = document.getElementById('c-address').value;
-            let total = cart.reduce((sum, item) => sum + item.price, 0);
-
-            if(!name || !phone || !address) { alert("الرجاء ملء كافة الحقول لشحن الطلب!"); return; }
-
-            // تجميع المنتجات لمعرفة العدد
-            let productsMap = {};
-            cart.forEach(item => {
-                if(productsMap[item.name]) productsMap[item.name].qty++;
-                else productsMap[item.name] = { name: item.name, qty: 1 };
+        async function sendOrder() {
+            const n = document.getElementById('cust-name').value;
+            const p = document.getElementById('cust-phone').value;
+            const a = document.getElementById('cust-addr').value;
+            if(!n || !p || !a) { alert("املا البيانات!"); return; }
+            let total = myCart.reduce((s, i) => s + i.price, 0);
+            
+            let pMap = {};
+            myCart.forEach(x => {
+                if(pMap[x.name]) pMap[x.name].qty++;
+                else pMap[x.name] = { name: x.name, qty: 1 };
             });
 
-            const orderData = {
-                customer_name: name,
-                customer_phone: phone,
-                customer_address: address,
-                total: total,
-                marketer_id: currentMarketer,
-                products: Object.values(productsMap)
-            };
-
-            const res = await fetch('/api/orders', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(orderData)
-            });
-
+            const payload = { customer_name: n, customer_phone: p, customer_address: a, total: total, marketer_id: marketerCode, products: Object.values(pMap) };
+            const res = await fetch('/api/orders', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
             if(res.ok) {
-                alert("🎉 تم إرسال طلبك بنجاح! سيتم التواصل معك للشحن قريباً.");
-                cart = [];
-                updateCartUI();
-                closeOrderModal();
-            } else { alert("عذراً، حدث خطأ أثناء إرسال الطلب."); }
+                alert("🎉 تم تسجيل طلبك بنجاح!");
+                myCart = [];
+                document.getElementById('cart-bar-view').style.display = 'none';
+                hideModal();
+            }
         }
-
-        window.addEventListener('DOMContentLoaded', loadStoreProducts);
+        window.addEventListener('DOMContentLoaded', getCloudProducts);
     </script>
 </body>
 </html>
