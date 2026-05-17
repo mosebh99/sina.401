@@ -55,7 +55,6 @@
         .order-card { background: #141414; border: 1px solid var(--primary); padding: 20px; border-radius: 10px; width: 90%; max-width: 400px; text-align: right; }
         .order-card input { width: 100%; padding: 10px; margin-bottom: 12px; background: #000; border: 1px solid #444; color: white; border-radius: 5px; box-sizing: border-box; }
 
-        /* نافذة عرض الصورة المكبرة */
         .image-viewer-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; justify-content: center; align-items: center; z-index: 2000; cursor: zoom-out; }
         .image-viewer-modal img { max-width: 90%; max-height: 85%; border: 2px solid var(--primary); border-radius: 8px; box-shadow: 0 0 20px rgba(212,175,55,0.3); }
     </style>
@@ -127,7 +126,7 @@
         let cart = [];
         let allProducts = [];
         let currentMarketer = "";
-        const DEFAULT_IMG = "logo.png.jpeg"; // الصورة الافتراضية اللوجو الفخم الجديد
+        const DEFAULT_IMG = "logo.png.jpeg"; 
 
         function toggleMenu(e) { e.stopPropagation(); document.getElementById('dots-menu').classList.toggle('show'); }
         
@@ -153,7 +152,7 @@
         function renderGrid(list) {
             const g = document.getElementById('main-grid');
             g.innerHTML = '';
-            if(list.length===0) { g.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:#666;">في انتظار إضافة منتجات حية للمخزن.</p>'; return; }
+            if(!list || list.length===0) { g.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:#666;">في انتظار إضافة منتجات حية للمخزن.</p>'; return; }
             list.forEach(p => {
                 let pImg = p.image_url && p.image_url.trim() !== "" ? p.image_url : DEFAULT_IMG;
                 g.innerHTML += `
@@ -227,7 +226,11 @@
             const orders = await res.json();
             const myOrder = orders.find(o => o.customer_phone === ph);
             const out = document.getElementById('track-result');
-            if(myOrder) { out.style.color = '#22c55e'; out.innerText = `📦 طلبك الحالي حالته: [ ${myOrder.status} ] بمبلغ إجمالي ${myOrder.total_price} ج.م`; }
+            if(myOrder) { 
+                let displayTotal = o.total_price ? o.total_price : o.total;
+                out.style.color = '#22c55e'; 
+                out.innerText = `📦 طلبك الحالي حالته: [ ${myOrder.status} ] بمبلغ إجمالي ${displayTotal} ج.م`; 
+            }
             else { out.style.color = 'red'; out.innerText = "❌ لم نجد أي طلبات شحن مسجلة بهذا الرقم."; }
         }
 
