@@ -1,1 +1,4 @@
-requirements.txt
+Flask==3.0.2
+psycopg2-binary==2.9.9
+gunicorn==21.2.0
+werkzeug==3.0.1
