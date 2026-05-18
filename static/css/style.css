@@ -1,35 +1,38 @@
 /* ==========================================================================
-   🎨 الهوية البصرية النظيفة والفاتحة لمتجر Sina 401
+   🎨 المتغيرات الأساسية والهوية البصرية المتكاملة (Sina 401 Theme)
    ========================================================================== */
 :root {
-    --primary: #007185; /* لون مريح واحترافي مستوحى من المتاجر العالمية */
-    --primary-hover: #005f73;
-    --bg: #f8f9fa; /* خلفية فاتحة ومريحة جداً للعين */
-    --card-bg: #ffffff; /* كروت بيضاء نقية للمنتجات */
-    --card-border: #e0e0e0;
-    --text: #333333; /* نصوص داكنة وواضحة للقراءة */
-    --text-muted: #666666;
-    --success: #2ea85c;
-    --danger: #d93838;
-    --transition: all 0.3s ease;
+    --primary: #d4af37; /* الذهبي الملكي الأصلي */
+    --primary-gradient: linear-gradient(135deg, #d4af37 0%, #aa8416 100%);
+    --primary-hover: #f3e5ab; /* الذهبي الفاتح عند التمرير */
+    --bg: #070707; /* الخلفية الداكنة العميقة */
+    --card-bg: rgba(20, 20, 20, 0.65); /* خلفية الكروت الزجاجية */
+    --card-border: rgba(212, 175, 55, 0.15); /* حدود الكروت الذهبية الخفيفة */
+    --text: #ffffff;
+    --text-muted: #aaaaaa;
+    --success: #22c55e;
+    --danger: #ef4444;
+    --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* ==========================================================================
-   🌐 الإعدادات العامة للموقع
+   🌐 الإعدادات العامة للموقع والخطوط
    ========================================================================== */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: var(--bg);
+    background-image: radial-gradient(circle at 50% 0%, #1a150b 0%, #070707 70%);
     color: var(--text);
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    direction: rtl;
+    overflow-x: hidden;
 }
 
 header {
-    background: #ffffff;
-    border-bottom: 1px solid var(--card-border);
+    background: rgba(10, 10, 10, 0.8);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(212, 175, 55, 0.1);
     padding: 15px 40px;
     display: flex;
     justify-content: space-between;
@@ -37,37 +40,39 @@ header {
     position: sticky;
     top: 0;
     z-index: 999;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
 header h1 a {
     color: var(--primary);
     text-decoration: none;
-    font-weight: bold;
-    font-size: 24px;
-}
-
-.nav-links {
-    color: var(--text-muted);
-    font-size: 14px;
-    font-weight: bold;
+    font-weight: 800;
+    letter-spacing: 1px;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 .nav-links a {
-    color: var(--primary);
+    color: var(--text-muted);
     text-decoration: none;
-    margin-right: 15px;
+    margin-right: 20px;
+    font-size: 14px;
+    transition: var(--transition);
+}
+
+.nav-links a:hover {
+    color: var(--primary);
 }
 
 /* ==========================================================================
    🔍 حقول الإدخال والـ Inputs
    ========================================================================== */
 .search-input {
-    background: #ffffff;
-    border: 1px solid #cccccc;
-    color: var(--text);
-    padding: 10px 15px;
-    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 25px;
     width: 100%;
     box-sizing: border-box;
     font-size: 14px;
@@ -77,64 +82,98 @@ header h1 a {
 
 .search-input:focus {
     border-color: var(--primary);
-    box-shadow: 0 0 5px rgba(0, 113, 133, 0.3);
+    box-shadow: 0 0 12px rgba(212, 175, 55, 0.2);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* ==========================================================================
+   📦 تصميم شبكة المنتجات والكروت (Grid System)
+   ========================================================================== */
+.products-container {
+    max-width: 1300px;
+    margin: 40px auto;
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 30px;
+}
+
+.product-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+    transition: var(--transition);
+    backdrop-filter: blur(10px);
+}
+
+.product-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    border-color: rgba(212, 175, 55, 0.4);
+    box-shadow: 0 20px 40px rgba(212, 175, 55, 0.1);
+}
+
+.product-card img {
+    width: 100%;
+    height: 260px;
+    object-fit: cover;
+    transition: var(--transition);
+}
+
+.product-card:hover img {
+    transform: scale(1.05);
+}
+
+.product-info {
+    padding: 25px;
+    text-align: right;
+}
+
+.product-info h3 {
+    margin: 0 0 10px 0;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.product-info p {
+    color: var(--text-muted);
+    font-size: 13px;
+    line-height: 1.5;
+    margin: 0 0 20px 0;
+    height: 40px;
+    overflow: hidden;
+}
+
+.price-tag {
+    font-size: 22px;
+    color: var(--primary);
+    font-weight: 800;
+    margin-bottom: 15px;
+}
+
+.category-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: rgba(0, 0, 0, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    padding: 4px 12px;
+    border-radius: 30px;
+    font-size: 11px;
+    backdrop-filter: blur(5px);
+    z-index: 2;
 }
 
 /* ==========================================================================
    🔘 الأزرار والروابط التفاعلية (Buttons)
    ========================================================================== */
 .btn-primary {
-    background: var(--primary);
-    color: #ffffff;
+    background: var(--primary-gradient);
+    color: #000;
     border: none;
-    padding: 10px 20px;
-    border-radius: 6px;
+    padding: 12px 25px;
+    border-radius: 25px;
     font-weight: bold;
-    font-family: inherit;
-    cursor: pointer;
-    width: 100%;
-    margin-top: 10px;
-    font-size: 14px;
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-    transition: var(--transition);
-}
-
-.btn-primary:hover {
-    background: var(--primary-hover);
-    transform: translateY(-1px);
-}
-
-/* ==========================================================================
-   💬 زر الواتساب العائم الذكي
-   ========================================================================== */
-.whatsapp-float {
-    position: fixed;
-    bottom: 25px;
-    left: 25px;
-    background-color: #25d366;
-    color: #fff;
-    border-radius: 50%;
-    width: 55px;
-    height: 55px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-    z-index: 9999;
-    text-decoration: none;
-    transition: var(--transition);
-}
-
-.whatsapp-float:hover {
-    transform: scale(1.05);
-}
-
-/* استجابة الشاشات للموبايل */
-@media (max-width: 768px) {
-    header { padding: 15px 20px; }
-    header h1 { font-size: 20px; }
-    .nav-links a { font-size: 13px; }
-}
+    font-
