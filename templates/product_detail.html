@@ -21,17 +21,24 @@
     </header>
 
     <div class="details-container" id="product-detail-view">
-        <p style="text-align:center; width:100%; color:var(--text-muted);">جاري جلب تفاصيل السلعة من المخزن السحابي...</p>
+        <p style="text-align:center; width:100%; color:var(--text-muted);">جاري جلب تفاصيل المنتج من السحابة...</p>
     </div>
 
-    <script src="/static/js/store.js"></script>
     <script>
-        const productId = window.location.pathname.split('/').pop();
-        async function loadProductDetails() {
+        async function loadProductDetail() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const productId = urlParams.get('id');
+            if(!productId) { window.location.href = '/'; return; }
+
             try {
-                const res = await fetch(`/api/products/${productId}`);
-                if(!res.ok) throw new Error();
-                const p = await res.json();
+                const res = await fetch('/api/products');
+                const products = await res.json();
+                const p = products.find(prod => prod.id == productId);
+
+                if(!p) {
+                    document.getElementById('product-detail-view').innerHTML = "❌ المنتج غير موجود.";
+                    return;
+                }
 
                 document.getElementById('product-detail-view').innerHTML = `
                     <div class="gallery-box">
@@ -46,10 +53,10 @@
                     </div>
                 `;
             } catch(e) {
-                document.getElementById('product-detail-view').innerHTML = "<p style='text-align:center; width:100%; color:#ef4444;'>❌ خطأ في سحب البيانات أو أن المنتج غير موجود.</p>";
+                document.getElementById('product-detail-view').innerHTML = "❌ خطأ في جلب البيانات السحابية.";
             }
         }
-        window.addEventListener('DOMContentLoaded', loadProductDetails);
+        window.addEventListener('DOMContentLoaded', loadProductDetail);
     </script>
 </body>
 </html>
