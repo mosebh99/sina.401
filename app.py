@@ -30,74 +30,38 @@ def fix_database_columns_forced():
                 name VARCHAR(255) NOT NULL,
                 category VARCHAR(100),
                 description TEXT,
-                selling_price REAL DEFAULT 0,
-                purchasing_price REAL DEFAULT 0,
-                commission REAL DEFAULT 0,
-                stock_quantity INTEGER DEFAULT 0,
-                image_url TEXT
+                purchasing_price NUMERIC,
+                selling_price NUMERIC,
+                stock_quantity INTEGER,
+                commission NUMERIC,
+                image_url TEXT,
+                extra_images TEXT
             );
         ''')
-        cursor.execute('''
-            ALTER TABLE products ADD COLUMN IF NOT EXISTS purchasing_price REAL DEFAULT 0;
-            ALTER TABLE products ADD COLUMN IF NOT EXISTS commission REAL DEFAULT 0;
-            ALTER TABLE products ADD COLUMN IF NOT EXISTS stock_quantity INTEGER DEFAULT 0;
-        ''')
-        
-        # إنشاء جدول الطلبات إن لم يكن موجوداً
+        # إنشاء جدول الطلبات
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS orders (
                 id SERIAL PRIMARY KEY,
                 customer_name VARCHAR(255),
                 customer_phone VARCHAR(50),
                 customer_address TEXT,
-                total_price REAL DEFAULT 0,
+                total_price NUMERIC,
                 marketer_id VARCHAR(100),
                 products_json TEXT,
-                status VARCHAR(50) DEFAULT 'قيد المراجعة'
+                status VARCHAR(50) DEFAULT 'قيد المراجعة',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
         ''')
         conn.commit()
         cursor.close()
         conn.close()
-        print("🎉 [FORCED] Database tables & columns verified successfully!")
+        print("✅ Database Tables Verified & Repaired Successfully.")
     except Exception as e:
-        print(f"❌ Database auto-fix failed: {e}")
+        print(f"❌ Database Fix Error: {str(e)}")
 
-# تشغيل دالة الإصلاح فوراً عند بدء التطبيق
-fix_database_columns_forced()
-
-# ==========================================
-# 🏠 مسارات واجهات العرض (Frontend Routes)
-# ==========================================
-
-@app.route('/')
-def index_page():
-    return render_template('index.html')
-
-@app.route('/cashier.html')
-def cashier_page():
-    return render_template('cashier.html')
-
-@app.route('/login.html')
-def login_page():
-    return render_template('login.html')
-
-@app.route('/marketers.html')
-def marketers_page():
-    return render_template('marketers.html')
-
-@app.route('/product_detail.html')
-def product_detail_page():
-    return render_template('product_detail.html')
-
-# ==========================================
-# ⚙️ واجهات برمجية التطبيقات (API Routes)
-# ==========================================
-
-# --- 📦 واجهات المنتجات ---
-
+# --- مسارات الـ API لإدارة المنتجات ---
 @app.route('/api/products', methods=['GET', 'POST'])
-def api_products():
+def handle_products():
     try:
         conn = get_db_connection()
         if request.method == 'GET':
@@ -112,12 +76,13 @@ def api_products():
             data = request.json
             cur = conn.cursor(cursor_factory=RealDictCursor)
             cur.execute("""
-                INSERT INTO products (name, category, description, selling_price, purchasing_price, commission, stock_quantity, image_url)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s) RETURNING *;
+                INSERT INTO products (name, category, description, purchasing_price, selling_price, stock_quantity, commission, image_url, extra_images)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING *;
             """, (
                 data.get('name'), data.get('category'), data.get('description'),
-                data.get('selling_price', 0), data.get('purchasing_price', 0),
-                data.get('commission', 0), data.get('stock_quantity', 0), data.get('image_url')
+                float(data.get('purchasing_price') or 0), float(data.get('selling_price') or 0),
+                int(data.get('stock_quantity') or 0), float(data.get('commission') or 0),
+                data.get('image_url'), data.get('extra_images')
             ))
             new_product = cur.fetchone()
             conn.commit()
@@ -127,23 +92,42 @@ def api_products():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@app.route('/api/products/<int:pid>', methods=['DELETE'])
-def delete_product(pid):
+@app.route('/api/products/<int:prod_id>', methods=['DELETE', 'PUT'])
+def handle_single_product(prod_id):
     try:
         conn = get_db_connection()
-        cur = conn.cursor()
-        cur.execute("DELETE FROM products WHERE id = %s;", (pid,))
-        conn.commit()
-        cur.close()
-        conn.close()
-        return jsonify({"success": True})
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        if request.method == 'DELETE':
+            cur.execute("DELETE FROM products WHERE id = %s RETURNING *;", (prod_id,))
+            deleted = cur.fetchone()
+            conn.commit()
+            cur.close()
+            conn.close()
+            if deleted: return jsonify(deleted)
+            return jsonify({"error": "Product not found"}), 404
+        elif request.method == 'PUT':
+            data = request.json
+            cur.execute("""
+                UPDATE products SET name=%s, category=%s, description=%s, purchasing_price=%s, selling_price=%s, 
+                stock_quantity=%s, commission=%s, image_url=%s, extra_images=%s WHERE id=%s RETURNING *;
+            """, (
+                data.get('name'), data.get('category'), data.get('description'),
+                float(data.get('purchasing_price') or 0), float(data.get('selling_price') or 0),
+                int(data.get('stock_quantity') or 0), float(data.get('commission') or 0),
+                data.get('image_url'), data.get('extra_images'), prod_id
+            ))
+            updated = cur.fetchone()
+            conn.commit()
+            cur.close()
+            conn.close()
+            if updated: return jsonify(updated)
+            return jsonify({"error": "Product not found"}), 404
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# --- 📥 واجهات الطلبات ---
-
+# --- مسارات الـ API لإدارة الطلبات ---
 @app.route('/api/orders', methods=['GET', 'POST'])
-def api_orders():
+def handle_orders():
     try:
         conn = get_db_connection()
         if request.method == 'GET':
@@ -158,7 +142,6 @@ def api_orders():
             data = request.json
             cur = conn.cursor(cursor_factory=RealDictCursor)
             
-            # معالجة المنتجات سواء أرسلت كـ products أو items
             items_data = data.get('products') or data.get('items') or []
             products_json_str = json.dumps(items_data, ensure_ascii=False)
             total_val = data.get('total_price') or data.get('total_val') or 0
@@ -179,10 +162,44 @@ def api_orders():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@app.route('/api/public/orders', methods=['GET'])
-def get_public_orders():
-    # مسار مساعد وآمن ومباشر لتتبع شحنات الواجهة الأمامية بدون تعقيد
-    return api_orders()
+@app.route('/api/orders/<int:order_id>', methods=['PUT'])
+def update_order_status(order_id):
+    try:
+        data = request.json
+        conn = get_db_connection()
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        cur.execute("UPDATE orders SET status = %s WHERE id = %s RETURNING *;", (data.get('status'), order_id))
+        updated_order = cur.fetchone()
+        conn.commit()
+        cur.close()
+        conn.close()
+        if updated_order:
+            return jsonify(updated_order)
+        return jsonify({"error": "Order not found"}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# --- مسارات عرض الصفحات المستقرة والمؤمنة ---
+@app.route('/')
+def index_page():
+    return render_template('index.html')
+
+@app.route('/login.html')
+def login_page():
+    return render_template('login.html')
+
+@app.route('/cashier.html')
+def cashier_page():
+    return render_template('cashier.html')
+
+@app.route('/marketers.html')
+def marketers_page():
+    return render_template('marketers.html')
+
+@app.route('/product_detail.html')
+def product_detail_page():
+    return render_template('product_detail.html')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    fix_database_columns_forced()
+    app.run(debug=True, port=5000)
