@@ -6,24 +6,125 @@
     <title>بوابة المسوقين والعمولات | Sina 401</title>
     <link rel="icon" type="image/png" href="/static/css/logo.png.jpeg">
     <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        .marketer-card { background: var(--card-bg); border: 1px solid var(--card-border); padding: 25px; border-radius: 12px; margin: 20px auto; max-width: 1000px; }
+        .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 20px; }
+        .stat-box { background: #111; padding: 15px; border-radius: 8px; border-right: 4px solid var(--primary); text-align: center; }
+        .data-table { width: 100%; border-collapse: collapse; margin-top: 20px; text-align: right; }
+        .data-table th, .data-table td { padding: 12px; border-bottom: 1px solid #222; }
+        .data-table th { color: var(--primary); background: #141414; }
+    </style>
 </head>
 <body>
+
+    <div class="toast" id="toast-notification"></div>
+
     <header>
-        <h1><a href="/">📊 بوابة المسوقين بالعمولة</a></h1>
-        <div class="nav-links"><a href="/">⬅️ العودة للمتجر</a></div>
+        <h1><a href="/marketers.html">📊 نظام الأرباح وتتبع العمولات للشركاء</a></h1>
+        <div class="nav-links"><a href="/" class="btn-secondary" style="padding:8px 15px; text-decoration:none;">🏠 العودة للمتجر</a></div>
     </header>
 
-    <div style="max-width: 600px; margin: 50px auto; padding: 30px; background: var(--card-bg); border-radius: 12px; border: 1px solid #222;">
-        <h2 style="color: var(--primary); margin-top: 0; text-align: center;">💰 نظام تتبع المبيعات والعمولات</h2>
-        <p style="color: var(--text-muted); text-align: center; font-size: 14px;">أهلاً بك في نظام شركاء النجاح لـ Sina 401. يمكنك متابعة طلبات عملائك من هنا.</p>
+    <div class="marketer-card">
+        <h2 style="color: var(--primary); margin-top: 0;">💰 استعلام ومتابعة الأرباح السحابية</h2>
+        <p style="color: var(--text-muted); font-size: 14px;">أدخل كود التسويق الخاص بك (Marketer ID) للبحث الفوري في قاعدة بيانات المبيعات.</p>
         
-        <div style="margin-top: 30px; padding: 20px; background: #141414; border-radius: 8px; border-right: 4px solid var(--primary);">
-            <h4 style="margin: 0 0 10px 0; color: #fff;">💹 إحصائيات سريعة للمنصة:</h4>
-            <p style="margin: 5px 0; font-size: 14px; color: #ccc;">• يتم تحديث عمولات الشحن فور تحول الطلب إلى حالة "تم التسليم".</p>
-            <p style="margin: 5px 0; font-size: 14px; color: #ccc;">• السحب يتم بالتنسيق المباشر مع إدارة المخزن السحابي.</p>
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <input type="text" id="marketer-code-input" class="search-input" style="flex: 1;" placeholder="اكتب كود التسويق الخاص بك هنا (مثل: M10, SINA401)...">
+            <button class="btn-primary" style="width: auto; margin: 0; padding: 0 25px;" onclick="queryMarketerStats()">📊 استعلام فوري</button>
+        </div>
+
+        <div class="stats-row" id="stats-dashboard" style="display: none;">
+            <div class="stat-box">
+                <h4 style="margin: 0; color: #aaa;">إجمالي المبيعات الشاحنة</h4>
+                <p id="total-sales-count" style="font-size: 24px; font-weight: bold; margin: 10px 0; color: white;">0</p>
+            </div>
+            <div class="stat-box">
+                <h4 style="margin: 0; color: #aaa;">العمولة المستحقة الصافية</h4>
+                <p id="total-commission-val" style="font-size: 24px; font-weight: bold; margin: 10px 0; color: var(--primary);">0 ج.م</p>
+            </div>
+            <div class="stat-box">
+                <h4 style="margin: 0; color: #aaa;">شحنات قيد الانتظار</h4>
+                <p id="pending-orders-count" style="font-size: 24px; font-weight: bold; margin: 10px 0; color: #ffaa00;">0</p>
+            </div>
+        </div>
+
+        <div id="marketer-table-wrapper" style="display: none; margin-top: 30px;">
+            <h3 style="color: var(--primary); margin-bottom: 10px; text-align: right;">📦 سجل طلبات شحن عملائك وحالاتها الحالية</h3>
+            <div style="overflow-x: auto;">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>رقم الشحنة</th>
+                            <th>اسم العميل</th>
+                            <th>المجموع الكلي</th>
+                            <th>الحالة والوضعية</th>
+                        </tr>
+                    </thead>
+                    <tbody id="marketer-orders-rows"></tbody>
+                </table>
+            </div>
         </div>
     </div>
 
     <script src="/static/js/store.js"></script>
+    <script>
+        async function queryMarketerStats() {
+            const code = document.getElementById('marketer-code-input').value.trim();
+            if(!code) { alert("من فضلك أدخل كود التسويق أولاً"); return; }
+
+            try {
+                const res = await fetch('/api/orders');
+                const orders = await res.json();
+
+                // تصفية الطلبات الخاصة بهذا المسوق فقط
+                let myOrders = orders.filter(o => o.marketer_id && o.marketer_id.trim().toLowerCase() === code.toLowerCase());
+
+                if(myOrders.length === 0) {
+                    alert("لم نجد أي بيانات مسجلة لهذا الكود حالياً.");
+                    document.getElementById('stats-dashboard').style.display = 'none';
+                    document.getElementById('marketer-table-wrapper').style.display = 'none';
+                    return;
+                }
+
+                // حساب المؤشرات والعمولات تلقائياً
+                let totalSales = myOrders.length;
+                let pendingCount = myOrders.filter(o => o.status === 'قيد المراجعة' || o.status === 'تم الشحن').length;
+                
+                // افتراض عمولة ثابتة 10% أو حسب إجمالي الفواتير
+                let totalComm = 0;
+                myOrders.forEach(o => {
+                    let price = parseFloat(o.total_price) || parseFloat(o.total_val) || 0;
+                    totalComm += (price * 0.10); // عمولة افتراضية احترافية 10% من المبيعات
+                });
+
+                // عرض وتحديث واجهة الأرقام
+                document.getElementById('total-sales-count').innerText = totalSales;
+                document.getElementById('total-commission-val').innerText = totalComm.toFixed(0) + " ج.م";
+                document.getElementById('pending-orders-count').innerText = pendingCount;
+
+                // تعبئة جدول الشحنات
+                const tbody = document.getElementById('marketer-orders-rows');
+                tbody.innerHTML = '';
+                myOrders.forEach(o => {
+                    let totalVal = o.total_price ? o.total_price : (o.total_val ? o.total_val : 0);
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>#${o.id}</td>
+                            <td><strong>${o.customer_name || 'عميل المتجر'}</strong></td>
+                            <td style="color:var(--primary); font-weight:bold;">${totalVal} ج.م</td>
+                            <td><span style="color:#ffaa00;">🔄 ${o.status || 'قيد المراجعة'}</span></td>
+                        </tr>
+                    `;
+                });
+
+                document.getElementById('stats-dashboard').style.display = 'grid';
+                document.getElementById('marketer-table-wrapper').style.display = 'block';
+                showToast("📊 تم مزامنة بيانات المسوق بنجاح");
+
+            } catch(e) {
+                alert("حدث خطأ أثناء تحميل السجلات.");
+            }
+        }
+    </script>
 </body>
 </html>
