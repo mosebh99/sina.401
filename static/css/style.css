@@ -1,38 +1,35 @@
 /* ==========================================================================
-   🎨 المتغيرات الأساسية والهوية البصرية المتكاملة (Sina 401 Theme)
+   🎨 الهوية البصرية النظيفة والفاتحة لمتجر Sina 401
    ========================================================================== */
 :root {
-    --primary: #d4af37; /* الذهبي الملكي الأصلي */
-    --primary-gradient: linear-gradient(135deg, #d4af37 0%, #aa8416 100%);
-    --primary-hover: #f3e5ab; /* الذهبي الفاتح عند التمرير */
-    --bg: #070707; /* الخلفية الداكنة العميقة */
-    --card-bg: rgba(20, 20, 20, 0.65); /* خلفية الكروت الزجاجية */
-    --card-border: rgba(212, 175, 55, 0.15); /* حدود الكروت الذهبية الخفيفة */
-    --text: #ffffff;
-    --text-muted: #aaaaaa;
-    --success: #22c55e;
-    --danger: #ef4444;
-    --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    --primary: #007185; /* لون مريح واحترافي مستوحى من المتاجر العالمية */
+    --primary-hover: #005f73;
+    --bg: #f8f9fa; /* خلفية فاتحة ومريحة جداً للعين */
+    --card-bg: #ffffff; /* كروت بيضاء نقية للمنتجات */
+    --card-border: #e0e0e0;
+    --text: #333333; /* نصوص داكنة وواضحة للقراءة */
+    --text-muted: #666666;
+    --success: #2ea85c;
+    --danger: #d93838;
+    --transition: all 0.3s ease;
 }
 
 /* ==========================================================================
-   🌐 الإعدادات العامة للموقع والخطوط
+   🌐 الإعدادات العامة للموقع
    ========================================================================== */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: var(--bg);
-    background-image: radial-gradient(circle at 50% 0%, #1a150b 0%, #070707 70%);
     color: var(--text);
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    overflow-x: hidden;
+    direction: rtl;
 }
 
 header {
-    background: rgba(10, 10, 10, 0.8);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+    background: #ffffff;
+    border-bottom: 1px solid var(--card-border);
     padding: 15px 40px;
     display: flex;
     justify-content: space-between;
@@ -40,39 +37,37 @@ header {
     position: sticky;
     top: 0;
     z-index: 999;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
 header h1 a {
     color: var(--primary);
     text-decoration: none;
-    font-weight: 800;
-    letter-spacing: 1px;
-    background: var(--primary-gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    font-weight: bold;
+    font-size: 24px;
+}
+
+.nav-links {
+    color: var(--text-muted);
+    font-size: 14px;
+    font-weight: bold;
 }
 
 .nav-links a {
-    color: var(--text-muted);
-    text-decoration: none;
-    margin-right: 20px;
-    font-size: 14px;
-    transition: var(--transition);
-}
-
-.nav-links a:hover {
     color: var(--primary);
+    text-decoration: none;
+    margin-right: 15px;
 }
 
 /* ==========================================================================
    🔍 حقول الإدخال والـ Inputs
    ========================================================================== */
 .search-input {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    color: #fff;
-    padding: 12px 20px;
-    border-radius: 25px;
+    background: #ffffff;
+    border: 1px solid #cccccc;
+    color: var(--text);
+    padding: 10px 15px;
+    border-radius: 6px;
     width: 100%;
     box-sizing: border-box;
     font-size: 14px;
@@ -82,42 +77,38 @@ header h1 a {
 
 .search-input:focus {
     border-color: var(--primary);
-    box-shadow: 0 0 12px rgba(212, 175, 55, 0.2);
-    background: rgba(255, 255, 255, 0.05);
+    box-shadow: 0 0 5px rgba(0, 113, 133, 0.3);
 }
 
 /* ==========================================================================
    🔘 الأزرار والروابط التفاعلية (Buttons)
    ========================================================================== */
 .btn-primary {
-    background: var(--primary-gradient);
-    color: #000;
+    background: var(--primary);
+    color: #ffffff;
     border: none;
-    padding: 12px 25px;
-    border-radius: 25px;
+    padding: 10px 20px;
+    border-radius: 6px;
     font-weight: bold;
     font-family: inherit;
     cursor: pointer;
     width: 100%;
-    margin-top: 15px;
+    margin-top: 10px;
     font-size: 14px;
     display: inline-flex;
     justify-content: center;
     align-items: center;
     gap: 8px;
     transition: var(--transition);
-    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2);
 }
 
 .btn-primary:hover {
-    transform: scale(1.02);
-    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
     background: var(--primary-hover);
-    color: #000;
+    transform: translateY(-1px);
 }
 
 /* ==========================================================================
-   💬 إضافة تايل وعناصر زر الواتساب العائم الذكي للمستهلك
+   💬 زر الواتساب العائم الذكي
    ========================================================================== */
 .whatsapp-float {
     position: fixed;
@@ -131,27 +122,19 @@ header h1 a {
     display: flex;
     justify-content: center;
     align-items: center;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
     z-index: 9999;
     text-decoration: none;
     transition: var(--transition);
 }
 
 .whatsapp-float:hover {
-    transform: scale(1.1);
-    box-shadow: 0 6px 20px rgba(37, 211, 102, 0.6);
+    transform: scale(1.05);
 }
 
-/* استجابة التصميم وشاشات العرض للهواتف والموبايل */
+/* استجابة الشاشات للموبايل */
 @media (max-width: 768px) {
-    header {
-        padding: 15px 20px;
-    }
-    header h1 {
-        font-size: 18px;
-    }
-    .nav-links a {
-        font-size: 12px;
-        margin-right: 10px;
-    }
+    header { padding: 15px 20px; }
+    header h1 { font-size: 20px; }
+    .nav-links a { font-size: 13px; }
 }
