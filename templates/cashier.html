@@ -3,165 +3,135 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة التحكم العليا والأدمن | Sina Store</title>
-    <link rel="stylesheet" href="/static/css/style.css">
+    <title>لوحة التحكم المطورة | Sina Store</title>
+    <link rel="icon" type="image/png" href="/static/css/logo.png.jpeg">
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #070707; padding: 20px; color:#fff; }
-        .section-box { background: #111; border: 1px solid #d4af37; padding: 20px; border-radius: 12px; margin-bottom: 30px; }
-        .grid-2 { display: grid; grid-template-columns: repeat(2,1fr); gap: 15px; }
-        table { width:100%; border-collapse:collapse; margin-top:15px; }
-        th, td { padding:12px; border-bottom:1px solid #222; text-align:right;}
-        th { color:#d4af37; }
+        :root { --primary: #d4af37; --bg: #0d0d0d; --card-bg: #141414; --text: #ffffff; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 20px; direction: rtl; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        h1, h2 { color: var(--primary); text-align: center; }
+        .form-box { background: var(--card-bg); border: 1px solid var(--primary); padding: 20px; border-radius: 10px; margin-bottom: 30px; }
+        .grid-inputs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        .form-group { display: flex; flex-direction: column; margin-bottom: 10px; }
+        .full-width { grid-column: span 2; }
+        label { margin-bottom: 5px; color: #aaa; font-size: 14px; }
+        input, select, textarea { padding: 10px; background: #000; border: 1px solid #333; color: #fff; border-radius: 6px; font-family: inherit; }
+        .btn-submit { background: var(--primary); color: #000; font-weight: bold; border: none; padding: 12px; border-radius: 6px; cursor: pointer; transition: 0.2s; margin-top: 10px; }
+        .btn-submit:hover { background: #f3e5ab; }
+        .product-item { background: #141414; padding: 15px; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #222; }
+        .btn-danger { background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
     </style>
 </head>
 <body>
-    <header style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #333; padding-bottom:15px;">
-        <h1 style="color:#d4af37; margin:0;">👑 لوحة الإدارة والتحكم الكاملة</h1>
-        <a href="/api/auth/logout" style="color:red; font-weight:bold; text-decoration:none;">🚪 تسجيل خروج</a>
-    </header>
+    <div class="container">
+        <h1>✨ لوحة الإدارة والجرد الشاملة</h1>
+        
+        <div class="form-box">
+            <h2>📦 إضافة منتج جديد للسحابة</h2>
+            <form id="product-form" onsubmit="saveProduct(event)">
+                <div class="grid-inputs">
+                    <div class="form-group">
+                        <label>اسم المنتج الفاخر</label>
+                        <input type="text" id="p-name" required placeholder="مثال: سماعة بلوتوث P9 Pro">
+                    </div>
+                    <div class="form-group">
+                        <label>القسم</label>
+                        <select id="p-category">
+                            <option value="إكسسوارات موبايل">إكسسوارات موبايل</option>
+                            <option value="شواحن وكابلات">شواحن وكابلات</option>
+                            <option value="سماعات">سماعات</option>
+                            <option value="عام">عام</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>سعر البيع للجمهور (ج.م)</label>
+                        <input type="number" step="0.01" id="p-price" required placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label>سعر الشراء / التكلفة (ج.م)</label>
+                        <input type="number" step="0.01" id="p-purchasing" required placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label>عمولة المسوق الثابتة (ج.م)</label>
+                        <input type="number" step="0.01" id="p-commission" required placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label>الكمية المتاحة بالمخزن</label>
+                        <input type="number" id="p-stock" required placeholder="0">
+                    </div>
+                    <div class="form-group full-width">
+                        <label>رابط صورة المنتج</label>
+                        <input type="url" id="p-img" placeholder="https://example.com/image.jpg">
+                    </div>
+                    <div class="form-group full-width">
+                        <label>وصف وتفاصيل المنتج</label>
+                        <textarea id="p-desc" rows="3" placeholder="اكتب مواصفات المنتج هنا..."></textarea>
+                    </div>
+                </div>
+                <button type="submit" class="btn-submit full-width">🚀 حفظ وتثبيت المنتج وتحديث المخزن</button>
+            </form>
+        </div>
 
-    <div class="section-box" style="margin-top:20px;">
-        <h2 style="color:#d4af37; margin-top:0;">🤝 طلبات المسوقين المعلقة</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>الاسم الكامل</th>
-                    <th>اسم المستخدم</th>
-                    <th>الهاتف</th>
-                    <th>المحافظة</th>
-                    <th>الحالة</th>
-                    <th>توليد الكود والتفعيل</th>
-                </tr>
-            </thead>
-            <tbody id="pending-marketers-rows"></tbody>
-        </table>
-    </div>
-
-    <div class="section-box">
-        <h2 style="color:#d4af37; margin-top:0;">📦 إضافة منتج جديد للمخزن السحابي</h2>
-        <form id="prod-form" onsubmit="addStoreProduct(event)">
-            <div class="grid-2">
-                <input type="text" id="p-name" class="search-input" placeholder="اسم المنتج..." required style="width:100%;">
-                <input type="text" id="p-cat" class="search-input" placeholder="القسم (عام، جرابات...)" style="width:100%;">
-                <input type="number" id="p-purch" class="search-input" placeholder="سعر الشراء (التكلفة)..." required style="width:100%;">
-                <input type="number" id="p-sell" class="search-input" placeholder="سعر البيع للجمهور..." required style="width:100%;">
-                <input type="number" id="p-comm" class="search-input" placeholder="عمولة المسوق..." required style="width:100%;">
-                <input type="number" id="p-stock" class="search-input" placeholder="الكمية المتوفرة بالمخزن..." required style="width:100%;">
-                <input type="text" id="p-img" class="search-input" placeholder="رابط صورة المنتج..." style="width:100%; grid-column:span 2;">
-                <textarea id="p-desc" class="search-input" placeholder="تفاصيل ووصف المنتج الفني..." style="width:100%; grid-column:span 2; height:80px; background:#1c1c1c; color:#fff; border:1px solid #333; border-radius:8px; padding:10px;"></textarea>
-            </div>
-            <button type="submit" class="btn-primary" style="margin-top:15px;">تثبيت وحفظ المنتج في قاعدة البيانات ☁️</button>
-        </form>
-    </div>
-
-    <div class="section-box">
-        <h2 style="color:#d4af37; margin-top:0;">📋 إدارة شحنات مبيعات المتجر</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>رقم الشحنة</th>
-                    <th>العميل</th>
-                    <th>المسوق صاحب الكود</th>
-                    <th>الإجمالي الحساب</th>
-                    <th>تعديل حالة الشحنة</th>
-                </tr>
-            </thead>
-            <tbody id="admin-orders-rows"></tbody>
-        </table>
+        <h2>📦 المنتجات الحالية في المخزن السحابي</h2>
+        <div id="products-list"></div>
     </div>
 
     <script>
-        async function loadDashboardData() {
-            // جلب المسوقين
-            const mRes = await fetch('/api/admin/pending_marketers');
-            const marketers = await mRes.json();
-            const mTbody = document.getElementById('pending-marketers-rows');
-            mTbody.innerHTML = '';
-            marketers.forEach(m => {
-                mTbody.innerHTML += `
-                    <tr>
-                        <td>${m.fullname}</td>
-                        <td>${m.username}</td>
-                        <td>${m.phone}</td>
-                        <td>${m.address}</td>
-                        <td style="color:${m.status==='approved'?'#22c55e':'orange'}">${m.status==='approved'?'مقبول':'معلق ⏳'}</td>
-                        <td>
-                            ${m.status==='pending' ? `
-                                <input type="text" id="code-${m.id}" placeholder="اكتب كود فريد..." style="padding:6px; border-radius:4px; border:1px solid #d4af37; background:#000; color:#fff;">
-                                <button onclick="approveMarketer(${m.id})" style="background:#22c55e; color:#000; padding:6px 12px; border:none; border-radius:4px; font-weight:bold; cursor:pointer;">موافقة وتفعيل</button>
-                            ` : `<strong>${m.marketer_code}</strong>`}
-                        </td>
-                    </tr>
-                `;
-            });
-
-            // جلب الطلبات
-            const oRes = await fetch('/api/orders');
-            const orders = await oRes.json();
-            const oTbody = document.getElementById('admin-orders-rows');
-            oTbody.innerHTML = '';
-            orders.forEach(o => {
-                oTbody.innerHTML += `
-                    <tr>
-                        <td>#${o.id}</td>
-                        <td><strong>${o.customer_name}</strong> (${o.customer_phone})</td>
-                        <td><mark style="background:#d4af37; color:#000; padding:2px 6px; border-radius:4px;">${o.marketer_id || 'طبيعي بدون كود'}</mark></td>
-                        <td>${o.total_price} ج.م</td>
-                        <td>
-                            <select onchange="updateStatus(${o.id}, this.value)" style="padding:6px; background:#141414; color:#fff; border:1px solid var(--primary); border-radius:6px;">
-                                <option value="قيد المراجعة" ${o.status==='قيد المراجعة'?'selected':''}>قيد المراجعة 🔄</option>
-                                <option value="جاري الشحن" ${o.status==='جاري الشحن'?'selected':''}>جاري الشحن 🚚</option>
-                                <option value="تم التوصيل" ${o.status==='تم التوصيل'?'selected':''}>تم التوصيل ✅</option>
-                                <option value="مسترجع" ${o.status==='مسترجع'?'selected':''}>مسترجع ❌</option>
-                            </select>
-                        </td>
-                    </tr>
+        async function loadProducts() {
+            const res = await fetch('/api/products');
+            const products = await res.json();
+            const list = document.getElementById('products-list');
+            list.innerHTML = '';
+            
+            products.forEach(p => {
+                list.innerHTML += `
+                    <div class="product-item">
+                        <div>
+                            <strong>${p.name}</strong> - <span style="color:var(--primary);">${p.selling_price} ج.م</span>
+                            <br>
+                            <small style="color:#888;">المخزون: ${p.stock_quantity} | العمولة: ${p.commission} ج.م</small>
+                        </div>
+                        <button class="btn-danger" onclick="deleteProduct(${p.id})">حذف 🗑️</button>
+                    </div>
                 `;
             });
         }
 
-        async function approveMarketer(uid) {
-            const codeInput = document.getElementById(`code-${uid}`).value.trim();
-            if(!codeInput) { alert("أدخل الكود المخصص للمسوق أولاً!"); return; }
-            const res = await fetch('/api/admin/pending_marketers', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ user_id: uid, marketer_code: codeInput })
-            });
-            if(res.ok) { alert("🎉 تم اعتماد كود المسوق وتفعيل حسابه سحابياً بنجاح!"); loadDashboardData(); }
-        }
-
-        async function addStoreProduct(e) {
+        async function saveProduct(e) {
             e.preventDefault();
             const payload = {
                 name: document.getElementById('p-name').value,
-                category: document.getElementById('p-cat').value || 'عام',
-                purchasing_price: document.getElementById('p-purch').value,
-                selling_price: document.getElementById('p-sell').value,
-                commission: document.getElementById('p-comm').value,
-                stock_quantity: document.getElementById('p-stock').value,
+                category: document.getElementById('p-category').value,
+                selling_price: parseFloat(document.getElementById('p-price').value),
+                purchasing_price: parseFloat(document.getElementById('p-purchasing').value),
+                commission: parseFloat(document.getElementById('p-commission').value),
+                stock_quantity: parseInt(document.getElementById('p-stock').value),
                 image_url: document.getElementById('p-img').value,
                 description: document.getElementById('p-desc').value
             };
+
             const res = await fetch('/api/products', {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json'},
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             });
-            if(res.ok) { alert("📦 تم حفظ وتأمين المنتج بالمخزن بنجاح!"); document.getElementById('prod-form').reset(); loadDashboardData(); }
+
+            if (res.ok) {
+                alert('🎉 تم حفظ وتثبيت المنتج بنجاح!');
+                document.getElementById('product-form').reset();
+                loadProducts();
+            } else {
+                alert('❌ فشل حفظ البيانات.');
+            }
         }
 
-        async function updateStatus(oid, newStatus) {
-            await fetch(`/api/orders/${oid}`, {
-                method: 'PUT',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ status: newStatus })
-            });
-            alert("🚦 تم تحديث حالة الشحنة بالنجاح ومزامنتها فورياً للمسوق والعميل!");
-            loadDashboardData();
+        async function deleteProduct(id) {
+            if (!confirm('هل أنت متأكد من حذف هذا المنتج نهائياً؟')) return;
+            const res = await fetch(`/api/products/${id}`, { method: 'DELETE' });
+            if (res.ok) { loadProducts(); }
         }
 
-        window.addEventListener('DOMContentLoaded', loadDashboardData);
+        window.addEventListener('DOMContentLoaded', loadProducts);
     </script>
 </body>
 </html>
