@@ -1,10 +1,13 @@
+/* ==========================================================================
+   🎨 المتغيرات الأساسية والهوية البصرية المتكاملة (Sina 401 Theme)
+   ========================================================================== */
 :root {
-    --primary: #d4af37;
+    --primary: #d4af37; /* الذهبي الملكي الأصلي */
     --primary-gradient: linear-gradient(135deg, #d4af37 0%, #aa8416 100%);
-    --primary-hover: #f3e5ab;
-    --bg: #070707;
-    --card-bg: rgba(20, 20, 20, 0.6);
-    --card-border: rgba(212, 175, 55, 0.15);
+    --primary-hover: #f3e5ab; /* الذهبي الفاتح عند التمرير */
+    --bg: #070707; /* الخلفية الداكنة العميقة */
+    --card-bg: rgba(20, 20, 20, 0.65); /* خلفية الكروت الزجاجية */
+    --card-border: rgba(212, 175, 55, 0.15); /* حدود الكروت الذهبية الخفيفة */
     --text: #ffffff;
     --text-muted: #aaaaaa;
     --success: #22c55e;
@@ -12,6 +15,9 @@
     --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* ==========================================================================
+   🌐 الإعدادات العامة للموقع والخطوط
+   ========================================================================== */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: var(--bg);
@@ -20,100 +26,274 @@ body {
     margin: 0;
     padding: 0;
     scroll-behavior: smooth;
-    direction: rtl;
+    direction: rtl; /* دعم اللغة العربية */
+    min-height: 100vh;
 }
 
+* {
+    box-sizing: border-box;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+/* ==========================================================================
+   🔔 الإشعارات العائمة الاحترافية (Toast Notifications)
+   ========================================================================== */
+.toast {
+    position: fixed;
+    bottom: 30px;
+    left: 30px;
+    background: #141414;
+    border-right: 4px solid var(--primary);
+    padding: 15px 25px;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+    z-index: 9999;
+    display: none;
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from { transform: translateX(-100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+/* ==========================================================================
+   👑 الهيدر الملتصق الذكي (Sticky Header)
+   ========================================================================== */
 header {
     background: rgba(20, 20, 20, 0.95);
     backdrop-filter: blur(10px);
-    border-bottom: 1px solid rgba(212, 175, 55, 0.1);
-    padding: 15px 30px;
+    padding: 15px 40px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     position: sticky;
     top: 0;
     z-index: 1000;
 }
 
-header h1 m, header h1 a {
-    color: var(--primary);
-    text-decoration: none;
-    font-size: 22px;
-    font-weight: bold;
+header h1 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 800;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.nav-links {
+    display: flex;
+    gap: 20px;
+    align-items: center;
 }
 
 .nav-links a {
-    color: #fff;
-    text-decoration: none;
-    margin-right: 20px;
     font-size: 14px;
-    transition: var(--transition);
+    font-weight: 500;
+    color: var(--text-muted);
 }
 
 .nav-links a:hover {
     color: var(--primary);
 }
 
+/* ==========================================================================
+   🌅 البانر الترحيبي (Hero Banner)
+   ========================================================================== */
 .hero-banner {
     text-align: center;
     padding: 60px 20px;
+    background: radial-gradient(circle, rgba(212,175,55,0.08) 0%, rgba(0,0,0,0) 70%);
 }
 
 .hero-banner h2 {
-    color: var(--primary);
     font-size: 32px;
+    color: var(--text);
     margin-bottom: 10px;
 }
 
 .hero-banner p {
     color: var(--text-muted);
     font-size: 16px;
+    margin: 0;
 }
 
+/* ==========================================================================
+   🔍 أدوات التحكم، البحث، والفلاتر (Controls Row)
+   ========================================================================== */
+.controls-row {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 0 20px;
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.search-input {
+    flex: 1;
+    min-width: 250px;
+    background: #111;
+    border: 1px solid #222;
+    padding: 12px 20px;
+    border-radius: 30px;
+    color: #fff;
+    font-family: inherit;
+    font-size: 14px;
+    transition: var(--transition);
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.15);
+}
+
+.filter-select {
+    background: #111;
+    border: 1px solid #222;
+    padding: 12px 20px;
+    border-radius: 30px;
+    color: #fff;
+    font-family: inherit;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+/* ==========================================================================
+   📦 شبكة عرض المنتجات وكروت العرض (Products Grid & Cards)
+   ========================================================================== */
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 30px;
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.product-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    backdrop-filter: blur(10px);
+    transition: var(--transition);
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(212, 175, 55, 0.4);
+    box-shadow: 0 12px 30px rgba(212, 175, 55, 0.1);
+}
+
+.product-card img {
+    width: 100%;
+    height: 240px;
+    object-fit: cover;
+    transition: var(--transition);
+}
+
+.product-card:hover img {
+    transform: scale(1.03);
+}
+
+.card-body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.card-body h3 {
+    margin: 0 0 10px 0;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.price-box {
+    margin-top: auto;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+/* تفاصيل المخزون على الكارت */
+.stock-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: rgba(0, 0, 0, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    padding: 4px 12px;
+    border-radius: 30px;
+    font-size: 11px;
+    backdrop-filter: blur(5px);
+    z-index: 2;
+}
+
+/* ==========================================================================
+   🔘 الأزرار والروابط التفاعلية (Buttons)
+   ========================================================================== */
 .btn-primary {
     background: var(--primary-gradient);
     color: #000;
     border: none;
     padding: 12px 25px;
-    border-radius: 8px;
+    border-radius: 25px;
     font-weight: bold;
+    font-family: inherit;
     cursor: pointer;
+    width: 100%;
+    margin-top: 15px;
+    font-size: 14px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
     transition: var(--transition);
+    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2);
 }
 
 .btn-primary:hover {
+    transform: scale(1.02);
+    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
     background: var(--primary-hover);
-    transform: translateY(-2px);
 }
 
-.stock-badge {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    background: rgba(0, 0, 0, 0.7);
-    border: 1px solid var(--primary);
-    color: #fff;
-    padding: 4px 10px;
-    border-radius: 30px;
-    font-size: 11px;
-    z-index: 2;
-}
-
+/* 💬 زر الواتساب العائم السريع */
 .floating-whatsapp {
     position: fixed;
     bottom: 30px;
-    left: 30px;
-    background: #25d366;
-    color: white;
+    right: 30px;
     width: 60px;
     height: 60px;
+    background: #25d366;
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
-    text-decoration: none;
-    font-size: 28px;
-    box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
-    z-index: 9999;
+    box-shadow: 0 10px 25px rgba(37, 211, 102, 0.35);
+    z-index: 999;
+    transition: var(--transition);
 }
+
+.floating-whatsapp:hover {
+    transform: scale(1.1) rotate(10deg);
+    box-shadow: 0 12px 30px rgba(37, 2
