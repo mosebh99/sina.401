@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang=\"ar\" dir=\"rtl\">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset=\"UTF-8\">
+    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
     <title>تسجيل الدخول الإداري | Sina 401</title>
-    <link rel="icon" type="image/png" href="/static/css/logo.png.jpeg">
-    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel=\"icon\" type=\"image/png\" href=\"/static/css/logo.png.jpeg\">
+    <link rel=\"stylesheet\" href=\"/static/css/style.css\">
 </head>
 <body>
     <header>
-        <h1><a href="/">✨ لوحة التحكم الموحدة</a></h1>
+        <h1><a href=\"/\">✨ لوحة التحكم الموحدة</a></h1>
         <div class="nav-links"><a href="/">⬅️ العودة للمتجر</a></div>
     </header>
 
@@ -18,24 +18,28 @@
         <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 25px;">قم بإدخال بيانات الاعتماد المخصصة لإدارة المتجر</p>
         
         <form id="admin-login-form" style="display: flex; flex-direction: column; gap: 15px;">
-            <input type="text" id="adm-user" class="search-input" placeholder="اسم المستخدم أو الكود..." required style="width:100%;">
+            <input type="text" id="adm-user" class="search-input" placeholder="اسم المستخدم..." required style="width:100%;">
             <input type="password" id="adm-pass" class="search-input" placeholder="كلمة المرور السرية..." required style="width:100%;">
             <button type="submit" class="btn-primary" style="margin-top:10px;">تحقق آمن وعبور للكاشير</button>
         </form>
     </div>
 
     <script>
+        if(sessionStorage.getItem('sina_admin_auth') === 'true') {
+            window.location.href = '/cashier.html';
+        }
+
         document.getElementById('admin-login-form').addEventListener('submit', function(e) {
             e.preventDefault();
             const user = document.getElementById('adm-user').value.trim();
             const pass = document.getElementById('adm-pass').value.trim();
 
-            // التحقق والعبور الفوري والآمن
             if(user === "admin" && pass === "MoSebA01065653401") {
-                alert("✅ تم التحقق بنجاح! جاري الانتقال للوحة التحكم...");
+                sessionStorage.setItem('sina_admin_auth', 'true');
+                alert("✅ تم التحقق بنجاح! جاري العبور إلى لوحة الكاشير...");
                 window.location.href = '/cashier.html';
             } else {
-                alert("❌ اسم المستخدم أو كلمة المرور غير صحيحة!");
+                alert("❌ بيانات الدخول غير صحيحة!");
             }
         });
     </script>
