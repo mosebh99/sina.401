@@ -15,62 +15,78 @@
 
     <div style="max-width: 600px; margin: 50px auto; padding: 30px; background: var(--card-bg); border-radius: 12px; border: 1px solid #222;">
         <h2 style="color: var(--primary); margin-top: 0; text-align: center;">💰 نظام تتبع المبيعات والعمولات</h2>
-        <p style="color: var(--text-muted); text-align: center; font-size: 14px;">أهلاً بك في نظام شركاء النجاح لـ Sina 401. يمكنك متابعة طلبات عملائك من هنا.</p>
+        <p style="color: var(--text-muted); text-align: center; font-size: 14px;">أهلاً بك في نظام شركاء النجاح لـ Sina 401. يمكنك متابعة طلبات عملائك وعمولاتك الحقيقية بدقة.</p>
         
         <div style="margin-top: 30px; padding: 20px; background: #141414; border-radius: 8px; border-right: 4px solid var(--primary);">
-            <label style="color:#fff; display:block; margin-bottom:10px;">أدخل كود المسوق المعتمد:</label>
+            <label style="color:#fff; display:block; margin-bottom:10px; font-weight:bold;">اكتب كود التسويق الخاص بك:</label>
             <div style="display:flex; gap:10px;">
-                <input type="text" id="m-code" class="search-input" style="flex:1;" placeholder="مثال: Sina01">
-                <button class="btn-primary" style="width:auto; margin:0; padding:0 20px;" onclick="checkMarketerEarnings()">استعلام فوري</button>
+                <input type="text" id="m-code" class="search-input" placeholder="مثال: Sina01..." style="flex:1;">
+                <button class="btn-primary" onclick="checkMarketerEarnings()" style="width:auto; margin-top:0; padding:0 25px;">تحليل الأرباح</button>
             </div>
         </div>
 
-        <div id="marketer-report" style="margin-top:20px; font-size:16px; color:var(--primary); text-align:center; font-weight:bold;"></div>
-
-        <div style="margin-top: 40px; padding: 20px; background: #141414; border-radius: 8px; border-right: 4px solid var(--primary);">
-            <h3 style="color: var(--primary); margin-top: 0; margin-bottom: 15px;">📝 تقديم طلب انضمام جديد ومسوق معتمد</h3>
-            <form id="marketer-join-form" style="display: flex; flex-direction: column; gap: 12px;">
-                <input type="text" id="join-name" class="search-input" placeholder="الاسم بالكامل..." required>
-                <input type="tel" id="join-phone" class="search-input" placeholder="رقم الواتساب..." required>
-                <input type="text" id="join-code" class="search-input" placeholder="اختر كود التسويق الخاص بك (مثال: Sina01)..." required>
-                <button type="submit" class="btn-primary" style="margin-top: 5px;">إرسال طلب الانضمام وتفعيل الكود</button>
-            </form>
-        </div>
+        <div id="marketer-report" style="margin-top:25px;"></div>
     </div>
 
     <script>
-        document.getElementById('marketer-join-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const mCode = document.getElementById('join-code').value.trim();
-            
-            // تفعيل الكود محلياً فوراً لبدء العمل وحفظه بالمتصفح
-            localStorage.setItem('active_marketer_code', mCode);
-            alert(`🎉 تم إنشاء وتفعيل كودك التسويقي بنجاح في النظام: ${mCode}\nيمكنك الآن استخدامه و ترويج المنتجات وحساب أرباحك!`);
-            document.getElementById('marketer-join-form').reset();
-            
-            if(document.getElementById('m-code')) {
-                document.getElementById('m-code').value = mCode;
-                checkMarketerEarnings();
+        // التقاط الكود من الرابط وتعبئته تلقائياً عند الدخول
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const mCode = urlParams.get('m') || localStorage.getItem('active_marketer_id');
+            if(mCode) {
+                const codeInput = document.getElementById('m-code');
+                if(codeInput) {
+                    codeInput.value = mCode;
+                    checkMarketerEarnings();
+                }
             }
         });
 
         async function checkMarketerEarnings() {
             const code = document.getElementById('m-code').value.trim();
             if(!code) { alert("من فضلك اكتب كودك أولاً!"); return; }
-            document.getElementById('marketer-report').innerText = "⏳ جاري حساب عمولاتك...";
+            document.getElementById('marketer-report').innerText = "⏳ جاري تشغيل خوارزمية جرد وحساب عمولاتك الحية...";
             try {
                 const res = await fetch('/api/orders');
                 const orders = await res.json();
+                
+                // جلب الشحنات الخاصة بالمسوق فقط
                 let myOrders = orders.filter(o => o.marketer_id && o.marketer_id.trim() === code);
                 let totalComm = 0;
-                myOrders.forEach(o => { totalComm += ((o.total_price || 0) * 0.10); });
+                let deliveredCount = 0;
+
+                myOrders.forEach(o => {
+                    if (o.status === 'تم التسليم') {
+                        deliveredCount++;
+                    }
+                    
+                    // قراءة المنتجات لحساب عمولة كل منتج تم بيعه بدقة
+                    try {
+                        let products = typeof o.products_json === 'string' ? JSON.parse(o.products_json) : o.products_json;
+                        if (Array.isArray(products)) {
+                            products.forEach(p => {
+                                // استخدام عمولة المنتج المحددة بالمخزن أو 10% افتراضي إن لم توجد
+                                totalComm += (Number(p.commission) || (Number(p.selling_price) * 0.10)) * (p.quantity || 1);
+                            });
+                        } else {
+                            totalComm += ((o.total_price || 0) * 0.10);
+                        }
+                    } catch(e) {
+                        totalComm += ((o.total_price || 0) * 0.10);
+                    }
+                });
+
                 document.getElementById('marketer-report').innerHTML = `
-                    <div style="background:#111; padding:15px; border-radius:8px; border:1px solid var(--primary); color:#fff; text-align:right;">
-                        <p>📊 عدد الشحنات المسجلة بكودك: <span style="color:var(--primary);">${myOrders.length} طلب</span></p>
-                        <p>💰 عمولاتك الحالية التقديرية (10%): <span style="color:#22c55e;">${Math.round(totalComm)} ج.م</span></p>
+                    <div style="background:#111; padding:20px; border-radius:8px; border:1px solid var(--primary); color:#fff; text-align:right; display:flex; flex-direction:column; gap:10px;">
+                        <p style="margin:0;">📊 إجمالي الطلبات المسجلة باسمك: <span style="color:var(--primary); font-weight:bold;">${myOrders.length} طلب</span></p>
+                        <p style="margin:0;">✅ شحنات ناجحة تم تسليمها للعميل: <span style="color:#22c55e; font-weight:bold;">${deliveredCount} طلب</span></p>
+                        <hr style="border:none; border-top:1px solid #222; margin:5px 0;">
+                        <p style="margin:0; font-size:16px;">💰 العمولات المستحقة (الحقيقية والتقديرية): <span style="color:#22c55e; font-weight:bold; font-size:20px;">${Math.round(totalComm)} ج.م</span></p>
                     </div>
                 `;
-            } catch(e) { document.getElementById('marketer-report').innerText = "❌ حدث خطأ أثناء تحميل سجلات العمولات."; }
+            } catch(e) { 
+                document.getElementById('marketer-report').innerText = "❌ حدث خطأ في المزامنة السحابية للسجل."; 
+            }
         }
     </script>
 </body>
