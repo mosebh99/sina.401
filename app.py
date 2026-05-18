@@ -9,13 +9,13 @@ TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
 STATIC_DIR = os.path.join(BASE_DIR, 'static')
 
 app = Flask(__name__, template_folder=TEMPLATE_DIR, static_folder=STATIC_DIR)
-app = app  # السطر الإجباري لمنصة Vercel لمنع الـ Failed
+app = app  # السطر السحري الإجباري لمنصة Vercel لمنع الـ Failed
 
 # رابط الاتصال المباشر والمؤمن بقاعدة بيانات Supabase
 DATABASE_URL = "postgresql://postgres:MoSebA01065653401@db.ellxxztpfpaqlbqsnyhb.supabase.co:5432/postgres"
 
 def get_db_connection():
-    """إنشاء اتصال مؤمن بالسيرفر السحابي لحماية البيانات من السقوط"""
+    """إنشاء اتصال مؤمن بالسيرفر السحابي لضمان ثبات الاتصال"""
     conn = psycopg2.connect(DATABASE_URL, sslmode='allow', cursor_factory=RealDictCursor)
     return conn
 
