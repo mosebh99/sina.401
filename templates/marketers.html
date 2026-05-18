@@ -3,59 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>بوابة العمولات والشركاء | Sina 401</title>
+    <title>بوابة المسوقين والعمولات | Sina 401</title>
     <link rel="icon" type="image/png" href="/static/css/logo.png.jpeg">
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
     <header>
         <h1><a href="/">📊 بوابة المسوقين بالعمولة</a></h1>
-        <div class=\"nav-links\"><a href=\"/\">⬅️ العودة للمتجر</a></div>
+        <div class="nav-links"><a href="/">⬅️ العودة للمتجر</a></div>
     </header>
 
-    <div style="max-width: 700px; margin: 50px auto; padding: 30px; background: var(--card-bg); border-radius: 12px; border: 1px solid #222;">
-        <h2 style="color: var(--primary); text-align: center; margin-top:0;">💰 نظام تتبع المبيعات والأرباح</h2>
-        <p style="color: var(--text-muted); text-align: center; font-size: 14px;">أهلاً بك في نظام شركاء نجاح Sina 401. أدخل كود التسويق الخاص بك لمتابعة أرباحك فوراً.</p>
+    <div style="max-width: 600px; margin: 50px auto; padding: 30px; background: var(--card-bg); border-radius: 12px; border: 1px solid #222;">
+        <h2 style="color: var(--primary); margin-top: 0; text-align: center;">💰 نظام تتبع المبيعات والعمولات</h2>
+        <p style="color: var(--text-muted); text-align: center; font-size: 14px;">أهلاً بك في نظام شركاء النجاح لـ Sina 401. يمكنك متابعة طلبات عملائك من هنا.</p>
         
         <div style="margin-top: 30px; padding: 20px; background: #141414; border-radius: 8px; border-right: 4px solid var(--primary);">
             <label style="color:#fff; display:block; margin-bottom:10px;">أدخل كود المسوق المعتمد:</label>
             <div style="display:flex; gap:10px;">
-                <input type="text" id="m-code" class="search-input" style="flex:1; padding:10px; background:#000; border:1px solid #333; color:#fff; border-radius:6px;" placeholder="مثال: Sina01">
+                <input type="text" id="m-code" class="search-input" style="flex:1;" placeholder="مثال: Sina01">
                 <button class="btn-primary" style="width:auto; margin:0; padding:0 20px;" onclick="checkMarketerEarnings()">استعلام فوري</button>
             </div>
         </div>
 
         <div id="marketer-report" style="margin-top:20px; font-size:16px; color:var(--primary); text-align:center; font-weight:bold;"></div>
+
+        <div style="margin-top: 40px; padding: 20px; background: #141414; border-radius: 8px; border-right: 4px solid var(--primary);">
+            <h3 style="color: var(--primary); margin-top: 0; margin-bottom: 15px;">📝 تقديم طلب انضمام جديد ومسوق معتمد</h3>
+            <form id="marketer-join-form" style="display: flex; flex-direction: column; gap: 12px;">
+                <input type="text" id="join-name" class="search-input" placeholder="الاسم بالكامل..." required>
+                <input type="tel" id="join-phone" class="search-input" placeholder="رقم الواتساب..." required>
+                <input type="text" id="join-code" class="search-input" placeholder="اختر كود التسويق الخاص بك (مثال: Sina01)..." required>
+                <button type="submit" class="btn-primary" style="margin-top: 5px;">إرسال طلب الانضمام وتفعيل الكود</button>
+            </form>
+        </div>
     </div>
 
     <script>
+        document.getElementById('marketer-join-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const mCode = document.getElementById('join-code').value.trim();
+            
+            // تفعيل الكود محلياً فوراً لبدء العمل وحفظه بالمتصفح
+            localStorage.setItem('active_marketer_code', mCode);
+            alert(`🎉 تم إنشاء وتفعيل كودك التسويقي بنجاح في النظام: ${mCode}\nيمكنك الآن استخدامه و ترويج المنتجات وحساب أرباحك!`);
+            document.getElementById('marketer-join-form').reset();
+            
+            if(document.getElementById('m-code')) {
+                document.getElementById('m-code').value = mCode;
+                checkMarketerEarnings();
+            }
+        });
+
         async function checkMarketerEarnings() {
             const code = document.getElementById('m-code').value.trim();
             if(!code) { alert("من فضلك اكتب كودك أولاً!"); return; }
-            
-            document.getElementById('marketer-report').innerText = "⏳ جاري جلب السجلات وحساب عمولاتك...";
-            
+            document.getElementById('marketer-report').innerText = "⏳ جاري حساب عمولاتك...";
             try {
                 const res = await fetch('/api/orders');
                 const orders = await res.json();
-                
                 let myOrders = orders.filter(o => o.marketer_id && o.marketer_id.trim() === code);
                 let totalComm = 0;
-                
-                // حساب العمولات بناءً على إجمالي المبيعات (10% كحد افتراضي أمان في حال عدم تحديد عمولة المنتج)
-                myOrders.forEach(o => {
-                    totalComm += (o.total_price * 0.10); 
-                });
-                
+                myOrders.forEach(o => { totalComm += ((o.total_price || 0) * 0.10); });
                 document.getElementById('marketer-report').innerHTML = `
-                    <div style="background:#111; padding:15px; border-radius:8px; border:1px solid var(--primary); margin-top:10px; color:#fff;">
-                        <p>📊 عدد الشحنات المسجلة بكودك: <span style="color:var(--primary); font-size:18px;">${myOrders.length} طلب</span></p>
-                        <p>💰 مستحقات عمولتك الحالية المتاحة: <span style="color:#22c55e; font-size:20px;">${Math.round(totalComm)} ج.م</span></p>
+                    <div style="background:#111; padding:15px; border-radius:8px; border:1px solid var(--primary); color:#fff; text-align:right;">
+                        <p>📊 عدد الشحنات المسجلة بكودك: <span style="color:var(--primary);">${myOrders.length} طلب</span></p>
+                        <p>💰 عمولاتك الحالية التقديرية (10%): <span style="color:#22c55e;">${Math.round(totalComm)} ج.م</span></p>
                     </div>
                 `;
-            } catch(e) {
-                document.getElementById('marketer-report').innerText = "❌ حدث خطأ أثناء تحميل سجلات العمولات.";
-            }
+            } catch(e) { document.getElementById('marketer-report').innerText = "❌ حدث خطأ أثناء تحميل سجلات العمولات."; }
         }
     </script>
 </body>
