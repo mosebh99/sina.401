@@ -6,6 +6,18 @@
     <title>Sina 401 | متجر سينا لملحقات الموبايل</title>
     <link rel="icon" type="image/png" href="/static/css/logo.png.jpeg">
     <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        .menu-dots { font-size: 28px; color: var(--primary); cursor: pointer; padding: 0 10px; user-select: none; }
+        .dropdown-menu { display: none; position: absolute; top: 60px; left: 20px; background: #1a1a1a; border: 1px solid #333; border-radius: 8px; width: 200px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); z-index: 1000; overflow: hidden; }
+        .dropdown-menu a { display: block; padding: 12px 15px; color: #fff; text-decoration: none; transition: 0.2s; text-align: right; font-size: 14px; }
+        .dropdown-menu a:hover { background: var(--primary); color: #000; }
+        .dropdown-menu.show { display: block; }
+        
+        /* تنسيق قسم السلة العائمة */
+        .cart-badge { background: #ef4444; color: white; border-radius: 50%; padding: 2px 7px; font-size: 12px; position: absolute; top: -5px; right: -10px; }
+        .cart-section { max-width: 1000px; margin: 20px auto; padding: 20px; background: #141414; border-radius: 12px; border: 1px solid #333; display: none; }
+        .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #222; }
+    </style>
 </head>
 <body>
 
@@ -13,10 +25,16 @@
 
     <header>
         <h1><a href="/">✨ Sina 401</a></h1>
-        <div class="nav-links">
-            <a href="/">الرئيسية</a>
-            <a href="/marketers.html">بوابة المسوقين</a>
-            <a href="/login.html">🔐 لوحة الإدارة</a>
+        <div style="position: relative; display: flex; align-items: center; gap: 15px;">
+            <button onclick="toggleCartSection()" style="background: none; border: none; color: #fff; cursor: pointer; position: relative; font-size: 18px;">
+                🛒 السلة <span class="cart-badge" id="cart-count">0</span>
+            </button>
+            <div class="menu-dots" onclick="toggleDropdown()">⋮</div>
+            <div class="dropdown-menu" id="main-dropdown">
+                <a href="/">🏠 الرئيسية</a>
+                <a href="/marketers.html">📊 بوابة المسوقين</a>
+                <a href="/login.html">🔐 لوحة الإدارة</a>
+            </div>
         </div>
     </header>
 
@@ -25,18 +43,31 @@
         <p>اكتشف أقوى العروض وملحقات الهواتف بضمان سينا ستور الأصلي</p>
     </div>
 
-    <div class="controls-row" style="max-width:1000px; margin:20px auto; padding:0 20px; display:flex; gap:10px;">
-        <input type="text" id="search-box" class="search-input" placeholder="ابحث عن منتجك المفضل..." oninput="loadStoreProducts()" style="flex:1; padding:12px; background:#141414; border:1px solid #333; color:white; border-radius:8px;">
+    <div class="cart-section" id="cart-container-section">
+        <h3 style="color:var(--primary); margin-top:0;">🛒 سلة المشتريات الحالية</h3>
+        <div id="cart-items-list"></div>
+        <div style="text-align: left; margin: 15px 0; font-size: 18px; font-weight: bold;">الإجمالي: <span id="cart-total-price" style="color:var(--primary);">0</span> ج.م</div>
+        
+        <form id="checkout-form" style="display:flex; flex-direction:column; gap:10px; max-width:500px; margin-top:20px;">
+            <input type="text" id="cust-name" class="search-input" placeholder="اسم المستلم بالكامل..." required>
+            <input type="tel" id="cust-phone" class="search-input" placeholder="رقم الهاتف للتواصل..." required>
+            <input type="text" id="cust-address" class="search-input" placeholder="عنوان التوصيل بالتفصيل..." required>
+            <button type="submit" class="btn-primary" style="margin:0;">🚀 تأكيد وإرسال طلب الشحن</button>
+        </form>
     </div>
 
-    <div class="products-grid" id="products-container" style="max-width:1000px; margin:30px auto; display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:20px; padding:0 20px;">
+    <div class="controls-row">
+        <input type="text" id="search-box" class="search-input" placeholder="ابحث عن منتجك المفضل..." oninput="loadStoreProducts()">
+    </div>
+
+    <div class="products-grid" id="products-container">
         <p style="text-align: center; grid-column: 1/-1; color: var(--text-muted);">جاري تحميل المنتجات من المخزن السحابي...</p>
     </div>
 
     <div style="max-width: 500px; margin: 40px auto; padding: 20px; background:var(--card-bg); border-radius:12px; border:1px solid #222;">
         <h3 style="color:var(--primary); text-align:center; margin-top:0; margin-bottom:15px;">📦 تتبع حالة شحنتك فوراً</h3>
         <div style="display:flex; gap:10px;">
-            <input type="tel" id="track-phone" class="search-input" style="flex:1; padding:10px; background:#000; border:1px solid #333; color:#fff; border-radius:6px;" placeholder="رقم الهاتف المسجل بالطلب...">
+            <input type="tel" id="track-phone" class="search-input" style="flex:1;" placeholder="رقم الهاتف المسجل بالطلب...">
             <button class="btn-primary" style="width:auto; margin:0; padding:0 20px;" onclick="trackMyOrder()">تتبع الشحنة</button>
         </div>
         <div id="track-output"></div>
@@ -45,6 +76,26 @@
     <a href="https://wa.me/201065653401" class="floating-whatsapp" target="_blank">💬</a>
 
     <script>
+        let cart = JSON.parse(localStorage.getItem('sina_store_cart')) || [];
+
+        function toggleDropdown() {
+            document.getElementById('main-dropdown').classList.toggle('show');
+        }
+        window.onclick = function(event) {
+            if (!event.target.matches('.menu-dots')) {
+                const dropdowns = document.getElementsByClassName("dropdown-menu");
+                for (let i = 0; i < dropdowns.length; i++) {
+                    dropdowns[i].classList.remove('show');
+                }
+            }
+        }
+
+        function toggleCartSection() {
+            const sec = document.getElementById('cart-container-section');
+            sec.style.display = (sec.style.display === 'block') ? 'none' : 'block';
+            renderCart();
+        }
+
         async function loadStoreProducts() {
             try {
                 const res = await fetch('/api/products');
@@ -53,7 +104,6 @@
                 container.innerHTML = '';
                 
                 const searchTxt = document.getElementById('search-box').value.toLowerCase();
-                
                 let filtered = products.filter(p => p.name.toLowerCase().includes(searchTxt));
 
                 if (filtered.length === 0) {
@@ -66,47 +116,126 @@
                         <div class="product-card" style="background:#141414; border:1px solid var(--card-border); border-radius:12px; overflow:hidden; position:relative; display:flex; flex-direction:column;">
                             <span class="stock-badge">📦 المتاح: ${p.stock_quantity || 0}</span>
                             <img src="${p.image_url || '/static/css/logo.png.jpeg'}" style="width:100%; height:220px; object-fit:cover;">
-                            <div class="card-body" style="padding:15px; flex-grow:1; display:flex; flex-direction:column; justify-content:between;">
-                                <h3 style="margin:0 0 10px 0; font-size:18px;"><a href="/product_detail.html?id=${p.id}" style="color:#fff; text-decoration:none;">${p.name}</a></h3>
-                                <p style="color:#aaa; font-size:13px; flex-grow:1;">${p.description || ''}</p>
-                                <div class="price-box" style="font-size:18px; color:var(--primary); font-weight:bold; margin-top:10px;">${p.selling_price} ج.م</div>
-                                <button class="btn-primary" onclick="window.location.href='https://wa.me/201065653401?text=أريد طلب منتج: ${p.name}'" style="margin-top:10px;">شراء عبر واتساب 💬</button>
+                            <div class="card-body" style="padding:15px; flex-grow:1; display:flex; flex-direction:column;">
+                                <h3 style="margin:0 0 10px 0; font-size:18px;"><a href="/product_detail.html?id=${p.id}" style="color:#fff;">${p.name}</a></h3>
+                                <div class="price-box" style="font-size:18px; color:var(--primary); font-weight:bold; margin-bottom:15px;">${p.selling_price} ج.م</div>
+                                
+                                <div style="display:flex; gap:10px; margin-top:auto;">
+                                    <button class="btn-primary" onclick="window.location.href='https://wa.me/201065653401?text=أريد طلب منتج: ${p.name}'" style="margin:0; flex:1; background:#25d366; color:white;">طلب 💬</button>
+                                    <button class="btn-primary" onclick="addToCart(${p.id}, '${p.name}', ${p.selling_price})" style="margin:0; flex:1;">+ السلة 🛒</button>
+                                </div>
                             </div>
                         </div>
                     `;
                 });
+                updateCartBadge();
             } catch (err) {
                 document.getElementById('products-container').innerHTML = `<p style="grid-column: 1/-1; text-align:center; color: red;">❌ فشل الاتصال بالمخزن السحابي.</p>`;
             }
         }
 
+        function addToCart(id, name, price) {
+            const existing = cart.find(item => item.id === id);
+            if(existing) {
+                existing.qty += 1;
+            } else {
+                cart.push({ id, name, price, qty: 1 });
+            }
+            localStorage.setItem('sina_store_cart', JSON.stringify(cart));
+            updateCartBadge();
+            alert(`✅ تم إضافة "${name}" إلى السلة بنجاح!`);
+        }
+
+        function updateCartBadge() {
+            const count = cart.reduce((sum, item) => sum + item.qty, 0);
+            document.getElementById('cart-count').innerText = count;
+        }
+
+        function renderCart() {
+            const list = document.getElementById('cart-items-list');
+            const totalOut = document.getElementById('cart-total-price');
+            list.innerHTML = '';
+            
+            if(cart.length === 0) {
+                list.innerHTML = '<p style="color:#aaa; text-align:center;">السلة فارغة حالياً.</p>';
+                totalOut.innerText = '0';
+                return;
+            }
+
+            let total = 0;
+            cart.forEach((item, index) => {
+                total += (item.price * item.qty);
+                list.innerHTML += `
+                    <div class="cart-item">
+                        <div><strong>${item.name}</strong> (×${item.qty})</div>
+                        <div style="color:var(--primary); font-weight:bold;">
+                            ${item.price * item.qty} ج.م
+                            <button onclick="removeFromCart(${index})" style="background:none; border:none; color:#ef4444; cursor:pointer; margin-right:10px;">❌</button>
+                        </div>
+                    </div>
+                `;
+            });
+            totalOut.innerText = total;
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            localStorage.setItem('sina_store_cart', JSON.stringify(cart));
+            renderCart();
+            updateCartBadge();
+        }
+
+        // إرسال الطلب بالكامل للسيرفر السحابي
+        document.getElementById('checkout-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if(cart.length === 0) { alert("سلتك فارغة!"); return; }
+
+            const payload = {
+                customer_name: document.getElementById('cust-name').value.trim(),
+                customer_phone: document.getElementById('cust-phone').value.trim(),
+                customer_address: document.getElementById('cust-address').value.trim(),
+                total_price: parseFloat(document.getElementById('cart-total-price').innerText),
+                marketer_id: localStorage.getItem('active_marketer_code') || 'Direct',
+                products: cart,
+                status: 'قيد المراجعة'
+            };
+
+            try {
+                const res = await fetch('/api/orders', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if(res.ok) {
+                    alert("🎉 تم تسجيل طلبك بنجاح في قاعدة البيانات السحابية وجاري المراجعة!");
+                    cart = [];
+                    localStorage.removeItem('sina_store_cart');
+                    document.getElementById('checkout-form').reset();
+                    toggleCartSection();
+                    updateCartBadge();
+                } else { alert("❌ حدث خطأ أثناء إرسال الطلب."); }
+            } catch(err) { alert("❌ فشل الاتصال بالسيرفر."); }
+        });
+
         async function trackMyOrder() {
             const phoneInput = document.getElementById('track-phone').value.trim();
             const out = document.getElementById('track-output');
             if(!phoneInput) { alert("من فضلك أدخل رقم الهاتف المسجل به الطلب"); return; }
-            
             out.innerHTML = "🔍 جاري البحث في السجلات المزامنة...";
             try {
-                const res = await fetch('/api/public/orders');
+                const res = await fetch('/api/orders');
                 const orders = await res.json();
-                
                 let myOrder = orders.find(o => o.customer_phone && o.customer_phone.trim() === phoneInput);
-                
                 if(myOrder) {
-                    let displayTotal = myOrder.total_price ? myOrder.total_price : (myOrder.total_val ? myOrder.total_val : 0);
                     out.innerHTML = `
                         <div style="background:#111; padding:15px; border-radius:8px; border-right:4px solid var(--primary); margin-top:15px; text-align:right;">
                             <p style="margin:5px 0;">📦 رقم الشحنة: <strong>#${myOrder.id}</strong></p>
                             <p style="margin:5px 0;">🚦 حالة الطلب: <span style="color:var(--primary); font-weight:bold;">🔄 ${myOrder.status || 'قيد المراجعة'}</span></p>
-                            <p style="margin:5px 0;">💰 إجمالي الحساب: <strong>${displayTotal} ج.م</strong></p>
+                            <p style="margin:5px 0;">💰 إجمالي الحساب: <strong>${myOrder.total_price || 0} ج.م</strong></p>
                         </div>
                     `;
-                } else {
-                    out.innerHTML = `<p style="color:#ef4444; text-align:center; margin-top:15px;">❌ لم نجد أي طلبات شحن مسجلة بهذا الرقم.</p>`;
-                }
-            } catch(e) {
-                out.innerHTML = `<p style="color:#ef4444; text-align:center; margin-top:15px;">❌ خطأ في سحب بيانات التتبع.</p>`;
-            }
+                } else { out.innerHTML = `<p style="color:#ef4444; text-align:center; margin-top:15px;">❌ لم نجد أي طلبات مسجلة بهذا الرقم.</p>`; }
+            } catch(e) { out.innerHTML = `<p style="color:#ef4444; text-align:center; margin-top:15px;">❌ خطأ في سحب بيانات التتبع.</p>`; }
         }
 
         window.addEventListener('DOMContentLoaded', loadStoreProducts);
