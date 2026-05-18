@@ -3,203 +3,165 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة الكاشير وإدارة المخزن | Sina 401</title>
-    <link rel="icon" type="image/png" href="/static/css/logo.png.jpeg">
+    <title>لوحة التحكم العليا والأدمن | Sina Store</title>
     <link rel="stylesheet" href="/static/css/style.css">
     <style>
-        .cashier-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; padding: 20px; max-width: 1300px; margin: auto; }
-        .panel-card { background: var(--card-bg); border: 1px solid var(--card-border); padding: 20px; border-radius: 12px; backdrop-filter: blur(10px); }
-        .form-group { margin-bottom: 15px; text-align: right; }
-        .form-group label { display: block; margin-bottom: 5px; color: var(--primary); font-size: 14px; }
-        .form-control { width: 100%; padding: 10px; background: #111; border: 1px solid #333; color: white; border-radius: 6px; box-sizing: border-box; }
-        .data-table { width: 100%; border-collapse: collapse; margin-top: 15px; text-align: right; }
-        .data-table th, .data-table td { padding: 12px; border-bottom: 1px solid #222; font-size: 14px; }
-        .data-table th { color: var(--primary); background: #141414; }
-        .action-btn { padding: 5px 10px; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; margin-left: 5px; }
-        .btn-del { background: var(--danger); color: white; }
-        .btn-edit { background: var(--primary); color: black; font-weight: bold; }
-        @media (max-width: 768px) { .cashier-grid { grid-template-columns: 1fr; } }
+        body { font-family: 'Segoe UI', sans-serif; background: #070707; padding: 20px; color:#fff; }
+        .section-box { background: #111; border: 1px solid #d4af37; padding: 20px; border-radius: 12px; margin-bottom: 30px; }
+        .grid-2 { display: grid; grid-template-columns: repeat(2,1fr); gap: 15px; }
+        table { width:100%; border-collapse:collapse; margin-top:15px; }
+        th, td { padding:12px; border-bottom:1px solid #222; text-align:right;}
+        th { color:#d4af37; }
     </style>
 </head>
 <body>
-
-    <div class="toast" id="toast-notification"></div>
-
-    <header>
-        <h1><a href="/cashier.html">🖥️ شاشة إدارة المخزن والطلبات</a></h1>
-        <div class="nav-links">
-            <a href="/" class="btn-secondary" style="padding: 8px 15px; text-decoration: none;">🏠 المتجر الرئيسي</a>
-        </div>
+    <header style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #333; padding-bottom:15px;">
+        <h1 style="color:#d4af37; margin:0;">👑 لوحة الإدارة والتحكم الكاملة</h1>
+        <a href="/api/auth/logout" style="color:red; font-weight:bold; text-decoration:none;">🚪 تسجيل خروج</a>
     </header>
 
-    <div class="cashier-grid">
-        <div class="panel-card">
-            <h3 id="form-title" style="color: var(--primary); margin-top: 0; border-bottom: 1px solid #222; padding-bottom: 10px;">📦 إضافة منتج جديد للمخزن</h3>
-            <form id="product-form" onsubmit="saveProduct(event)">
-                <input type="hidden" id="prod-id">
-                <div class="form-group">
-                    <label>اسم المنتج متاحاً للمشترين</label>
-                    <input type="text" id="prod-name" class="form-control" placeholder="مثال: شاحن سريع 20 وات" required>
-                </div>
-                <div class="form-group">
-                    <label>القسم</label>
-                    <select id="prod-category" class="form-control">
-                        <option value="عام">عام وإلكترونيات</option>
-                        <option value="ساعات ذكية">ساعات ذكية</option>
-                        <option value="سماعات">سماعات بلوتوث</option>
-                        <option value="شواحن">شواحن وكوابل</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>سعر التكلفة (ج.م)</label>
-                    <input type="number" id="prod-cost" class="form-control" value="0" required>
-                </div>
-                <div class="form-group">
-                    <label>سعر البيع للجمهور (ج.م)</label>
-                    <input type="number" id="prod-selling" class="form-control" value="0" required>
-                </div>
-                <div class="form-group">
-                    <label>الكمية المتاحة في الرفوف</label>
-                    <input type="number" id="prod-qty" class="form-control" value="1" required>
-                </div>
-                <div class="form-group">
-                    <label>رابط صورة المنتج السحابية</label>
-                    <input type="url" id="prod-image" class="form-control" placeholder="https://example.com/image.jpg">
-                </div>
-                <div class="form-group">
-                    <label>وصف المنتج ومميزاته</label>
-                    <textarea id="prod-desc" class="form-control" rows="3" placeholder="اكتب تفاصيل ومواصفات المنتج هنا..."></textarea>
-                </div>
-                <button type="submit" class="btn-primary" style="width: 100%; margin-top: 10px;">💾 حفظ المنتج في قاعدة البيانات</button>
-                <button type="button" id="cancel-edit-btn" class="btn-secondary" onclick="resetProductForm()" style="width: 100%; margin-top: 5px; display: none;">إلغاء التعديل</button>
-            </form>
-        </div>
-
-        <div class="panel-card">
-            <h3 style="color: var(--primary); margin-top: 0; border-bottom: 1px solid #222; padding-bottom: 10px;">📋 جرد المنتجات الحالية في قاعدة البيانات</h3>
-            <div style="overflow-x: auto;">
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>المنتج</th>
-                            <th>القسم</th>
-                            <th>التكلفة</th>
-                            <th>البيع</th>
-                            <th>المخزون</th>
-                            <th>إجراءات</th>
-                        </tr>
-                    </thead>
-                    <tbody id="cashier-products-table">
-                        <tr>
-                            <td colspan="6" style="text-align: center; color: var(--text-muted);">🔄 جاري سحب بيانات الجرد من السيرفر...</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+    <div class="section-box" style="margin-top:20px;">
+        <h2 style="color:#d4af37; margin-top:0;">🤝 طلبات المسوقين المعلقة</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>الاسم الكامل</th>
+                    <th>اسم المستخدم</th>
+                    <th>الهاتف</th>
+                    <th>المحافظة</th>
+                    <th>الحالة</th>
+                    <th>توليد الكود والتفعيل</th>
+                </tr>
+            </thead>
+            <tbody id="pending-marketers-rows"></tbody>
+        </table>
     </div>
 
-    <script src="/static/js/store.js"></script>
+    <div class="section-box">
+        <h2 style="color:#d4af37; margin-top:0;">📦 إضافة منتج جديد للمخزن السحابي</h2>
+        <form id="prod-form" onsubmit="addStoreProduct(event)">
+            <div class="grid-2">
+                <input type="text" id="p-name" class="search-input" placeholder="اسم المنتج..." required style="width:100%;">
+                <input type="text" id="p-cat" class="search-input" placeholder="القسم (عام، جرابات...)" style="width:100%;">
+                <input type="number" id="p-purch" class="search-input" placeholder="سعر الشراء (التكلفة)..." required style="width:100%;">
+                <input type="number" id="p-sell" class="search-input" placeholder="سعر البيع للجمهور..." required style="width:100%;">
+                <input type="number" id="p-comm" class="search-input" placeholder="عمولة المسوق..." required style="width:100%;">
+                <input type="number" id="p-stock" class="search-input" placeholder="الكمية المتوفرة بالمخزن..." required style="width:100%;">
+                <input type="text" id="p-img" class="search-input" placeholder="رابط صورة المنتج..." style="width:100%; grid-column:span 2;">
+                <textarea id="p-desc" class="search-input" placeholder="تفاصيل ووصف المنتج الفني..." style="width:100%; grid-column:span 2; height:80px; background:#1c1c1c; color:#fff; border:1px solid #333; border-radius:8px; padding:10px;"></textarea>
+            </div>
+            <button type="submit" class="btn-primary" style="margin-top:15px;">تثبيت وحفظ المنتج في قاعدة البيانات ☁️</button>
+        </form>
+    </div>
+
+    <div class="section-box">
+        <h2 style="color:#d4af37; margin-top:0;">📋 إدارة شحنات مبيعات المتجر</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>رقم الشحنة</th>
+                    <th>العميل</th>
+                    <th>المسوق صاحب الكود</th>
+                    <th>الإجمالي الحساب</th>
+                    <th>تعديل حالة الشحنة</th>
+                </tr>
+            </thead>
+            <tbody id="admin-orders-rows"></tbody>
+        </table>
+    </div>
+
     <script>
-        document.addEventListener('DOMContentLoaded', loadCashierInventory);
+        async function loadDashboardData() {
+            // جلب المسوقين
+            const mRes = await fetch('/api/admin/pending_marketers');
+            const marketers = await mRes.json();
+            const mTbody = document.getElementById('pending-marketers-rows');
+            mTbody.innerHTML = '';
+            marketers.forEach(m => {
+                mTbody.innerHTML += `
+                    <tr>
+                        <td>${m.fullname}</td>
+                        <td>${m.username}</td>
+                        <td>${m.phone}</td>
+                        <td>${m.address}</td>
+                        <td style="color:${m.status==='approved'?'#22c55e':'orange'}">${m.status==='approved'?'مقبول':'معلق ⏳'}</td>
+                        <td>
+                            ${m.status==='pending' ? `
+                                <input type="text" id="code-${m.id}" placeholder="اكتب كود فريد..." style="padding:6px; border-radius:4px; border:1px solid #d4af37; background:#000; color:#fff;">
+                                <button onclick="approveMarketer(${m.id})" style="background:#22c55e; color:#000; padding:6px 12px; border:none; border-radius:4px; font-weight:bold; cursor:pointer;">موافقة وتفعيل</button>
+                            ` : `<strong>${m.marketer_code}</strong>`}
+                        </td>
+                    </tr>
+                `;
+            });
 
-        async function loadCashierInventory() {
-            try {
-                const res = await fetch('/api/products');
-                const products = await res.json();
-                const tbody = document.getElementById('cashier-products-table');
-                tbody.innerHTML = '';
-                
-                if(products.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">المخزن فارغ تماماً، قم بإضافة أول منتج الآن!</td></tr>`;
-                    return;
-                }
-
-                products.forEach(p => {
-                    tbody.innerHTML += `
-                        <tr>
-                            <td><strong>${p.name}</strong></td>
-                            <td><span style="color:#aaa; font-size:12px;">${p.category || 'عام'}</span></td>
-                            <td style="color:#ef4444;">${p.cost_price || 0} ج.م</td>
-                            <td style="color:#22c55e; font-weight:bold;">${p.selling_price || 0} ج.م</td>
-                            <td><strong>${p.stock_qty || 0}</strong></td>
-                            <td>
-                                <button class="action-btn btn-edit" onclick="editProductPopup(${JSON.stringify(p).replace(/"/g, '&quot;')})">⚙️ تعديل</button>
-                                <button class="action-btn btn-del" onclick="deleteProductFromStorage(${p.id})">🗑️ حذف</button>
-                            </td>
-                        </tr>
-                    `;
-                });
-            } catch (err) {
-                console.error(err);
-            }
+            // جلب الطلبات
+            const oRes = await fetch('/api/orders');
+            const orders = await oRes.json();
+            const oTbody = document.getElementById('admin-orders-rows');
+            oTbody.innerHTML = '';
+            orders.forEach(o => {
+                oTbody.innerHTML += `
+                    <tr>
+                        <td>#${o.id}</td>
+                        <td><strong>${o.customer_name}</strong> (${o.customer_phone})</td>
+                        <td><mark style="background:#d4af37; color:#000; padding:2px 6px; border-radius:4px;">${o.marketer_id || 'طبيعي بدون كود'}</mark></td>
+                        <td>${o.total_price} ج.م</td>
+                        <td>
+                            <select onchange="updateStatus(${o.id}, this.value)" style="padding:6px; background:#141414; color:#fff; border:1px solid var(--primary); border-radius:6px;">
+                                <option value="قيد المراجعة" ${o.status==='قيد المراجعة'?'selected':''}>قيد المراجعة 🔄</option>
+                                <option value="جاري الشحن" ${o.status==='جاري الشحن'?'selected':''}>جاري الشحن 🚚</option>
+                                <option value="تم التوصيل" ${o.status==='تم التوصيل'?'selected':''}>تم التوصيل ✅</option>
+                                <option value="مسترجع" ${o.status==='مسترجع'?'selected':''}>مسترجع ❌</option>
+                            </select>
+                        </td>
+                    </tr>
+                `;
+            });
         }
 
-        async function saveProduct(e) {
+        async function approveMarketer(uid) {
+            const codeInput = document.getElementById(`code-${uid}`).value.trim();
+            if(!codeInput) { alert("أدخل الكود المخصص للمسوق أولاً!"); return; }
+            const res = await fetch('/api/admin/pending_marketers', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ user_id: uid, marketer_code: codeInput })
+            });
+            if(res.ok) { alert("🎉 تم اعتماد كود المسوق وتفعيل حسابه سحابياً بنجاح!"); loadDashboardData(); }
+        }
+
+        async function addStoreProduct(e) {
             e.preventDefault();
-            const id = document.getElementById('prod-id').value;
             const payload = {
-                name: document.getElementById('prod-name').value,
-                category: document.getElementById('prod-category').value,
-                cost_price: parseFloat(document.getElementById('prod-cost').value) || 0,
-                selling_price: parseFloat(document.getElementById('prod-selling').value) || 0,
-                stock_qty: parseInt(document.getElementById('prod-qty').value) || 0,
-                image_url: document.getElementById('prod-image').value,
-                description: document.getElementById('prod-desc').value
+                name: document.getElementById('p-name').value,
+                category: document.getElementById('p-cat').value || 'عام',
+                purchasing_price: document.getElementById('p-purch').value,
+                selling_price: document.getElementById('p-sell').value,
+                commission: document.getElementById('p-comm').value,
+                stock_quantity: document.getElementById('p-stock').value,
+                image_url: document.getElementById('p-img').value,
+                description: document.getElementById('p-desc').value
             };
-
-            const url = id ? `/api/products/${id}` : '/api/products';
-            const method = id ? 'PUT' : 'POST';
-
-            try {
-                const res = await fetch(url, {
-                    method: method,
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                if(res.ok) {
-                    showToast(id ? "✅ تم تحديث بيانات المنتج بنجاح" : "🚀 تم إضافة المنتج للمخزن السحابي بنجاح");
-                    resetProductForm();
-                    loadCashierInventory();
-                    if(typeof loadStoreProducts === 'function') loadStoreProducts();
-                }
-            } catch(err) {
-                alert("حدث خطأ أثناء حفظ البيانات");
-            }
+            const res = await fetch('/api/products', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(payload)
+            });
+            if(res.ok) { alert("📦 تم حفظ وتأمين المنتج بالمخزن بنجاح!"); document.getElementById('prod-form').reset(); loadDashboardData(); }
         }
 
-        function editProductPopup(p) {
-            document.getElementById('form-title').innerText = "⚙️ تعديل بيانات المنتج الحالي";
-            document.getElementById('prod-id').value = p.id;
-            document.getElementById('prod-name').value = p.name;
-            document.getElementById('prod-category').value = p.category;
-            document.getElementById('prod-cost').value = p.cost_price;
-            document.getElementById('prod-selling').value = p.selling_price;
-            document.getElementById('prod-qty').value = p.stock_qty;
-            document.getElementById('prod-image').value = p.image_url || '';
-            document.getElementById('prod-desc').value = p.description || '';
-            document.getElementById('cancel-edit-btn').style.display = 'block';
+        async function updateStatus(oid, newStatus) {
+            await fetch(`/api/orders/${oid}`, {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ status: newStatus })
+            });
+            alert("🚦 تم تحديث حالة الشحنة بالنجاح ومزامنتها فورياً للمسوق والعميل!");
+            loadDashboardData();
         }
 
-        function resetProductForm() {
-            document.getElementById('form-title').innerText = "📦 إضافة منتج جديد للمخزن";
-            document.getElementById('prod-id').value = '';
-            document.getElementById('product-form').reset();
-            document.getElementById('cancel-edit-btn').style.display = 'none';
-        }
-
-        async function deleteProductFromStorage(id) {
-            if(!confirm("هل أنت متأكد تماماً من حذف هذا المنتج نهائياً من السيستم؟")) return;
-            try {
-                const res = await fetch(`/api/products/${id}`, { method: 'DELETE' });
-                if(res.ok) {
-                    showToast("🗑️ تم مسح المنتج تماماً من السيرفر");
-                    loadCashierInventory();
-                }
-            } catch(err) {
-                alert("فشل حذف المنتج");
-            }
-        }
+        window.addEventListener('DOMContentLoaded', loadDashboardData);
     </script>
 </body>
 </html>
