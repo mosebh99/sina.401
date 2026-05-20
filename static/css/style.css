@@ -1,41 +1,46 @@
 /* ==========================================================================
-   Sina 401 Theme - Complete Stylesheet
+   Sina 401 Theme - Enhanced Version
    ========================================================================== */
 :root {
     --primary: #d4af37;
     --primary-gradient: linear-gradient(135deg, #d4af37 0%, #aa8416 100%);
     --primary-hover: #f3e5ab;
-    --bg: #070707;
-    --card-bg: rgba(20, 20, 20, 0.65);
-    --card-border: rgba(212, 175, 55, 0.15);
+    --bg: #0a0a0a;
+    --bg-light: #111111;
+    --card-bg: #1a1a1a;
+    --card-border: rgba(212, 175, 55, 0.2);
     --text: #ffffff;
-    --text-muted: #aaaaaa;
+    --text-muted: #888888;
     --success: #22c55e;
     --danger: #ef4444;
     --warning: #f59e0b;
     --info: #3b82f6;
-    --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    --transition: all 0.3s ease;
 }
 
 /* ==========================================================================
    Base Styles
    ========================================================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: var(--bg);
-    background-image: radial-gradient(circle at 50% 0%, #1a1508 0%, #070707 70%);
+    background-image: 
+        radial-gradient(circle at 20% 50%, rgba(212, 175, 55, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 80% 50%, rgba(212, 175, 55, 0.03) 0%, transparent 50%);
     color: var(--text);
-    margin: 0;
-    padding: 0;
-    scroll-behavior: smooth;
-    direction: rtl;
     min-height: 100vh;
+    line-height: 1.6;
     -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-}
-
-* {
-    box-sizing: border-box;
 }
 
 a {
@@ -47,22 +52,23 @@ a {
 img {
     max-width: 100%;
     height: auto;
+    display: block;
 }
 
 /* ==========================================================================
    Scrollbar
    ========================================================================== */
 ::-webkit-scrollbar {
-    width: 8px;
+    width: 6px;
 }
 
 ::-webkit-scrollbar-track {
-    background: #111;
+    background: var(--bg);
 }
 
 ::-webkit-scrollbar-thumb {
     background: var(--primary);
-    border-radius: 4px;
+    border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -70,45 +76,17 @@ img {
 }
 
 /* ==========================================================================
-   Toast Notifications
-   ========================================================================== */
-.toast {
-    position: fixed;
-    bottom: 30px;
-    left: 30px;
-    background: #141414;
-    border-right: 4px solid var(--primary);
-    padding: 15px 25px;
-    border-radius: 8px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
-    z-index: 9999;
-    display: none;
-    animation: slideIn 0.3s ease-out;
-    font-size: 14px;
-}
-
-@keyframes slideIn {
-    from { transform: translateX(-100%); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* ==========================================================================
    Header
    ========================================================================== */
 header {
-    background: rgba(20, 20, 20, 0.95);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    padding: 15px 40px;
+    background: rgba(10, 10, 10, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    padding: 15px 30px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(212, 175, 55, 0.1);
     position: sticky;
     top: 0;
     z-index: 1000;
@@ -116,7 +94,7 @@ header {
 
 header h1 {
     margin: 0;
-    font-size: 24px;
+    font-size: 22px;
     font-weight: 800;
     background: var(--primary-gradient);
     -webkit-background-clip: text;
@@ -130,16 +108,16 @@ header h1 a:hover {
 
 .nav-links {
     display: flex;
-    gap: 20px;
+    gap: 15px;
     align-items: center;
 }
 
 .nav-links a {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 500;
     color: var(--text-muted);
-    padding: 8px 12px;
-    border-radius: 6px;
+    padding: 8px 14px;
+    border-radius: 8px;
     transition: var(--transition);
 }
 
@@ -153,13 +131,14 @@ header h1 a:hover {
    ========================================================================== */
 .hero-banner {
     text-align: center;
-    padding: 60px 20px;
-    background: radial-gradient(circle, rgba(212,175,55,0.08) 0%, rgba(0,0,0,0) 70%);
+    padding: 50px 20px 40px;
+    background: 
+        radial-gradient(ellipse at 50% 0%, rgba(212, 175, 55, 0.08) 0%, transparent 60%);
     animation: fadeIn 0.8s ease-out;
 }
 
 .hero-banner h2 {
-    font-size: 32px;
+    font-size: 28px;
     color: var(--text);
     margin-bottom: 10px;
     font-weight: 700;
@@ -167,30 +146,33 @@ header h1 a:hover {
 
 .hero-banner p {
     color: var(--text-muted);
-    font-size: 16px;
-    margin: 0;
+    font-size: 15px;
+    max-width: 500px;
+    margin: 0 auto;
 }
 
 /* ==========================================================================
    Controls & Search
    ========================================================================== */
 .controls-row {
-    max-width: 1200px;
+    max-width: 800px;
     margin: 20px auto;
     padding: 0 20px;
     display: flex;
-    gap: 15px;
+    gap: 12px;
     flex-wrap: wrap;
+    justify-content: center;
 }
 
 .search-input {
     flex: 1;
-    min-width: 250px;
-    background: #111;
+    min-width: 280px;
+    max-width: 500px;
+    background: var(--bg-light);
     border: 1px solid #222;
     padding: 12px 20px;
     border-radius: 30px;
-    color: #fff;
+    color: var(--text);
     font-family: inherit;
     font-size: 14px;
     transition: var(--transition);
@@ -199,27 +181,44 @@ header h1 a:hover {
 .search-input:focus {
     outline: none;
     border-color: var(--primary);
-    box-shadow: 0 0 15px rgba(212, 175, 55, 0.15);
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.1);
 }
 
 .search-input::placeholder {
     color: #555;
 }
 
-.filter-select {
-    background: #111;
-    border: 1px solid #222;
-    padding: 12px 20px;
-    border-radius: 30px;
-    color: #fff;
-    font-family: inherit;
-    cursor: pointer;
-    transition: var(--transition);
+/* ==========================================================================
+   Category Filter
+   ========================================================================== */
+.category-filter {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 15px auto;
+    justify-content: center;
+    max-width: 800px;
+    padding: 0 20px;
 }
 
-.filter-select:focus {
-    outline: none;
+.category-btn {
+    background: var(--bg-light);
+    border: 1px solid #222;
+    color: var(--text-muted);
+    padding: 8px 18px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: var(--transition);
+    font-size: 13px;
+    font-family: inherit;
+}
+
+.category-btn.active,
+.category-btn:hover {
+    background: var(--primary-gradient);
+    color: #000;
     border-color: var(--primary);
+    font-weight: 600;
 }
 
 /* ==========================================================================
@@ -227,10 +226,10 @@ header h1 a:hover {
    ========================================================================== */
 .products-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 30px;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 25px;
     max-width: 1200px;
-    margin: 40px auto;
+    margin: 30px auto;
     padding: 0 20px;
 }
 
@@ -242,66 +241,81 @@ header h1 a:hover {
     display: flex;
     flex-direction: column;
     position: relative;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
     transition: var(--transition);
     animation: fadeIn 0.5s ease-out;
 }
 
 .product-card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-8px);
     border-color: rgba(212, 175, 55, 0.4);
-    box-shadow: 0 12px 30px rgba(212, 175, 55, 0.1);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 30px rgba(212, 175, 55, 0.05);
+}
+
+.product-card .img-container {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+    background: #0d0d0d;
 }
 
 .product-card img {
     width: 100%;
-    height: 240px;
+    height: 100%;
     object-fit: cover;
     transition: var(--transition);
 }
 
 .product-card:hover img {
-    transform: scale(1.03);
+    transform: scale(1.05);
 }
 
 .card-body {
-    padding: 20px;
+    padding: 18px;
     display: flex;
     flex-direction: column;
     flex-grow: 1;
 }
 
 .card-body h3 {
-    margin: 0 0 10px 0;
-    font-size: 18px;
+    margin: 0 0 8px 0;
+    font-size: 16px;
     font-weight: 600;
     line-height: 1.4;
+}
+
+.card-body h3 a {
+    color: var(--text);
 }
 
 .card-body h3 a:hover {
     color: var(--primary);
 }
 
+.card-body .category {
+    color: var(--text-muted);
+    font-size: 12px;
+    margin-bottom: 10px;
+}
+
 .price-box {
-    margin-top: auto;
     font-size: 20px;
     font-weight: 700;
     color: var(--primary);
+    margin-bottom: 15px;
 }
 
 .stock-badge {
     position: absolute;
-    top: 15px;
-    right: 15px;
-    background: rgba(0, 0, 0, 0.75);
+    top: 12px;
+    right: 12px;
+    background: rgba(0, 0, 0, 0.8);
     border: 1px solid rgba(255, 255, 255, 0.1);
     color: #fff;
-    padding: 4px 12px;
-    border-radius: 30px;
+    padding: 5px 12px;
+    border-radius: 20px;
     font-size: 11px;
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(10px);
     z-index: 2;
 }
 
@@ -312,36 +326,102 @@ header h1 a:hover {
     background: var(--primary-gradient);
     color: #000;
     border: none;
-    padding: 12px 25px;
+    padding: 10px 20px;
     border-radius: 25px;
-    font-weight: bold;
+    font-weight: 700;
     font-family: inherit;
     cursor: pointer;
-    width: 100%;
-    margin-top: 15px;
-    font-size: 14px;
+    font-size: 13px;
     display: inline-flex;
     justify-content: center;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     transition: var(--transition);
     box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2);
+    width: 100%;
 }
 
 .btn-primary:hover {
     transform: scale(1.02);
-    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
-    background: var(--primary-hover);
+    box-shadow: 0 6px 25px rgba(212, 175, 55, 0.4);
 }
 
-.btn-primary:active {
-    transform: scale(0.98);
+.btn-whatsapp {
+    background: linear-gradient(135deg, #25d366, #128c7e);
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    font-size: 13px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    transition: var(--transition);
+    box-shadow: 0 4px 15px rgba(37, 211, 102, 0.2);
+    width: 100%;
 }
 
-.btn-primary:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    transform: none;
+.btn-whatsapp:hover {
+    transform: scale(1.02);
+    box-shadow: 0 6px 25px rgba(37, 211, 102, 0.4);
+}
+
+/* ==========================================================================
+   Cart Section
+   ========================================================================== */
+.cart-section {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 25px;
+    background: var(--card-bg);
+    border-radius: 16px;
+    border: 1px solid var(--card-border);
+    display: none;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #222;
+}
+
+.cart-item img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-left: 12px;
+}
+
+.qty-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.qty-btn {
+    background: var(--bg-light);
+    border: 1px solid #333;
+    color: var(--text);
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: var(--transition);
+}
+
+.qty-btn:hover {
+    background: var(--primary);
+    color: #000;
+    border-color: var(--primary);
 }
 
 /* ==========================================================================
@@ -349,16 +429,16 @@ header h1 a:hover {
    ========================================================================== */
 .floating-whatsapp {
     position: fixed;
-    bottom: 30px;
-    right: 30px;
-    width: 60px;
-    height: 60px;
-    background: #25d366;
+    bottom: 25px;
+    right: 25px;
+    width: 55px;
+    height: 55px;
+    background: linear-gradient(135deg, #25d366, #128c7e);
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
-    box-shadow: 0 10px 25px rgba(37, 211, 102, 0.35);
+    box-shadow: 0 8px 25px rgba(37, 211, 102, 0.3);
     z-index: 999;
     transition: var(--transition);
     font-size: 24px;
@@ -366,19 +446,154 @@ header h1 a:hover {
 }
 
 .floating-whatsapp:hover {
-    transform: scale(1.1) rotate(10deg);
-    box-shadow: 0 12px 30px rgba(37, 211, 102, 0.5);
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 12px 35px rgba(37, 211, 102, 0.4);
 }
 
 /* ==========================================================================
-   Forms
+   Tracking Section
    ========================================================================== */
-form {
-    width: 100%;
+.track-section {
+    max-width: 500px;
+    margin: 40px auto;
+    padding: 25px;
+    background: var(--card-bg);
+    border-radius: 16px;
+    border: 1px solid var(--card-border);
 }
 
-input, textarea, select {
-    font-family: inherit;
+.track-section h3 {
+    color: var(--primary);
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 18px;
+}
+
+/* ==========================================================================
+   Toast Notifications
+   ========================================================================== */
+.toast {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background: var(--card-bg);
+    border-right: 3px solid var(--primary);
+    padding: 15px 25px;
+    border-radius: 10px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    display: none;
+    animation: slideIn 0.3s ease-out;
+    font-size: 14px;
+    max-width: 350px;
+}
+
+@keyframes slideIn {
+    from { transform: translateX(-100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================================================
+   Dropdown Menu
+   ========================================================================== */
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 55px;
+    left: 20px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    width: 200px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    z-index: 1001;
+    overflow: hidden;
+}
+
+.dropdown-menu a {
+    display: block;
+    padding: 12px 16px;
+    color: var(--text);
+    font-size: 14px;
+    transition: var(--transition);
+}
+
+.dropdown-menu a:hover {
+    background: var(--primary-gradient);
+    color: #000;
+}
+
+.dropdown-menu.show {
+    display: block;
+    animation: fadeIn 0.2s ease-out;
+}
+
+/* ==========================================================================
+   Menu Dots
+   ========================================================================== */
+.menu-dots {
+    font-size: 24px;
+    color: var(--primary);
+    cursor: pointer;
+    padding: 8px;
+    user-select: none;
+    border-radius: 8px;
+    transition: var(--transition);
+}
+
+.menu-dots:hover {
+    background: rgba(212, 175, 55, 0.1);
+}
+
+/* ==========================================================================
+   Cart Badge
+   ========================================================================== */
+.cart-badge {
+    background: var(--danger);
+    color: white;
+    border-radius: 50%;
+    padding: 2px 7px;
+    font-size: 11px;
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    font-weight: bold;
+}
+
+/* ==========================================================================
+   Empty States
+   ========================================================================== */
+.empty-state {
+    text-align: center;
+    padding: 50px 20px;
+    color: var(--text-muted);
+    grid-column: 1 / -1;
+}
+
+.empty-state p {
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+/* ==========================================================================
+   Loading Skeleton
+   ========================================================================== */
+.loading-skeleton {
+    background: linear-gradient(90deg, var(--bg-light) 25%, #1a1a1a 50%, var(--bg-light) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 16px;
+    height: 280px;
+}
+
+@keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
 }
 
 /* ==========================================================================
@@ -387,34 +602,28 @@ input, textarea, select {
 @media (max-width: 768px) {
     header {
         padding: 12px 20px;
-        flex-wrap: wrap;
-        gap: 10px;
     }
 
     header h1 {
-        font-size: 20px;
+        font-size: 18px;
+    }
+
+    .hero-banner {
+        padding: 35px 15px 25px;
     }
 
     .hero-banner h2 {
-        font-size: 24px;
-    }
-
-    .hero-banner p {
-        font-size: 14px;
+        font-size: 22px;
     }
 
     .products-grid {
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: 20px;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 15px;
         padding: 0 15px;
     }
 
-    .product-card img {
-        height: 180px;
-    }
-
-    .controls-row {
-        padding: 0 15px;
+    .product-card .img-container {
+        height: 170px;
     }
 
     .search-input {
@@ -428,15 +637,6 @@ input, textarea, select {
         right: 20px;
         font-size: 20px;
     }
-
-    .nav-links {
-        gap: 10px;
-    }
-
-    .nav-links a {
-        font-size: 12px;
-        padding: 6px 10px;
-    }
 }
 
 @media (max-width: 480px) {
@@ -444,145 +644,29 @@ input, textarea, select {
         grid-template-columns: 1fr;
     }
 
-    .hero-banner {
-        padding: 40px 15px;
-    }
-
     .hero-banner h2 {
         font-size: 20px;
     }
+
+    .category-filter {
+        gap: 8px;
+    }
+
+    .category-btn {
+        padding: 6px 14px;
+        font-size: 12px;
+    }
 }
 
 /* ==========================================================================
-   Loading States
-   ========================================================================== */
-.loading-skeleton {
-    background: linear-gradient(90deg, #111 25%, #1a1a1a 50%, #111 75%);
-    background-size: 200% 100%;
-    animation: shimmer 1.5s infinite;
-    border-radius: 12px;
-}
-
-@keyframes shimmer {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
-}
-
-/* ==========================================================================
-   Empty States
-   ========================================================================== */
-.empty-state {
-    text-align: center;
-    padding: 40px;
-    color: var(--text-muted);
-}
-
-.empty-state img {
-    width: 120px;
-    opacity: 0.5;
-    margin-bottom: 15px;
-}
-
-/* ==========================================================================
-   Tables
-   ========================================================================== */
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-th, td {
-    padding: 12px;
-    text-align: right;
-    border-bottom: 1px solid #222;
-}
-
-th {
-    background: #111;
-    color: var(--primary);
-    font-weight: 600;
-}
-
-tr:hover {
-    background: rgba(255, 255, 255, 0.02);
-}
-
-/* ==========================================================================
-   Status Badges
-   ========================================================================== */
-.status-badge {
-    display: inline-block;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: bold;
-}
-
-.status-pending {
-    background: rgba(245, 158, 11, 0.2);
-    color: #f59e0b;
-}
-
-.status-shipping {
-    background: rgba(59, 130, 246, 0.2);
-    color: #3b82f6;
-}
-
-.status-delivered {
-    background: rgba(34, 197, 94, 0.2);
-    color: #22c55e;
-}
-
-.status-returned {
-    background: rgba(239, 68, 68, 0.2);
-    color: #ef4444;
-}
-
-/* ==========================================================================
-   Cards & Containers
-   ========================================================================== */
-.card {
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 12px;
-    padding: 20px;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-}
-
-/* ==========================================================================
-   Animations
-   ========================================================================== */
-@keyframes pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-}
-
-@keyframes bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
-}
-
-.animate-fade-in {
-    animation: fadeIn 0.5s ease-out;
-}
-
-.animate-slide-in {
-    animation: slideIn 0.3s ease-out;
-}
-
-/* ==========================================================================
-   Focus States
-   ========================================================================== */
-*:focus-visible {
-    outline: 2px solid var(--primary);
-    outline-offset: 2px;
-}
-
-/* ==========================================================================
-   Selection
+   Selection & Focus
    ========================================================================== */
 ::selection {
     background: rgba(212, 175, 55, 0.3);
     color: #fff;
+}
+
+*:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
 }
