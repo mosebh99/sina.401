@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بوابة المسوقين | Sina 401</title>
+    <link rel="icon" type="image/png" href="/static/css/logo.png.jpeg">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        .marketer-container { max-width: 900px; margin: 30px auto; padding: 0 20px; }
+        .marketer-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 30px; margin-bottom: 20px; text-align: center; }
+        .marketer-card h2 { color: var(--primary); margin-top: 0; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin: 20px 0; }
+        .stat-box { background: #111; padding: 15px; border-radius: 8px; border: 1px solid #222; }
+        .stat-box .number { font-size: 28px; font-weight: bold; color: var(--primary); }
+        .stat-box .label { font-size: 12px; color: var(--text-muted); margin-top: 5px; }
+        .orders-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .orders-table th, .orders-table td { padding: 12px; border-bottom: 1px solid #222; text-align: right; }
+        .orders-table th { background: #111; color: var(--primary); }
+        .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+        .status-pending { background: #f59e0b; color: #000; }
+        .status-shipping { background: #3b82f6; color: #fff; }
+        .status-delivered { background: #22c55e; color: #000; }
+        .status-returned { background: #ef4444; color: #fff; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1><a href="/">✨ Sina 401</a></h1>
+        <div class="nav-links"><a href="/">⬅️ العودة للمتجر</a></div>
+    </header>
+
+    <div class="marketer-container">
+        <div class="marketer-card">
+            <h2>📊 بوابة المسوقين</h2>
+            <p style="color: var(--text-muted);">أدخل كود المسوق الخاص بك لمتابعة أرباحك وطلباتك</p>
+
+            <div style="display: flex; gap: 10px; max-width: 400px; margin: 20px auto;">
+                <input type="text" id="marketer-code-input" class="search-input" placeholder="أدخل كود المسوق..." style="flex: 1;">
+                <button class="btn-primary" style="width: auto; margin: 0; padding: 0 25px;" onclick="loadMarketerData()">بحث</button>
+            </div>
+        </div>
+
+        <div id="marketer-stats" style="display: none;">
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="number" id="stat-orders">0</div>
+                    <div class="label">إجمالي الطلبات</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number" id="stat-sales">0</div>
+                    <div class="label">إجمالي المبيعات (ج.م)</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number" id="stat-commission">0</div>
+                    <div class="label">عمولتك المتوقعة (ج.م)</div>
+                </div>
+            </div>
+
+            <h3 style="color: var(--primary); margin-top: 30px;">📋 طلباتك المسجلة</h3>
+            <div style="overflow-x: auto;">
+                <table class="orders-table">
+                    <thead>
+                        <tr>
+                            <th>رقم الطلب</th>
+                            <th>العميل</th>
+                            <th>الهاتف</th>
+                            <th>المبلغ</th>
+                            <th>الحالة</th>
+                            <th>التاريخ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="marketer-orders-body">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function loadMarketerData() {
+            const code = document.getElementById('marketer-code-input').value.trim();
+            if (!code) { alert('من فضلك أدخل كود المسوق'); return; }
+
+            try {
+                const res = await fetch(`/api/marketers/stats/${code}`);
+                const data = await res.json();
+
+                if (data.error) {
+                    alert('❌ ' + data.error);
+                    return;
+                }
+
+                document.getElementById('marketer-stats').style.display = 'block';
+                document.getElementById('stat-orders').innerText = data.stats.total_orders || 0;
+                document.getElementById('stat-sales').innerText = (data.stats.total_sales || 0).toFixed(2);
+
+                // حساب العمولة (10% افتراضياً)
+                const commission = (data.stats.total_sales || 0) * 0.10;
+                document.getElementById('stat-commission').innerText = commission.toFixed(2);
+
+                const tbody = document.getElementById('marketer-orders-body');
+                tbody.innerHTML = '';
+
+                if (!data.orders || data.orders.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#aaa;">لا توجد طلبات مسجلة</td></tr>';
+                    return;
+                }
+
+                data.orders.forEach(o => {
+                    let statusClass = 'status-pending';
+                    let statusText = '⏳ قيد المراجعة';
+                    if (o.status === 'جاري الشحن') { statusClass = 'status-shipping'; statusText = '🚚 جاري الشحن'; }
+                    else if (o.status === 'تم التسليم') { statusClass = 'status-delivered'; statusText = '✅ تم التسليم'; }
+                    else if (o.status === 'مرتجع') { statusClass = 'status-returned'; statusText = '❌ مرتجع'; }
+
+                    tbody.innerHTML += `
+                        <tr>
+                            <td><strong>#${o.id}</strong></td>
+                            <td>${o.customer_name || '-'}</td>
+                            <td>${o.customer_phone || '-'}</td>
+                            <td style="color: var(--primary); font-weight: bold;">${o.total_price || 0} ج.م</td>
+                            <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                            <td style="color: var(--text-muted); font-size: 12px;">${o.created_at ? new Date(o.created_at).toLocaleDateString('ar-EG') : '-'}</td>
+                        </tr>
+                    `;
+                });
+            } catch (e) {
+                alert('❌ فشل الاتصال بالسيرفر');
+            }
+        }
+
+        // تحميل تلقائي إذا كان هناك كود محفوظ
+        const savedCode = localStorage.getItem('active_marketer_code');
+        if (savedCode) {
+            document.getElementById('marketer-code-input').value = savedCode;
+        }
+    </script>
+</body>
+</html>
