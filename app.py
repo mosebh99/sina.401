@@ -463,11 +463,11 @@ def api_marketers():
             hashed_pass = generate_password_hash(password)
             cur = conn.cursor(cursor_factory=RealDictCursor)
             cur.execute("""
-                INSERT INTO marketers (name, phone, code, password, commission_rate)
-                VALUES (%s, %s, %s, %s, %s) RETURNING id, name, phone, code, commission_rate, total_sales, total_commission, created_at;
+                INSERT INTO marketers (name, phone, code, password, commission_rate, total_sales, total_commission)
+                VALUES (%s, %s, %s, %s, %s, %s, %s) RETURNING id, name, phone, code, commission_rate, total_sales, total_commission, created_at;
             """, (
                 data.get('name'), data.get('phone'), data.get('code'),
-                hashed_pass, data.get('commission_rate', 0)
+                hashed_pass, data.get('commission_rate', 0), 0, 0
             ))
             new_marketer = cur.fetchone()
             conn.commit()
