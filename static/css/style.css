@@ -1,20 +1,14 @@
-/* ============================================
-   SINA 401 - Modern E-Commerce Theme
-   Clean & Organized CSS
-   ============================================ */
-
-/* ===== CSS VARIABLES ===== */
 :root {
     --primary: #d4af37;
-    --primary-dark: #aa8416;
-    --primary-light: #f3e5ab;
+    --primary-dark: #b8860b;
+    --primary-light: #f4e4a6;
     --bg: #0a0a0a;
-    --bg-light: #111;
-    --card-bg: #161616;
+    --bg-light: #141414;
+    --card-bg: #1a1a1a;
     --card-border: rgba(212, 175, 55, 0.15);
-    --text: #fff;
-    --text-muted: #999;
-    --text-dark: #666;
+    --text: #ffffff;
+    --text-muted: #999999;
+    --text-dark: #666666;
     --success: #22c55e;
     --danger: #ef4444;
     --warning: #f59e0b;
@@ -26,7 +20,6 @@
     --transition: all 0.3s ease;
 }
 
-/* ===== RESET & BASE ===== */
 *, *::before, *::after {
     margin: 0;
     padding: 0;
@@ -65,7 +58,6 @@ button {
     outline: none;
 }
 
-/* ===== SCROLLBAR ===== */
 ::-webkit-scrollbar {
     width: 6px;
 }
@@ -79,14 +71,13 @@ button {
     border-radius: 3px;
 }
 
-/* ===== HEADER ===== */
 header {
     position: sticky;
     top: 0;
     z-index: 1000;
-    background: rgba(10, 10, 10, 0.95);
+    background: rgba(10, 10, 10, 0.98);
     backdrop-filter: blur(20px);
-    border-bottom: 1px solid rgba(255,255,255,0.05);
+    border-bottom: 1px solid rgba(212, 175, 55, 0.1);
     padding: 12px 24px;
     display: flex;
     justify-content: space-between;
@@ -167,7 +158,6 @@ header {
     justify-content: center;
 }
 
-/* Dropdown Menu */
 .dropdown-menu {
     display: none;
     position: absolute;
@@ -179,6 +169,7 @@ header {
     min-width: 200px;
     box-shadow: var(--shadow);
     overflow: hidden;
+    z-index: 1001;
 }
 
 .dropdown-menu.show {
@@ -197,26 +188,28 @@ header {
     color: #000;
 }
 
-/* ===== HERO SECTION ===== */
 .hero {
     text-align: center;
-    padding: 80px 20px 60px;
-    background: 
-        radial-gradient(ellipse at 50% 0%, rgba(212, 175, 55, 0.08) 0%, transparent 60%);
+    padding: 60px 20px 50px;
+    background: radial-gradient(ellipse at 50% 0%, rgba(212, 175, 55, 0.08) 0%, transparent 60%);
 }
 
 .hero h2 {
-    font-size: 36px;
+    font-size: 32px;
     font-weight: 800;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
     color: var(--text);
 }
 
+.hero h2 span {
+    color: var(--primary);
+}
+
 .hero p {
-    font-size: 18px;
+    font-size: 16px;
     color: var(--text-muted);
     max-width: 500px;
-    margin: 0 auto 30px;
+    margin: 0 auto 25px;
 }
 
 .hero-btn {
@@ -228,6 +221,9 @@ header {
     font-weight: 700;
     transition: var(--transition);
     box-shadow: var(--shadow-gold);
+    display: inline-block;
+    border: none;
+    cursor: pointer;
 }
 
 .hero-btn:hover {
@@ -235,7 +231,6 @@ header {
     box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3);
 }
 
-/* ===== CART SECTION ===== */
 .cart-section {
     display: none;
     position: fixed;
@@ -284,6 +279,8 @@ header {
     align-items: center;
     justify-content: center;
     transition: var(--transition);
+    border: none;
+    cursor: pointer;
 }
 
 .close-btn:hover {
@@ -351,6 +348,8 @@ header {
     font-size: 16px;
     font-weight: bold;
     transition: var(--transition);
+    border: none;
+    cursor: pointer;
 }
 
 .qty-control button:hover {
@@ -377,6 +376,8 @@ header {
     color: var(--danger);
     font-size: 18px;
     transition: var(--transition);
+    border: none;
+    cursor: pointer;
 }
 
 .remove-btn:hover {
@@ -419,6 +420,7 @@ header {
     color: var(--text);
     font-size: 14px;
     transition: var(--transition);
+    font-family: inherit;
 }
 
 .checkout-form input:focus {
@@ -439,6 +441,8 @@ header {
     font-weight: 700;
     margin-top: 8px;
     transition: var(--transition);
+    border: none;
+    cursor: pointer;
 }
 
 .checkout-btn:hover {
@@ -452,7 +456,6 @@ header {
     cursor: not-allowed;
 }
 
-/* ===== CATEGORIES ===== */
 .categories-section {
     padding: 20px;
     max-width: 800px;
@@ -486,7 +489,6 @@ header {
     font-weight: 600;
 }
 
-/* ===== PRODUCTS SECTION ===== */
 .products-section {
     padding: 40px 20px;
     max-width: 1200px;
@@ -515,7 +517,6 @@ header {
     gap: 25px;
 }
 
-/* ===== PRODUCT CARD ===== */
 .product-card {
     background: var(--card-bg);
     border: 1px solid var(--card-border);
@@ -627,6 +628,9 @@ header {
     font-weight: 600;
     transition: var(--transition);
     text-align: center;
+    display: inline-block;
+    border: none;
+    cursor: pointer;
 }
 
 .btn-whatsapp:hover {
@@ -643,6 +647,9 @@ header {
     font-weight: 600;
     transition: var(--transition);
     text-align: center;
+    display: inline-block;
+    border: none;
+    cursor: pointer;
 }
 
 .btn-cart:hover {
@@ -650,7 +657,6 @@ header {
     box-shadow: var(--shadow-gold);
 }
 
-/* ===== TRACKING SECTION ===== */
 .tracking-section {
     padding: 60px 20px;
     max-width: 500px;
@@ -684,6 +690,7 @@ header {
     border-radius: var(--radius-sm);
     color: var(--text);
     font-size: 14px;
+    font-family: inherit;
 }
 
 .tracking-input input:focus {
@@ -699,6 +706,8 @@ header {
     font-weight: 700;
     font-size: 14px;
     transition: var(--transition);
+    border: none;
+    cursor: pointer;
 }
 
 .tracking-input button:hover {
@@ -706,7 +715,6 @@ header {
     box-shadow: var(--shadow-gold);
 }
 
-/* Order Cards */
 .order-card {
     background: var(--bg);
     border-radius: var(--radius-sm);
@@ -759,7 +767,6 @@ header {
     margin: 4px 0;
 }
 
-/* ===== FOOTER ===== */
 footer {
     background: var(--bg-light);
     border-top: 1px solid #222;
@@ -823,7 +830,6 @@ footer {
     font-size: 13px;
 }
 
-/* ===== FLOATING WHATSAPP ===== */
 .floating-whatsapp {
     position: fixed;
     bottom: 25px;
@@ -847,7 +853,6 @@ footer {
     box-shadow: 0 12px 35px rgba(37, 211, 102, 0.4);
 }
 
-/* ===== TOAST ===== */
 .toast {
     position: fixed;
     top: 20px;
@@ -877,7 +882,6 @@ footer {
     to { transform: translateX(0); opacity: 1; }
 }
 
-/* ===== LOADING SKELETON ===== */
 .loading-skeleton {
     background: linear-gradient(90deg, var(--bg-light) 25%, #1a1a1a 50%, var(--bg-light) 75%);
     background-size: 200% 100%;
@@ -891,7 +895,6 @@ footer {
     100% { background-position: -200% 0; }
 }
 
-/* ===== EMPTY STATE ===== */
 .empty-state {
     grid-column: 1 / -1;
     text-align: center;
@@ -920,7 +923,6 @@ footer {
     margin-top: 15px;
 }
 
-/* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
     header {
         padding: 10px 15px;
@@ -986,7 +988,6 @@ footer {
     }
 }
 
-/* ===== SELECTION ===== */
 ::selection {
     background: rgba(212, 175, 55, 0.3);
     color: #fff;
