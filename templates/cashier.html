@@ -327,6 +327,7 @@
     </header>
 
     <div class="admin-container">
+        <!-- لوحة الإحصائيات -->
         <div class="stats-dashboard" id="dashboard-stats">
             <div class="stat-card">
                 <div class="icon">💰</div>
@@ -350,6 +351,7 @@
             </div>
         </div>
 
+        <!-- رسم بياني -->
         <div class="chart-container">
             <h3 style="color: #d4af37; margin-top: 0;">📊 توزيع الطلبات حسب الحالة</h3>
             <div id="orders-chart"></div>
@@ -362,6 +364,7 @@
             <button class="tab-btn manager-only" onclick="switchTab('users-tab', this)">🔐 المستخدمين</button>
         </div>
 
+        <!-- تبويب المنتجات -->
         <div id="products-tab" class="tab-content active">
             <h3 style="color:#d4af37; margin-top:0;">✨ إضافة أو تعديل منتج</h3>
 
@@ -420,6 +423,7 @@
             </div>
         </div>
 
+        <!-- تبويب الطلبات -->
         <div id="orders-tab" class="tab-content">
             <h3 style="color:#d4af37; margin-top:0;">📋 سجل الطلبات</h3>
             <div style="overflow-x:auto;">
@@ -442,6 +446,7 @@
             </div>
         </div>
 
+        <!-- تبويب المسوقين (مدير فقط) -->
         <div id="marketers-tab" class="tab-content">
             <h3 style="color:#d4af37; margin-top:0;">➕ إضافة مسوق جديد</h3>
             <form id="marketer-form" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:15px; margin-bottom:30px;">
@@ -473,6 +478,7 @@
             </div>
         </div>
 
+        <!-- تبويب المستخدمين (مدير فقط) -->
         <div id="users-tab" class="tab-content">
             <h3 style="color:#d4af37; margin-top:0;">➕ إضافة مستخدم جديد</h3>
             <form id="user-form" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:15px; margin-bottom:30px;">
@@ -521,6 +527,7 @@
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
+        // التحقق من الصلاحيات
         async function checkAuth() {
             try {
                 const res = await fetch('/api/auth/check');
@@ -533,6 +540,7 @@
                 document.getElementById('user-name').innerText = data.name || 'مستخدم';
                 document.getElementById('user-role').innerText = data.role === 'manager' ? 'مدير' : 'أدمن';
 
+                // إخفاء تبويبات المدير للأدمن
                 if (data.role !== 'manager') {
                     document.querySelectorAll('.manager-only').forEach(el => {
                         el.style.display = 'none';
@@ -555,6 +563,7 @@
             if(tabId === 'users-tab') { loadAdminUsers(); }
         }
 
+        // ضغط الصور
         function compressAndProcessImage(file, type) {
             const reader = new FileReader();
             reader.readAsDataURL(file);
@@ -605,6 +614,9 @@
             }
         }
 
+        // ==========================================
+        // تحميل الإحصائيات
+        // ==========================================
         async function loadDashboardStats() {
             try {
                 const res = await fetch('/api/stats/dashboard');
@@ -647,6 +659,9 @@
             return 'linear-gradient(135deg, #d4af37, #b8860b)';
         }
 
+        // ==========================================
+        // إدارة المنتجات
+        // ==========================================
         async function loadAdminProducts() {
             try {
                 const res = await fetch('/api/products');
@@ -776,6 +791,9 @@
             } catch(e) { showToast("❌ فشل الاتصال.", "error"); }
         }
 
+        // ==========================================
+        // إدارة الطلبات
+        // ==========================================
         async function loadAdminOrders() {
             try {
                 const res = await fetch('/api/orders');
@@ -794,7 +812,7 @@
                         try {
                             let itemsArr = JSON.parse(o.products_json);
                             if(Array.isArray(itemsArr)){
-                                itemsArr.forEach(i => { itemsHtml += `• ${i.name} (×${i.qty})<<br>`; });
+                                itemsArr.forEach(i => { itemsHtml += `• ${i.name} (×${i.qty})<br>`; });
                             }
                         } catch(e) { itemsHtml = '-'; }
                     }
@@ -839,6 +857,9 @@
             } catch(e) { showToast("❌ فشل التحديث.", "error"); }
         }
 
+        // ==========================================
+        // إدارة المسوقين
+        // ==========================================
         async function loadAdminMarketers() {
             try {
                 const res = await fetch('/api/marketers');
@@ -908,6 +929,9 @@
             } catch(e) { showToast("❌ فشل الاتصال.", "error"); }
         }
 
+        // ==========================================
+        // إدارة المستخدمين (مدير فقط)
+        // ==========================================
         async function loadAdminUsers() {
             try {
                 const res = await fetch('/api/users');
@@ -977,6 +1001,9 @@
             } catch(e) { showToast("❌ فشل الاتصال.", "error"); }
         }
 
+        // ==========================================
+        // تسجيل الخروج
+        // ==========================================
         async function logout() {
             if(!confirm("تسجيل الخروج؟")) return;
             try {
@@ -985,6 +1012,7 @@
             } catch(e) { window.location.href = '/login.html'; }
         }
 
+        // التحميل الأولي
         window.addEventListener('DOMContentLoaded', () => {
             loadDashboardStats();
             loadAdminProducts();
