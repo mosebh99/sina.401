@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حساب المسوق | سينا ستور</title>
+    <link rel="icon" type="image/png" href="/static/css/logo.png.jpeg">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            min-height: 100vh;
+        }
+        header {
+            background: rgba(10,10,10,0.98);
+            backdrop-filter: blur(20px);
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(212,175,55,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .logo {
+            font-size: 20px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #d4af37, #b8860b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .user-info {
+            color: #888;
+            font-size: 13px;
+        }
+        .user-info span {
+            color: #d4af37;
+            font-weight: bold;
+        }
+        .logout-btn {
+            background: #ef4444;
+            color: #fff;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+        .logout-btn:hover { background: #dc2626; }
+        .nav-links a {
+            color: #888;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+        .nav-links
