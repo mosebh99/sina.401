@@ -3,44 +3,228 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>عرض تفاصيل المنتج | Sina 401</title>
+    <title>تفاصيل المنتج | سينا ستور</title>
     <link rel="icon" type="image/png" href="/static/css/logo.png.jpeg">
-    <link rel="stylesheet" href="/static/css/style.css">
     <style>
-        .details-container { max-width: 1000px; margin: 40px auto; padding: 20px; display: flex; gap: 40px; flex-wrap: wrap; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            min-height: 100vh;
+        }
+        header {
+            background: rgba(10,10,10,0.98);
+            backdrop-filter: blur(20px);
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(212,175,55,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .logo {
+            font-size: 20px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #d4af37, #b8860b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .nav-links a {
+            color: #888;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+        .nav-links a:hover { color: #d4af37; }
+
+        .details-container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 20px;
+            display: flex;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
         .gallery-box { flex: 1; min-width: 300px; }
         .info-box { flex: 1; min-width: 300px; }
-        .main-img { width: 100%; max-height: 400px; object-fit: cover; border-radius: 12px; border: 1px solid var(--primary); background: #000; cursor: zoom-in; transition: transform 0.3s; }
+        .main-img {
+            width: 100%;
+            max-height: 400px;
+            object-fit: cover;
+            border-radius: 12px;
+            border: 1px solid rgba(212,175,55,0.2);
+            background: #000;
+            cursor: zoom-in;
+            transition: transform 0.3s;
+        }
         .main-img:hover { transform: scale(1.02); }
-        .thumbnails { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
-        .thumbnails img { width: 70px; height: 70px; object-fit: cover; border-radius: 8px; border: 2px solid #333; cursor: pointer; transition: 0.3s; }
-        .thumbnails img.active, .thumbnails img:hover { border-color: var(--primary); }
+        .thumbnails {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        .thumbnails img {
+            width: 70px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid #333;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .thumbnails img.active, .thumbnails img:hover { border-color: #d4af37; }
 
-        .product-title { color: var(--primary); margin-top: 0; font-size: 28px; }
-        .product-category { color: var(--text-muted); font-size: 14px; margin-bottom: 15px; }
-        .product-desc { line-height: 1.8; color: #ccc; white-space: pre-line; margin: 20px 0; padding: 15px; background: #111; border-radius: 8px; }
-        .product-price { font-size: 32px; color: var(--primary); font-weight: bold; margin: 20px 0; }
-        .product-stock { display: inline-block; padding: 5px 15px; border-radius: 20px; font-size: 13px; margin-bottom: 20px; }
+        .product-title { color: #d4af37; margin-top: 0; font-size: 28px; }
+        .product-category { color: #888; font-size: 14px; margin-bottom: 15px; }
+        .product-desc {
+            line-height: 1.8;
+            color: #ccc;
+            white-space: pre-line;
+            margin: 20px 0;
+            padding: 15px;
+            background: #111;
+            border-radius: 8px;
+        }
+        .product-price { font-size: 32px; color: #d4af37; font-weight: bold; margin: 20px 0; }
+        .product-commission {
+            font-size: 14px;
+            color: #22c55e;
+            margin-bottom: 15px;
+            padding: 8px 15px;
+            background: rgba(34, 197, 94, 0.1);
+            border-radius: 8px;
+            display: inline-block;
+        }
+        .product-stock {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 13px;
+            margin-bottom: 20px;
+        }
         .stock-available { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
         .stock-low { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
         .stock-out { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
 
         .action-btns { display: flex; gap: 15px; margin-top: 25px; flex-wrap: wrap; }
-        .action-btns button { flex: 1; min-width: 150px; }
+        .action-btns button { flex: 1; min-width: 150px; padding: 14px; border-radius: 10px; font-weight: 700; font-size: 15px; border: none; cursor: pointer; font-family: inherit; transition: all 0.3s; }
+        .btn-whatsapp-action { background: #25d366; color: white; }
+        .btn-whatsapp-action:hover { transform: scale(1.02); box-shadow: 0 4px 15px rgba(37,211,102,0.3); }
+        .btn-cart-action { background: linear-gradient(135deg, #d4af37, #b8860b); color: #000; }
+        .btn-cart-action:hover { transform: scale(1.02); box-shadow: 0 4px 15px rgba(212,175,55,0.3); }
+
+        .order-form {
+            background: #161616;
+            border: 1px solid rgba(212,175,55,0.1);
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 30px;
+        }
+        .order-form h3 {
+            color: #d4af37;
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+        .order-form input {
+            width: 100%;
+            background: #111;
+            border: 1px solid #333;
+            padding: 12px 16px;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+            margin-bottom: 12px;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+        .order-form input:focus {
+            outline: none;
+            border-color: #d4af37;
+        }
+        .order-form button {
+            width: 100%;
+            background: linear-gradient(135deg, #d4af37, #b8860b);
+            color: #000;
+            padding: 14px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+        .order-form button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(212,175,55,0.3);
+        }
 
         .related-products { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
-        .related-products h3 { color: var(--primary); margin-bottom: 20px; }
+        .related-products h3 { color: #d4af37; margin-bottom: 20px; font-size: 18px; }
         .related-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
 
-        .breadcrumb { max-width: 1000px; margin: 20px auto; padding: 0 20px; color: var(--text-muted); font-size: 13px; }
-        .breadcrumb a { color: var(--primary); }
+        .breadcrumb { max-width: 1000px; margin: 20px auto; padding: 0 20px; color: #888; font-size: 13px; }
+        .breadcrumb a { color: #d4af37; }
         .breadcrumb a:hover { text-decoration: underline; }
+
+        .floating-whatsapp {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #25d366, #128c7e);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            box-shadow: 0 8px 25px rgba(37, 211, 102, 0.3);
+            z-index: 999;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        .floating-whatsapp:hover {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 12px 35px rgba(37, 211, 102, 0.4);
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #161616;
+            border-right: 3px solid #d4af37;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            z-index: 9999;
+            display: none;
+            animation: slideIn 0.3s ease-out;
+            font-size: 14px;
+            max-width: 350px;
+        }
+        .toast.show { display: block; }
+        @keyframes slideIn {
+            from { transform: translateX(-100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .details-container { padding: 10px; gap: 20px; }
+            .product-title { font-size: 22px; }
+            .product-price { font-size: 24px; }
+            .action-btns button { min-width: 100%; }
+        }
     </style>
 </head>
 <body>
 
     <header>
-        <h1><a href="/">✨ Sina 401</a></h1>
+        <div class="logo">✨ سينا ستور</div>
         <div class="nav-links"><a href="/">⬅️ العودة للمتجر</a></div>
     </header>
 
@@ -49,7 +233,7 @@
     </div>
 
     <div class="details-container" id="product-detail-view">
-        <p style="text-align:center; width:100%; color:var(--text-muted);">⏳ جاري جلب تفاصيل المنتج...</p>
+        <p style="text-align:center; width:100%; color:#888;">⏳ جاري جلب تفاصيل المنتج...</p>
     </div>
 
     <div class="related-products" id="related-section" style="display: none;">
@@ -58,12 +242,28 @@
     </div>
 
     <a href="https://wa.me/201065653401" class="floating-whatsapp" target="_blank">💬</a>
+    <div class="toast" id="toast"></div>
 
     <script>
-        let cart = JSON.parse(localStorage.getItem('sina_store_cart')) || [];
+        let cart = JSON.parse(localStorage.getItem('sina_cart')) || [];
+        let currentProduct = null;
+        let affiliateCode = '';
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.innerText = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        // Check for affiliate code
+        const urlParams = new URLSearchParams(window.location.search);
+        affiliateCode = urlParams.get('ref') || '';
+        if (affiliateCode) {
+            localStorage.setItem('affiliate_code', affiliateCode);
+        }
 
         async function loadProductDetail() {
-            const urlParams = new URLSearchParams(window.location.search);
             const productId = urlParams.get('id');
             if(!productId) { window.location.href = '/'; return; }
 
@@ -76,16 +276,15 @@
                     document.getElementById('product-detail-view').innerHTML = `
                         <div style="text-align:center; width:100%; padding:40px;">
                             <p style="color:#ef4444; font-size:24px;">❌ المنتج غير موجود</p>
-                            <a href="/" style="color:var(--primary); margin-top:15px; display:inline-block;">العودة للمتجر</a>
+                            <a href="/" style="color:#d4af37; margin-top:15px; display:inline-block;">العودة للمتجر</a>
                         </div>
                     `;
                     return;
                 }
 
-                // تحديث breadcrumb
+                currentProduct = p;
                 document.getElementById('breadcrumb-product').innerText = p.name;
 
-                // تحديد حالة المخزون
                 let stockClass = 'stock-available';
                 let stockText = `✅ متوفر: ${p.stock_quantity || 0} قطعة`;
                 if ((p.stock_quantity || 0) <= 5 && (p.stock_quantity || 0) > 0) {
@@ -96,19 +295,20 @@
                     stockText = '❌ نفذت الكمية';
                 }
 
-                // الصور الإضافية
                 let extraImagesHtml = '';
                 let thumbnailsHtml = '';
                 if (p.extra_images) {
                     try {
                         let arr = typeof p.extra_images === 'string' ? JSON.parse(p.extra_images) : p.extra_images;
                         if (Array.isArray(arr) && arr.length > 0) {
-                            thumbnailsHtml = arr.map((url, i) => 
+                            thumbnailsHtml = arr.map((url, i) =>
                                 `<img src="${url}" onclick="changeMainImage('${url}')" class="${i === 0 ? 'active' : ''}" alt="صورة ${i + 1}">`
                             ).join('');
                         }
                     } catch(e) {}
                 }
+
+                const commissionText = p.commission ? `💰 عمولة المسوق: ${p.commission}%` : '';
 
                 document.getElementById('product-detail-view').innerHTML = `
                     <div class="gallery-box">
@@ -122,27 +322,35 @@
                         <h2 class="product-title">${p.name}</h2>
                         <p class="product-category">🏷️ الفئة: ${p.category || 'عام'}</p>
                         <span class="product-stock ${stockClass}">${stockText}</span>
+                        ${commissionText ? `<div class="product-commission">${commissionText}</div>` : ''}
                         <p class="product-desc">${p.description || 'لا توجد تفاصيل إضافية لهذا المنتج.'}</p>
                         <div class="product-price">${p.selling_price || 0} ج.م</div>
                         <div class="action-btns">
-                            <button class="btn-primary" onclick="window.open('https://wa.me/201065653401?text=أريد طلب منتج: ${encodeURIComponent(p.name)}', '_blank')" style="background:#25d366; color:white;">
+                            <button class="btn-whatsapp-action" onclick="window.open('https://wa.me/201065653401?text=أريد طلب منتج: ${encodeURIComponent(p.name)}', '_blank')">
                                 💬 طلب عبر واتساب
                             </button>
-                            <button class="btn-primary" onclick="addToCart(${p.id}, '${p.name.replace(/'/g, "\'")}', ${p.selling_price})">
+                            <button class="btn-cart-action" onclick="addToCart(${p.id}, '${p.name.replace(/'/g, "\'")}', ${p.selling_price})">
                                 🛒 أضف للسلة
                             </button>
+                        </div>
+
+                        <div class="order-form">
+                            <h3>📝 اطلب الآن - الدفع عند الاستلام</h3>
+                            <input type="text" id="order-name" placeholder="الاسم الكامل *" required>
+                            <input type="tel" id="order-phone" placeholder="رقم الهاتف *" required>
+                            <input type="text" id="order-address" placeholder="العنوان بالتفصيل *" required>
+                            <input type="text" id="order-marketer-code" placeholder="كود المسوق (اختياري)" value="${affiliateCode}">
+                            <button onclick="submitOrder()">✅ تأكيد الطلب</button>
                         </div>
                     </div>
                 `;
 
-                // تحميل منتجات مشابهة
                 loadRelatedProducts(products, p);
-
             } catch(e) {
                 document.getElementById('product-detail-view').innerHTML = `
                     <div style="text-align:center; width:100%; padding:40px;">
                         <p style="color:#ef4444;">❌ خطأ في جلب البيانات</p>
-                        <button onclick="location.reload()" style="background:var(--primary-gradient); border:none; padding:10px 20px; border-radius:8px; cursor:pointer; margin-top:15px;">🔄 إعادة المحاولة</button>
+                        <button onclick="location.reload()" style="background:linear-gradient(135deg,#d4af37,#b8860b); border:none; padding:10px 20px; border-radius:8px; cursor:pointer; margin-top:15px; color:#000; font-weight:bold;">🔄 إعادة المحاولة</button>
                     </div>
                 `;
             }
@@ -166,12 +374,13 @@
             grid.innerHTML = '';
 
             related.forEach(p => {
+                const refParam = affiliateCode ? `&ref=${affiliateCode}` : '';
                 grid.innerHTML += `
-                    <div class="product-card" style="background:#141414; border:1px solid var(--card-border); border-radius:12px; overflow:hidden; cursor:pointer;" onclick="window.location.href='/product_detail.html?id=${p.id}'">
+                    <div class="product-card" style="background:#161616; border:1px solid rgba(212,175,55,0.1); border-radius:12px; overflow:hidden; cursor:pointer;" onclick="window.location.href='/product_detail.html?id=${p.id}${refParam}'">
                         <img src="${p.image_url || '/static/css/logo.png.jpeg'}" style="width:100%; height:150px; object-fit:cover;" onerror="this.src='/static/css/logo.png.jpeg'">
                         <div style="padding:12px;">
                             <h4 style="margin:0 0 8px 0; font-size:14px; color:#fff;">${p.name}</h4>
-                            <div style="color:var(--primary); font-weight:bold;">${p.selling_price} ج.م</div>
+                            <div style="color:#d4af37; font-weight:bold;">${p.selling_price} ج.م</div>
                         </div>
                     </div>
                 `;
@@ -185,14 +394,55 @@
             } else {
                 cart.push({ id, name, price, qty: 1 });
             }
-            localStorage.setItem('sina_store_cart', JSON.stringify(cart));
+            localStorage.setItem('sina_cart', JSON.stringify(cart));
+            showToast(`✅ تم إضافة "${name}" للسلة`);
+        }
 
-            // إشعار
-            const toast = document.createElement('div');
-            toast.style.cssText = 'position:fixed; top:20px; left:20px; background:#141414; border-right:4px solid var(--primary); padding:15px 25px; border-radius:8px; z-index:9999; animation:slideIn 0.3s;';
-            toast.innerHTML = `✅ تم إضافة "${name}" للسلة`;
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 2000);
+        async function submitOrder() {
+            if (!currentProduct) return;
+
+            const name = document.getElementById('order-name').value.trim();
+            const phone = document.getElementById('order-phone').value.trim();
+            const address = document.getElementById('order-address').value.trim();
+            const marketerCode = document.getElementById('order-marketer-code').value.trim() || affiliateCode || '';
+
+            if (!name || !phone || !address) {
+                showToast('❌ يرجى ملء جميع الحقول المطلوبة');
+                return;
+            }
+
+            const btn = document.querySelector('.order-form button');
+            btn.disabled = true;
+            btn.innerText = '⏳ جاري إرسال الطلب...';
+
+            try {
+                const res = await fetch('/api/orders', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        customer_name: name,
+                        customer_phone: phone,
+                        customer_address: address,
+                        total_price: currentProduct.selling_price,
+                        products: [{id: currentProduct.id, name: currentProduct.name, price: currentProduct.selling_price, qty: 1}],
+                        marketer_code: marketerCode,
+                        status: 'قيد المراجعة'
+                    })
+                });
+
+                if (res.ok) {
+                    showToast('🎉 تم الطلب بنجاح! الدفع عند الاستلام');
+                    document.querySelector('.order-form').reset();
+                    if (affiliateCode) localStorage.removeItem('affiliate_code');
+                } else {
+                    showToast('❌ فشل إرسال الطلب');
+                }
+            } catch (e) {
+                showToast('❌ فشل الاتصال');
+            } finally {
+                btn.disabled = false;
+                btn.innerText = '✅ تأكيد الطلب';
+            }
         }
 
         window.addEventListener('DOMContentLoaded', loadProductDetail);
