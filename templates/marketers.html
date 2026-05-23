@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>بوابة المسوقين | سينا ستور</title>
+    <title>إحصائيات المسوقين | سينا ستور</title>
     <link rel="icon" type="image/png" href="/static/css/logo.png.jpeg">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -12,8 +12,6 @@
             background: #0a0a0a;
             color: #fff;
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
         }
         header {
             background: rgba(10,10,10,0.98);
@@ -34,185 +32,239 @@
         .nav-links a {
             color: #888;
             font-size: 14px;
-            transition: all 0.3s;
+            transition: color 0.3s;
         }
         .nav-links a:hover { color: #d4af37; }
 
-        .login-container {
-            max-width: 420px;
-            margin: 60px auto;
-            padding: 40px 30px;
+        .container { max-width: 900px; margin: 30px auto; padding: 0 20px; }
+        .search-card {
             background: #161616;
-            border-radius: 16px;
-            border: 1px solid rgba(212,175,55,0.15);
+            border: 1px solid rgba(212,175,55,0.1);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 20px;
             text-align: center;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-            width: 90%;
         }
-        .login-container h2 {
+        .search-card h2 {
             color: #d4af37;
             margin-top: 0;
-            font-size: 24px;
+            font-size: 22px;
         }
-        .login-container p {
+        .search-card p {
             color: #888;
             font-size: 14px;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
-        .login-form {
+        .search-input-group {
             display: flex;
-            flex-direction: column;
-            gap: 15px;
+            gap: 10px;
+            max-width: 400px;
+            margin: 0 auto;
         }
-        .input-group { position: relative; }
-        .input-group input {
-            width: 100%;
-            padding: 14px 18px;
+        .search-input {
+            flex: 1;
             background: #111;
-            border: 1px solid #222;
-            border-radius: 10px;
+            border: 1px solid #333;
+            padding: 12px 16px;
+            border-radius: 8px;
             color: #fff;
+            font-size: 14px;
             font-family: inherit;
-            font-size: 15px;
-            transition: all 0.3s;
         }
-        .input-group input:focus {
+        .search-input:focus {
             outline: none;
             border-color: #d4af37;
-            box-shadow: 0 0 15px rgba(212,175,55,0.15);
         }
-        .input-group label {
-            display: block;
-            text-align: right;
-            margin-bottom: 6px;
-            color: #888;
-            font-size: 13px;
-        }
-        .login-btn {
+        .search-btn {
             background: linear-gradient(135deg, #d4af37, #b8860b);
             color: #000;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-weight: 700;
             border: none;
-            padding: 14px;
-            border-radius: 10px;
-            font-weight: bold;
-            font-size: 16px;
             cursor: pointer;
-            transition: all 0.3s;
-            margin-top: 10px;
             font-family: inherit;
+            transition: all 0.3s;
         }
-        .login-btn:hover {
-            transform: scale(1.02);
-            box-shadow: 0 6px 20px rgba(212,175,55,0.4);
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(212,175,55,0.3);
         }
-        .login-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
         }
-        .error-msg {
-            color: #ef4444;
-            font-size: 13px;
-            margin-top: 10px;
-            display: none;
+        .stat-box {
+            background: #111;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #222;
+            text-align: center;
         }
-        .success-msg {
-            color: #22c55e;
-            font-size: 13px;
-            margin-top: 10px;
-            display: none;
+        .stat-box .number {
+            font-size: 28px;
+            font-weight: bold;
+            color: #d4af37;
         }
-        .back-link {
-            display: inline-block;
-            margin-top: 20px;
+        .stat-box .label {
+            font-size: 12px;
             color: #888;
-            font-size: 14px;
-            transition: color 0.3s;
+            margin-top: 5px;
         }
-        .back-link:hover { color: #d4af37; }
+
+        .orders-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .orders-table th, .orders-table td {
+            padding: 12px;
+            border-bottom: 1px solid #222;
+            text-align: right;
+        }
+        .orders-table th {
+            background: #111;
+            color: #d4af37;
+            font-size: 13px;
+        }
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .status-pending { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
+        .status-shipping { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+        .status-delivered { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
+        .status-returned { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+
+        .login-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            background: linear-gradient(135deg, rgba(212,175,55,0.1), rgba(184,134,11,0.05));
+            border: 1px solid rgba(212,175,55,0.2);
+            border-radius: 8px;
+            color: #d4af37;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        .login-link:hover {
+            background: linear-gradient(135deg, rgba(212,175,55,0.2), rgba(184,134,11,0.1));
+        }
     </style>
 </head>
 <body>
+
     <header>
         <div class="logo">✨ سينا ستور</div>
         <div class="nav-links"><a href="/">⬅️ العودة للمتجر</a></div>
     </header>
 
-    <div class="login-container">
-        <h2>📊 بوابة المسوقين</h2>
-        <p>أدخل كود المسوق وكلمة المرور للوصول لحسابك</p>
+    <div class="container">
+        <div class="search-card">
+            <h2>📊 إحصائيات المسوقين</h2>
+            <p>أدخل كود المسوق لمتابعة أرباحه وطلباته</p>
 
-        <form id="marketer-login-form" class="login-form">
-            <div class="input-group">
-                <label>كود المسوق</label>
-                <input type="text" id="mk-code" placeholder="أدخل كود المسوق..." required>
+            <div class="search-input-group">
+                <input type="text" id="marketer-code-input" class="search-input" placeholder="أدخل كود المسوق...">
+                <button class="search-btn" onclick="loadMarketerData()">بحث</button>
             </div>
-            <div class="input-group">
-                <label>كلمة المرور</label>
-                <input type="password" id="mk-pass" placeholder="أدخل كلمة المرور..." required>
-            </div>
-            <button type="submit" class="login-btn" id="login-btn">تسجيل الدخول</button>
-            <div class="error-msg" id="error-msg"></div>
-            <div class="success-msg" id="success-msg"></div>
-        </form>
 
-        <a href="/" class="back-link">⬅️ العودة للمتجر الرئيسي</a>
+            <a href="/marketer_login.html" class="login-link">
+                🔐 هل أنت مسوق؟ سجل دخولك من هنا
+            </a>
+        </div>
+
+        <div id="marketer-stats" style="display: none;">
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="number" id="stat-orders">0</div>
+                    <div class="label">إجمالي الطلبات</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number" id="stat-sales">0</div>
+                    <div class="label">إجمالي المبيعات (ج.م)</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number" id="stat-commission">0</div>
+                    <div class="label">العمولة المتوقعة (ج.م)</div>
+                </div>
+            </div>
+
+            <h3 style="color: #d4af37; margin-top: 30px;">📋 الطلبات المسجلة</h3>
+            <div style="overflow-x: auto;">
+                <table class="orders-table">
+                    <thead>
+                        <tr>
+                            <th>رقم الطلب</th>
+                            <th>العميل</th>
+                            <th>الهاتف</th>
+                            <th>المبلغ</th>
+                            <th>الحالة</th>
+                            <th>التاريخ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="marketer-orders-body">
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
     <script>
-        async function checkLoginStatus() {
+        async function loadMarketerData() {
+            const code = document.getElementById('marketer-code-input').value.trim();
+            if (!code) { alert('من فضلك أدخل كود المسوق'); return; }
+
             try {
-                const res = await fetch('/api/marketer/check');
+                const res = await fetch(`/api/marketers/stats/${code}`);
                 const data = await res.json();
-                if (data.authenticated) {
-                    window.location.href = '/marketer_dashboard.html';
+
+                if (data.error) {
+                    alert('❌ ' + data.error);
+                    return;
                 }
-            } catch (e) {}
-        }
-        checkLoginStatus();
 
-        document.getElementById('marketer-login-form').addEventListener('submit', async function(e) {
-            e.preventDefault();
+                document.getElementById('marketer-stats').style.display = 'block';
+                document.getElementById('stat-orders').innerText = data.stats.total_orders || 0;
+                document.getElementById('stat-sales').innerText = (data.stats.total_sales || 0).toFixed(2);
+                document.getElementById('stat-commission').innerText = (data.total_commission || 0).toFixed(2);
 
-            const code = document.getElementById('mk-code').value.trim();
-            const pass = document.getElementById('mk-pass').value.trim();
-            const btn = document.getElementById('login-btn');
-            const errorDiv = document.getElementById('error-msg');
-            const successDiv = document.getElementById('success-msg');
+                const tbody = document.getElementById('marketer-orders-body');
+                tbody.innerHTML = '';
 
-            errorDiv.style.display = 'none';
-            successDiv.style.display = 'none';
-            btn.disabled = true;
-            btn.innerText = 'جاري التحقق...';
+                if (!data.orders || data.orders.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#aaa;">لا توجد طلبات مسجلة</td></tr>';
+                    return;
+                }
 
-            try {
-                const res = await fetch('/api/marketer/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ code: code, password: pass })
+                data.orders.forEach(o => {
+                    let statusClass = 'status-pending';
+                    let statusText = '⏳ قيد المراجعة';
+                    if (o.status === 'جاري الشحن') { statusClass = 'status-shipping'; statusText = '🚚 جاري الشحن'; }
+                    else if (o.status === 'تم التسليم') { statusClass = 'status-delivered'; statusText = '✅ تم التسليم'; }
+                    else if (o.status === 'مرتجع') { statusClass = 'status-returned'; statusText = '❌ مرتجع'; }
+
+                    tbody.innerHTML += `
+                        <tr>
+                            <td><strong>#${o.id}</strong></td>
+                            <td>${o.customer_name || '-'}</td>
+                            <td>${o.customer_phone || '-'}</td>
+                            <td style="color: #d4af37; font-weight: bold;">${o.total_price || 0} ج.م</td>
+                            <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                            <td style="color: #888; font-size: 12px;">${o.created_at ? new Date(o.created_at).toLocaleDateString('ar-EG') : '-'}</td>
+                        </tr>
+                    `;
                 });
-
-                const data = await res.json();
-
-                if (data.success) {
-                    successDiv.innerText = '✅ ' + data.message + ' جاري التوجيه...';
-                    successDiv.style.display = 'block';
-                    setTimeout(() => {
-                        window.location.href = '/marketer_dashboard.html';
-                    }, 1000);
-                } else {
-                    errorDiv.innerText = '❌ ' + (data.message || 'بيانات الدخول غير صحيحة');
-                    errorDiv.style.display = 'block';
-                    btn.disabled = false;
-                    btn.innerText = 'تسجيل الدخول';
-                }
-            } catch (err) {
-                errorDiv.innerText = '❌ فشل الاتصال بالسيرفر';
-                errorDiv.style.display = 'block';
-                btn.disabled = false;
-                btn.innerText = 'تسجيل الدخول';
+            } catch (e) {
+                alert('❌ فشل الاتصال بالسيرفر');
             }
-        });
+        }
     </script>
 </body>
 </html>
