@@ -25,6 +25,7 @@ def init_database():
         conn = get_db_connection()
         cursor = conn.cursor()
 
+        # جدول المنتجات
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS products (
                 id SERIAL PRIMARY KEY,
@@ -41,6 +42,28 @@ def init_database():
             );
         """)
 
+        # أضف الأعمدة المفقودة لو الجدول موجود
+        cursor.execute("""
+            DO $$ 
+            BEGIN 
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                              WHERE table_name='products' AND column_name='purchasing_price') THEN
+                    ALTER TABLE products ADD COLUMN purchasing_price REAL DEFAULT 0;
+                END IF;
+                
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                              WHERE table_name='products' AND column_name='commission') THEN
+                    ALTER TABLE products ADD COLUMN commission REAL DEFAULT 0;
+                END IF;
+                
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                              WHERE table_name='products' AND column_name='extra_images') THEN
+                    ALTER TABLE products ADD COLUMN extra_images TEXT DEFAULT '[]';
+                END IF;
+            END $$;
+        """)
+
+        # جدول الطلبات
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS orders (
                 id SERIAL PRIMARY KEY,
@@ -56,6 +79,7 @@ def init_database():
             );
         """)
 
+        # جدول المسوقين
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS marketers (
                 id SERIAL PRIMARY KEY,
@@ -70,6 +94,18 @@ def init_database():
             );
         """)
 
+        # أضف عمود password لو مفقود
+        cursor.execute("""
+            DO $$ 
+            BEGIN 
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                              WHERE table_name='marketers' AND column_name='password') THEN
+                    ALTER TABLE marketers ADD COLUMN password VARCHAR(255) NOT NULL DEFAULT '';
+                END IF;
+            END $$;
+        """)
+
+        # جدول المستخدمين
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS users (
                 id SERIAL PRIMARY KEY,
@@ -83,6 +119,7 @@ def init_database():
 
         conn.commit()
 
+        # إضافة مستخدم مدير افتراضي
         admin_pass = os.environ.get('ADMIN_PASSWORD', 'MoSebA01065653401')
         hashed = generate_password_hash(admin_pass)
         cursor.execute("""
