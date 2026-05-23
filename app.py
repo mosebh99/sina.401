@@ -1,6 +1,7 @@
 import os
 import json
 import psycopg2
+import secrets
 from psycopg2.extras import RealDictCursor
 from flask import Flask, jsonify, request, render_template, redirect, session, send_from_directory
 from whitenoise import WhiteNoise
@@ -19,6 +20,10 @@ DATABASE_URL = os.environ.get('DATABASE_URL') or "postgresql://postgres:MoSebA01
 
 def get_db_connection():
     return psycopg2.connect(DATABASE_URL, sslmode='allow', connect_timeout=10)
+
+# ==========================================
+# إنشاء الجداول + بيانات افتراضية
+# ==========================================
 
 def init_database():
     try:
@@ -42,27 +47,6 @@ def init_database():
             );
         """)
 
-        # أضف الأعمدة المفقودة لو الجدول موجود
-        cursor.execute("""
-            DO $$ 
-            BEGIN 
-                IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
-                              WHERE table_name='products' AND column_name='purchasing_price') THEN
-                    ALTER TABLE products ADD COLUMN purchasing_price REAL DEFAULT 0;
-                END IF;
-                
-                IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
-                              WHERE table_name='products' AND column_name='commission') THEN
-                    ALTER TABLE products ADD COLUMN commission REAL DEFAULT 0;
-                END IF;
-                
-                IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
-                              WHERE table_name='products' AND column_name='extra_images') THEN
-                    ALTER TABLE products ADD COLUMN extra_images TEXT DEFAULT '[]';
-                END IF;
-            END $$;
-        """)
-
         # جدول الطلبات
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS orders (
@@ -79,14 +63,14 @@ def init_database():
             );
         """)
 
-        # جدول المسوقين
+        # جدول المسوقين (مع كلمة مرور)
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS marketers (
                 id SERIAL PRIMARY KEY,
                 name VARCHAR(255) NOT NULL,
                 phone VARCHAR(50),
                 code VARCHAR(50) UNIQUE NOT NULL,
-                password VARCHAR(255) NOT NULL,
+                password VARCHAR(255) NOT NULL DEFAULT '',
                 commission_rate REAL DEFAULT 0,
                 total_sales REAL DEFAULT 0,
                 total_commission REAL DEFAULT 0,
@@ -94,18 +78,7 @@ def init_database():
             );
         """)
 
-        # أضف عمود password لو مفقود
-        cursor.execute("""
-            DO $$ 
-            BEGIN 
-                IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
-                              WHERE table_name='marketers' AND column_name='password') THEN
-                    ALTER TABLE marketers ADD COLUMN password VARCHAR(255) NOT NULL DEFAULT '';
-                END IF;
-            END $$;
-        """)
-
-        # جدول المستخدمين
+        # جدول المستخدمين (مدير + أدمن)
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS users (
                 id SERIAL PRIMARY KEY,
@@ -115,6 +88,48 @@ def init_database():
                 name VARCHAR(255),
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
+        """)
+
+        # التأكد من وجود كل الأعمدة (migration للجداول القديمة)
+        cursor.execute("""
+            DO $$ 
+            BEGIN 
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                              WHERE table_name='marketers' AND column_name='password') THEN
+                    ALTER TABLE marketers ADD COLUMN password VARCHAR(255) NOT NULL DEFAULT '';
+                END IF;
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                              WHERE table_name='marketers' AND column_name='commission_rate') THEN
+                    ALTER TABLE marketers ADD COLUMN commission_rate REAL DEFAULT 0;
+                END IF;
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                              WHERE table_name='marketers' AND column_name='total_sales') THEN
+                    ALTER TABLE marketers ADD COLUMN total_sales REAL DEFAULT 0;
+                END IF;
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                              WHERE table_name='marketers' AND column_name='total_commission') THEN
+                    ALTER TABLE marketers ADD COLUMN total_commission REAL DEFAULT 0;
+                END IF;
+            END $$;
+        """)
+
+        # Migration لجدول products
+        cursor.execute("""
+            DO $$ 
+            BEGIN 
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                              WHERE table_name='products' AND column_name='purchasing_price') THEN
+                    ALTER TABLE products ADD COLUMN purchasing_price REAL DEFAULT 0;
+                END IF;
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                              WHERE table_name='products' AND column_name='commission') THEN
+                    ALTER TABLE products ADD COLUMN commission REAL DEFAULT 0;
+                END IF;
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                              WHERE table_name='products' AND column_name='extra_images') THEN
+                    ALTER TABLE products ADD COLUMN extra_images TEXT DEFAULT '[]';
+                END IF;
+            END $$;
         """)
 
         conn.commit()
@@ -136,6 +151,10 @@ def init_database():
         print(f"Database error: {e}")
 
 init_database()
+
+# ==========================================
+# Middleware للصلاحيات
+# ==========================================
 
 def manager_required(f):
     @wraps(f)
@@ -164,6 +183,10 @@ def marketer_required(f):
             return redirect('/marketer_login.html')
         return f(*args, **kwargs)
     return decorated_function
+
+# ==========================================
+# مسارات الصفحات
+# ==========================================
 
 @app.route('/')
 def index_page():
@@ -194,6 +217,10 @@ def marketer_dashboard_page():
 @app.route('/product_detail.html')
 def product_detail_page():
     return render_template('product_detail.html')
+
+# ==========================================
+# API تسجيل الدخول - الإدارة
+# ==========================================
 
 @app.route('/api/auth/login', methods=['POST'])
 def api_login():
@@ -238,6 +265,10 @@ def check_auth():
         "name": session.get('name')
     })
 
+# ==========================================
+# API المستخدمين (مدير فقط)
+# ==========================================
+
 @app.route('/api/users', methods=['GET', 'POST'])
 @manager_required
 def api_users():
@@ -273,6 +304,7 @@ def delete_user(uid):
     try:
         conn = get_db_connection()
         cur = conn.cursor()
+        # ما ينفعش يحذف نفسه
         if uid == session.get('user_id'):
             return jsonify({"error": "لا يمكن حذف حسابك الحالي"}), 400
         cur.execute("DELETE FROM users WHERE id = %s;", (uid,))
@@ -282,6 +314,10 @@ def delete_user(uid):
         return jsonify({"success": True})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+# ==========================================
+# API المنتجات
+# ==========================================
 
 @app.route('/api/products', methods=['GET', 'POST'])
 def api_products():
@@ -296,6 +332,7 @@ def api_products():
             return jsonify(products)
 
         elif request.method == 'POST':
+            # التحقق من الصلاحيات
             if 'user_id' not in session or session.get('role') not in ['manager', 'admin']:
                 return jsonify({"error": "غير مصرح"}), 403
 
@@ -369,6 +406,10 @@ def product_detail(pid):
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+# ==========================================
+# API الطلبات
+# ==========================================
 
 @app.route('/api/orders', methods=['GET', 'POST'])
 def api_orders():
@@ -444,6 +485,10 @@ def order_detail(oid):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+# ==========================================
+# API المسوقين
+# ==========================================
+
 @app.route('/api/marketers', methods=['GET', 'POST'])
 @admin_required
 def api_marketers():
@@ -508,12 +553,14 @@ def marketer_stats(code):
         """, (code,))
         orders = cur.fetchall()
 
+        # حساب العمولة بناءً على كل طلب
         total_commission = 0
         for order in orders:
             if order['products_json']:
                 try:
                     items = json.loads(order['products_json'])
                     for item in items:
+                        # نحسب العمولة بناءً على نسبة المنتج
                         cur.execute("SELECT commission FROM products WHERE id = %s;", (item.get('id'),))
                         prod = cur.fetchone()
                         if prod:
@@ -531,6 +578,10 @@ def marketer_stats(code):
         })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+# ==========================================
+# API تسجيل دخول المسوق
+# ==========================================
 
 @app.route('/api/marketer/login', methods=['POST'])
 def marketer_login():
@@ -589,6 +640,10 @@ def marketer_profile():
         return jsonify(profile)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+# ==========================================
+# API الإحصائيات
+# ==========================================
 
 @app.route('/api/stats/dashboard', methods=['GET'])
 @admin_required
