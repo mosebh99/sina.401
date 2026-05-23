@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sina 401 | متجر ملحقات الموبايل</title>
+    <title>سينا ستور | Sina 401 - ملحقات الموبايل</title>
     <link rel="icon" type="image/png" href="/static/css/logo.png.jpeg">
-
+    <link rel="stylesheet" href="/static/css/style.css">
     <style>
         /* ===== CSS INLINE - يشتغل فوراً ===== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -20,13 +20,13 @@
 
         /* Header */
         header {
-            background: rgba(10,10,10,0.95);
+            background: rgba(10,10,10,0.98);
             backdrop-filter: blur(20px);
             padding: 12px 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+            border-bottom: 1px solid rgba(212,175,55,0.1);
             position: sticky;
             top: 0;
             z-index: 1000;
@@ -35,7 +35,7 @@
         .logo {
             font-size: 20px;
             font-weight: 800;
-            background: linear-gradient(135deg, #d4af37, #aa8416);
+            background: linear-gradient(135deg, #d4af37, #b8860b);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
@@ -80,14 +80,18 @@
         /* Hero */
         .hero {
             text-align: center;
-            padding: 40px 20px;
+            padding: 50px 20px 40px;
             background: radial-gradient(ellipse at 50% 0%, rgba(212,175,55,0.1) 0%, transparent 60%);
         }
 
         .hero h1 {
-            font-size: 24px;
+            font-size: 28px;
             font-weight: 800;
             margin-bottom: 10px;
+        }
+
+        .hero h1 span {
+            color: #d4af37;
         }
 
         .hero p {
@@ -97,7 +101,7 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #d4af37, #aa8416);
+            background: linear-gradient(135deg, #d4af37, #b8860b);
             color: #000;
             padding: 12px 30px;
             border-radius: 25px;
@@ -121,6 +125,7 @@
             border-radius: 25px;
             color: #fff;
             font-size: 14px;
+            font-family: inherit;
         }
 
         .search-box:focus {
@@ -150,10 +155,11 @@
             font-size: 13px;
             white-space: nowrap;
             cursor: pointer;
+            font-family: inherit;
         }
 
         .category-btn.active {
-            background: linear-gradient(135deg, #d4af37, #aa8416);
+            background: linear-gradient(135deg, #d4af37, #b8860b);
             color: #000;
             border-color: #d4af37;
             font-weight: 600;
@@ -194,6 +200,13 @@
             border: 1px solid rgba(212,175,55,0.1);
             border-radius: 12px;
             overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(212,175,55,0.3);
+            box-shadow: 0 8px 25px rgba(212,175,55,0.1);
         }
 
         .product-img {
@@ -243,6 +256,7 @@
             border: none;
             cursor: pointer;
             text-align: center;
+            font-family: inherit;
         }
 
         .btn-whatsapp {
@@ -251,11 +265,11 @@
         }
 
         .btn-cart {
-            background: linear-gradient(135deg, #d4af37, #aa8416);
+            background: linear-gradient(135deg, #d4af37, #b8860b);
             color: #000;
         }
 
-        /* Cart Sidebar */
+        /* Cart Overlay */
         .cart-overlay {
             display: none;
             position: fixed;
@@ -347,16 +361,23 @@
             border-radius: 8px;
             color: #fff;
             font-size: 14px;
+            font-family: inherit;
+        }
+
+        .tracking-input input:focus {
+            outline: none;
+            border-color: #d4af37;
         }
 
         .tracking-input button {
-            background: linear-gradient(135deg, #d4af37, #aa8416);
+            background: linear-gradient(135deg, #d4af37, #b8860b);
             color: #000;
             padding: 12px 20px;
             border-radius: 8px;
             font-weight: 700;
             border: none;
             cursor: pointer;
+            font-family: inherit;
         }
 
         /* Footer */
@@ -436,14 +457,44 @@
             0% { background-position: 200% 0; }
             100% { background-position: -200% 0; }
         }
+
+        /* Menu */
+        .menu-dropdown {
+            display: none;
+            position: absolute;
+            top: 60px;
+            left: 16px;
+            background: #161616;
+            border: 1px solid #333;
+            border-radius: 12px;
+            min-width: 180px;
+            z-index: 1001;
+            overflow: hidden;
+        }
+
+        .menu-dropdown a {
+            display: block;
+            padding: 12px 16px;
+            font-size: 14px;
+            border-bottom: 1px solid #222;
+            transition: all 0.3s;
+        }
+
+        .menu-dropdown a:hover {
+            background: #d4af37;
+            color: #000;
+        }
+
+        .menu-dropdown a:last-child {
+            border-bottom: none;
+        }
     </style>
-<base target="_blank">
 </head>
 <body>
 
     <!-- Header -->
     <header>
-        <div class="logo">✨ Sina 401</div>
+        <div class="logo">✨ سينا ستور</div>
         <div class="header-actions">
             <button class="icon-btn" onclick="toggleCart()">
                 🛒 <span id="cart-count" class="badge" style="display:none;">0</span>
@@ -453,16 +504,16 @@
     </header>
 
     <!-- Menu Dropdown -->
-    <div id="menu-dropdown" style="display:none; position:absolute; top:60px; left:16px; background:#161616; border:1px solid #333; border-radius:12px; min-width:180px; z-index:1001;">
-        <a href="/" style="display:block; padding:12px 16px; font-size:14px; border-bottom:1px solid #222;">🏠 الرئيسية</a>
-        <a href="/marketers.html" style="display:block; padding:12px 16px; font-size:14px; border-bottom:1px solid #222;">📊 المسوقين</a>
-        <a href="/login.html" style="display:block; padding:12px 16px; font-size:14px;">🔐 الإدارة</a>
+    <div class="menu-dropdown" id="menu-dropdown">
+        <a href="/">🏠 الرئيسية</a>
+        <a href="/marketer_login.html">📊 بوابة المسوقين</a>
+        <a href="/login.html">🔐 لوحة الإدارة</a>
     </div>
 
     <!-- Hero -->
     <section class="hero">
-        <h1>👑 أجود ملحقات الموبايل</h1>
-        <p>اكتشف تشكيلتنا الفاخرة من الكفرات والشواحن والسماعات</p>
+        <h1>👑 <span>سينا ستور</span></h1>
+        <p>أجود ملحقات الموبايل - كفرات، شواحن، سماعات وأكتر</p>
         <button class="btn-primary" onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">
             🛍️ تسوق الآن
         </button>
@@ -505,10 +556,16 @@
                     <span style="color:#d4af37;"><span id="cart-total">0</span> ج.م</span>
                 </div>
                 <form id="checkout-form" style="display:flex; flex-direction:column; gap:10px;">
-                    <input type="text" id="cust-name" placeholder="الاسم" required style="padding:12px; border-radius:8px; border:1px solid #333; background:#0a0a0a; color:#fff;">
-                    <input type="tel" id="cust-phone" placeholder="رقم الهاتف" required style="padding:12px; border-radius:8px; border:1px solid #333; background:#0a0a0a; color:#fff;">
-                    <input type="text" id="cust-address" placeholder="العنوان" required style="padding:12px; border-radius:8px; border:1px solid #333; background:#0a0a0a; color:#fff;">
-                    <button type="submit" style="background:linear-gradient(135deg,#d4af37,#aa8416); color:#000; padding:14px; border-radius:8px; font-weight:700; border:none; cursor:pointer;">تأكيد الطلب</button>
+                    <input type="text" id="cust-name" placeholder="الاسم الكامل *" required style="padding:12px; border-radius:8px; border:1px solid #333; background:#0a0a0a; color:#fff; font-family:inherit;">
+                    <input type="tel" id="cust-phone" placeholder="رقم الهاتف *" required style="padding:12px; border-radius:8px; border:1px solid #333; background:#0a0a0a; color:#fff; font-family:inherit;">
+                    <input type="text" id="cust-address" placeholder="العنوان بالتفصيل *" required style="padding:12px; border-radius:8px; border:1px solid #333; background:#0a0a0a; color:#fff; font-family:inherit;">
+                    <input type="text" id="marketer-code" placeholder="كود المسوق (اختياري)" style="padding:12px; border-radius:8px; border:1px solid #333; background:#0a0a0a; color:#fff; font-family:inherit;">
+                    <div style="background:#1a1a1a; padding:10px; border-radius:8px; border:1px solid #333; margin:5px 0;">
+                        <p style="font-size:13px; color:#888; margin:0;">💰 الدفع: <strong style="color:#d4af37;">عند الاستلام فقط</strong></p>
+                    </div>
+                    <button type="submit" style="background:linear-gradient(135deg,#d4af37,#b8860b); color:#000; padding:14px; border-radius:8px; font-weight:700; border:none; cursor:pointer; font-family:inherit; font-size:16px;">
+                        ✅ تأكيد الطلب - الدفع عند الاستلام
+                    </button>
                 </form>
             </div>
         </div>
@@ -528,10 +585,10 @@
 
     <!-- Footer -->
     <footer>
-        <p style="font-size:18px; font-weight:700; background:linear-gradient(135deg,#d4af37,#aa8416); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:10px;">✨ Sina 401</p>
+        <p style="font-size:18px; font-weight:700; background:linear-gradient(135deg,#d4af37,#b8860b); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:10px;">✨ سينا ستور</p>
         <p>وجهتك الأولى لملحقات الموبايل الفاخرة</p>
         <p style="margin-top:15px;">📞 01065653401</p>
-        <p style="margin-top:20px; font-size:12px; color:#444;">© 2024 Sina 401. جميع الحقوق محفوظة.</p>
+        <p style="margin-top:20px; font-size:12px; color:#444;">© 2026 سينا ستور. جميع الحقوق محفوظة.</p>
     </footer>
 
     <!-- WhatsApp -->
@@ -546,10 +603,26 @@
         let products = [];
         let currentCategory = 'all';
 
+        // Check for affiliate code in URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const affiliateCode = urlParams.get('ref');
+        if (affiliateCode) {
+            localStorage.setItem('affiliate_code', affiliateCode);
+        }
+
         function toggleMenu() {
             const menu = document.getElementById('menu-dropdown');
             menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
         }
+
+        // Close menu when clicking outside
+        document.addEventListener('click', function(e) {
+            const menu = document.getElementById('menu-dropdown');
+            const btn = document.querySelector('.icon-btn[onclick="toggleMenu()"]');
+            if (!menu.contains(e.target) && e.target !== btn) {
+                menu.style.display = 'none';
+            }
+        });
 
         function toggleCart() {
             document.getElementById('cart-overlay').classList.toggle('show');
@@ -602,9 +675,13 @@
                 return;
             }
 
-            grid.innerHTML = filtered.map(p => `
+            grid.innerHTML = filtered.map(p => {
+                const affiliateLink = localStorage.getItem('affiliate_code') ? `?ref=${localStorage.getItem('affiliate_code')}` : '';
+                return `
                 <div class="product-card">
-                    <img src="${p.image_url || '/static/css/logo.png.jpeg'}" class="product-img" alt="${p.name}" onerror="this.src='/static/css/logo.png.jpeg'">
+                    <a href="/product_detail.html?id=${p.id}${affiliateLink}">
+                        <img src="${p.image_url || '/static/css/logo.png.jpeg'}" class="product-img" alt="${p.name}" onerror="this.src='/static/css/logo.png.jpeg'">
+                    </a>
                     <div class="product-info">
                         <div class="product-name">${p.name}</div>
                         <div class="product-category">${p.category || 'عام'}</div>
@@ -615,7 +692,7 @@
                         </div>
                     </div>
                 </div>
-            `).join('');
+            `}).join('');
 
             updateCartBadge();
         }
@@ -655,9 +732,9 @@
                         </div>
                         <div style="display:flex; align-items:center; gap:10px;">
                             <div style="display:flex; align-items:center; gap:5px; background:#1a1a1a; border-radius:15px; padding:2px;">
-                                <button onclick="updateQty(${i},-1)" style="width:25px; height:25px; border-radius:50%; border:none; background:#333; color:#fff; cursor:pointer;">−</button>
+                                <button onclick="updateQty(${i},-1)" style="width:25px; height:25px; border-radius:50%; border:none; background:#333; color:#fff; cursor:pointer; font-family:inherit;">−</button>
                                 <span style="min-width:20px; text-align:center;">${item.qty}</span>
-                                <button onclick="updateQty(${i},1)" style="width:25px; height:25px; border-radius:50%; border:none; background:#333; color:#fff; cursor:pointer;">+</button>
+                                <button onclick="updateQty(${i},1)" style="width:25px; height:25px; border-radius:50%; border:none; background:#333; color:#fff; cursor:pointer; font-family:inherit;">+</button>
                             </div>
                             <span style="color:#d4af37; font-weight:bold; min-width:60px; text-align:left;">${item.price*item.qty} ج.م</span>
                             <button onclick="removeFromCart(${i})" style="background:none; border:none; color:#ef4444; cursor:pointer; font-size:16px;">🗑</button>
@@ -688,9 +765,12 @@
             e.preventDefault();
             if (cart.length === 0) { showToast('السلة فارغة'); return; }
 
-            const btn = e.target.querySelector('button');
+            const btn = e.target.querySelector('button[type="submit"]');
             btn.disabled = true;
-            btn.innerText = '⏳ جاري...';
+            btn.innerText = '⏳ جاري إرسال الطلب...';
+
+            // Get affiliate code if exists
+            const marketerCode = document.getElementById('marketer-code').value.trim() || localStorage.getItem('affiliate_code') || '';
 
             try {
                 const res = await fetch('/api/orders', {
@@ -702,22 +782,25 @@
                         customer_address: document.getElementById('cust-address').value,
                         total_price: parseFloat(document.getElementById('cart-total').innerText),
                         products: cart,
+                        marketer_code: marketerCode,
                         status: 'قيد المراجعة'
                     })
                 });
 
                 if (res.ok) {
-                    showToast('🎉 تم الطلب!');
+                    showToast('🎉 تم الطلب بنجاح! الدفع عند الاستلام');
                     cart = [];
                     localStorage.removeItem('sina_cart');
+                    localStorage.removeItem('affiliate_code');
                     toggleCart();
                     updateCartBadge();
+                    document.getElementById('checkout-form').reset();
                 }
             } catch(e) {
                 showToast('❌ فشل الاتصال');
             } finally {
                 btn.disabled = false;
-                btn.innerText = 'تأكيد الطلب';
+                btn.innerText = '✅ تأكيد الطلب - الدفع عند الاستلام';
             }
         });
 
@@ -743,6 +826,7 @@
                     let statusText = '⏳ قيد المراجعة';
                     if (o.status === 'جاري الشحن') { statusColor = '#3b82f6'; statusText = '🚚 جاري الشحن'; }
                     else if (o.status === 'تم التسليم') { statusColor = '#22c55e'; statusText = '✅ تم التسليم'; }
+                    else if (o.status === 'مرتجع') { statusColor = '#ef4444'; statusText = '❌ مرتجع'; }
 
                     return `
                         <div style="background:#0a0a0a; border-radius:8px; padding:15px; margin-top:10px; border-right:3px solid ${statusColor};">
@@ -753,6 +837,7 @@
                             <div style="color:#888; font-size:13px;">
                                 <div>💰 ${o.total_price} ج.م</div>
                                 <div>📅 ${new Date(o.created_at).toLocaleDateString('ar-EG')}</div>
+                                ${o.marketer_code ? `<div>👤 كود المسوق: ${o.marketer_code}</div>` : ''}
                             </div>
                         </div>
                     `;
