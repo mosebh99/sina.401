@@ -3,139 +3,216 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>بوابة المسوقين | Sina 401</title>
+    <title>بوابة المسوقين | سينا ستور</title>
     <link rel="icon" type="image/png" href="/static/css/logo.png.jpeg">
-    <link rel="stylesheet" href="/static/css/style.css">
     <style>
-        .marketer-container { max-width: 900px; margin: 30px auto; padding: 0 20px; }
-        .marketer-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 30px; margin-bottom: 20px; text-align: center; }
-        .marketer-card h2 { color: var(--primary); margin-top: 0; }
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin: 20px 0; }
-        .stat-box { background: #111; padding: 15px; border-radius: 8px; border: 1px solid #222; }
-        .stat-box .number { font-size: 28px; font-weight: bold; color: var(--primary); }
-        .stat-box .label { font-size: 12px; color: var(--text-muted); margin-top: 5px; }
-        .orders-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        .orders-table th, .orders-table td { padding: 12px; border-bottom: 1px solid #222; text-align: right; }
-        .orders-table th { background: #111; color: var(--primary); }
-        .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; }
-        .status-pending { background: #f59e0b; color: #000; }
-        .status-shipping { background: #3b82f6; color: #fff; }
-        .status-delivered { background: #22c55e; color: #000; }
-        .status-returned { background: #ef4444; color: #fff; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        header {
+            background: rgba(10,10,10,0.98);
+            backdrop-filter: blur(20px);
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(212,175,55,0.1);
+        }
+        .logo {
+            font-size: 20px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #d4af37, #b8860b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .nav-links a {
+            color: #888;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        .nav-links a:hover { color: #d4af37; }
+
+        .login-container {
+            max-width: 420px;
+            margin: 60px auto;
+            padding: 40px 30px;
+            background: #161616;
+            border-radius: 16px;
+            border: 1px solid rgba(212,175,55,0.15);
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            width: 90%;
+        }
+        .login-container h2 {
+            color: #d4af37;
+            margin-top: 0;
+            font-size: 24px;
+        }
+        .login-container p {
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .input-group { position: relative; }
+        .input-group input {
+            width: 100%;
+            padding: 14px 18px;
+            background: #111;
+            border: 1px solid #222;
+            border-radius: 10px;
+            color: #fff;
+            font-family: inherit;
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+        .input-group input:focus {
+            outline: none;
+            border-color: #d4af37;
+            box-shadow: 0 0 15px rgba(212,175,55,0.15);
+        }
+        .input-group label {
+            display: block;
+            text-align: right;
+            margin-bottom: 6px;
+            color: #888;
+            font-size: 13px;
+        }
+        .login-btn {
+            background: linear-gradient(135deg, #d4af37, #b8860b);
+            color: #000;
+            border: none;
+            padding: 14px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+            font-family: inherit;
+        }
+        .login-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 6px 20px rgba(212,175,55,0.4);
+        }
+        .login-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .error-msg {
+            color: #ef4444;
+            font-size: 13px;
+            margin-top: 10px;
+            display: none;
+        }
+        .success-msg {
+            color: #22c55e;
+            font-size: 13px;
+            margin-top: 10px;
+            display: none;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #888;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+        .back-link:hover { color: #d4af37; }
     </style>
 </head>
 <body>
-
     <header>
-        <h1><a href="/">✨ Sina 401</a></h1>
+        <div class="logo">✨ سينا ستور</div>
         <div class="nav-links"><a href="/">⬅️ العودة للمتجر</a></div>
     </header>
 
-    <div class="marketer-container">
-        <div class="marketer-card">
-            <h2>📊 بوابة المسوقين</h2>
-            <p style="color: var(--text-muted);">أدخل كود المسوق الخاص بك لمتابعة أرباحك وطلباتك</p>
+    <div class="login-container">
+        <h2>📊 بوابة المسوقين</h2>
+        <p>أدخل كود المسوق وكلمة المرور للوصول لحسابك</p>
 
-            <div style="display: flex; gap: 10px; max-width: 400px; margin: 20px auto;">
-                <input type="text" id="marketer-code-input" class="search-input" placeholder="أدخل كود المسوق..." style="flex: 1;">
-                <button class="btn-primary" style="width: auto; margin: 0; padding: 0 25px;" onclick="loadMarketerData()">بحث</button>
+        <form id="marketer-login-form" class="login-form">
+            <div class="input-group">
+                <label>كود المسوق</label>
+                <input type="text" id="mk-code" placeholder="أدخل كود المسوق..." required>
             </div>
-        </div>
+            <div class="input-group">
+                <label>كلمة المرور</label>
+                <input type="password" id="mk-pass" placeholder="أدخل كلمة المرور..." required>
+            </div>
+            <button type="submit" class="login-btn" id="login-btn">تسجيل الدخول</button>
+            <div class="error-msg" id="error-msg"></div>
+            <div class="success-msg" id="success-msg"></div>
+        </form>
 
-        <div id="marketer-stats" style="display: none;">
-            <div class="stats-grid">
-                <div class="stat-box">
-                    <div class="number" id="stat-orders">0</div>
-                    <div class="label">إجمالي الطلبات</div>
-                </div>
-                <div class="stat-box">
-                    <div class="number" id="stat-sales">0</div>
-                    <div class="label">إجمالي المبيعات (ج.م)</div>
-                </div>
-                <div class="stat-box">
-                    <div class="number" id="stat-commission">0</div>
-                    <div class="label">عمولتك المتوقعة (ج.م)</div>
-                </div>
-            </div>
-
-            <h3 style="color: var(--primary); margin-top: 30px;">📋 طلباتك المسجلة</h3>
-            <div style="overflow-x: auto;">
-                <table class="orders-table">
-                    <thead>
-                        <tr>
-                            <th>رقم الطلب</th>
-                            <th>العميل</th>
-                            <th>الهاتف</th>
-                            <th>المبلغ</th>
-                            <th>الحالة</th>
-                            <th>التاريخ</th>
-                        </tr>
-                    </thead>
-                    <tbody id="marketer-orders-body">
-                    </tbody>
-                </table>
-            </div>
-        </div>
+        <a href="/" class="back-link">⬅️ العودة للمتجر الرئيسي</a>
     </div>
 
     <script>
-        async function loadMarketerData() {
-            const code = document.getElementById('marketer-code-input').value.trim();
-            if (!code) { alert('من فضلك أدخل كود المسوق'); return; }
+        async function checkLoginStatus() {
+            try {
+                const res = await fetch('/api/marketer/check');
+                const data = await res.json();
+                if (data.authenticated) {
+                    window.location.href = '/marketer_dashboard.html';
+                }
+            } catch (e) {}
+        }
+        checkLoginStatus();
+
+        document.getElementById('marketer-login-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const code = document.getElementById('mk-code').value.trim();
+            const pass = document.getElementById('mk-pass').value.trim();
+            const btn = document.getElementById('login-btn');
+            const errorDiv = document.getElementById('error-msg');
+            const successDiv = document.getElementById('success-msg');
+
+            errorDiv.style.display = 'none';
+            successDiv.style.display = 'none';
+            btn.disabled = true;
+            btn.innerText = 'جاري التحقق...';
 
             try {
-                const res = await fetch(`/api/marketers/stats/${code}`);
+                const res = await fetch('/api/marketer/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code: code, password: pass })
+                });
+
                 const data = await res.json();
 
-                if (data.error) {
-                    alert('❌ ' + data.error);
-                    return;
+                if (data.success) {
+                    successDiv.innerText = '✅ ' + data.message + ' جاري التوجيه...';
+                    successDiv.style.display = 'block';
+                    setTimeout(() => {
+                        window.location.href = '/marketer_dashboard.html';
+                    }, 1000);
+                } else {
+                    errorDiv.innerText = '❌ ' + (data.message || 'بيانات الدخول غير صحيحة');
+                    errorDiv.style.display = 'block';
+                    btn.disabled = false;
+                    btn.innerText = 'تسجيل الدخول';
                 }
-
-                document.getElementById('marketer-stats').style.display = 'block';
-                document.getElementById('stat-orders').innerText = data.stats.total_orders || 0;
-                document.getElementById('stat-sales').innerText = (data.stats.total_sales || 0).toFixed(2);
-
-                // حساب العمولة (10% افتراضياً)
-                const commission = (data.stats.total_sales || 0) * 0.10;
-                document.getElementById('stat-commission').innerText = commission.toFixed(2);
-
-                const tbody = document.getElementById('marketer-orders-body');
-                tbody.innerHTML = '';
-
-                if (!data.orders || data.orders.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#aaa;">لا توجد طلبات مسجلة</td></tr>';
-                    return;
-                }
-
-                data.orders.forEach(o => {
-                    let statusClass = 'status-pending';
-                    let statusText = '⏳ قيد المراجعة';
-                    if (o.status === 'جاري الشحن') { statusClass = 'status-shipping'; statusText = '🚚 جاري الشحن'; }
-                    else if (o.status === 'تم التسليم') { statusClass = 'status-delivered'; statusText = '✅ تم التسليم'; }
-                    else if (o.status === 'مرتجع') { statusClass = 'status-returned'; statusText = '❌ مرتجع'; }
-
-                    tbody.innerHTML += `
-                        <tr>
-                            <td><strong>#${o.id}</strong></td>
-                            <td>${o.customer_name || '-'}</td>
-                            <td>${o.customer_phone || '-'}</td>
-                            <td style="color: var(--primary); font-weight: bold;">${o.total_price || 0} ج.م</td>
-                            <td><span class="status-badge ${statusClass}">${statusText}</span></td>
-                            <td style="color: var(--text-muted); font-size: 12px;">${o.created_at ? new Date(o.created_at).toLocaleDateString('ar-EG') : '-'}</td>
-                        </tr>
-                    `;
-                });
-            } catch (e) {
-                alert('❌ فشل الاتصال بالسيرفر');
+            } catch (err) {
+                errorDiv.innerText = '❌ فشل الاتصال بالسيرفر';
+                errorDiv.style.display = 'block';
+                btn.disabled = false;
+                btn.innerText = 'تسجيل الدخول';
             }
-        }
-
-        // تحميل تلقائي إذا كان هناك كود محفوظ
-        const savedCode = localStorage.getItem('active_marketer_code');
-        if (savedCode) {
-            document.getElementById('marketer-code-input').value = savedCode;
-        }
+        });
     </script>
 </body>
 </html>
