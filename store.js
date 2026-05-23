@@ -1,15 +1,3 @@
-/**
- * Sina 401 Store - JavaScript Utilities
- * ملف مساعد للوظائف المشتركة في المتجر
- */
-
-// ==========================================
-// Utility Functions
-// ==========================================
-
-/**
- * تنسيق السعر بالعملة المصرية
- */
 function formatPrice(price) {
     return new Intl.NumberFormat('ar-EG', {
         style: 'currency',
@@ -18,9 +6,6 @@ function formatPrice(price) {
     }).format(price);
 }
 
-/**
- * تنسيق التاريخ بالعربية
- */
 function formatDate(dateString) {
     if (!dateString) return '-';
     const date = new Date(dateString);
@@ -33,11 +18,7 @@ function formatDate(dateString) {
     });
 }
 
-/**
- * إظهار إشعار Toast
- */
 function showToast(message, type = 'success', duration = 3000) {
-    // إزالة أي Toast موجود
     const existing = document.querySelector('.toast-notification');
     if (existing) existing.remove();
 
@@ -47,7 +28,7 @@ function showToast(message, type = 'success', duration = 3000) {
         position: fixed;
         top: 20px;
         left: 20px;
-        background: ${type === 'success' ? '#141414' : '#ef4444'};
+        background: ${type === 'success' ? '#161616' : '#ef4444'};
         border-right: 4px solid ${type === 'success' ? '#d4af37' : '#ef4444'};
         color: #fff;
         padding: 15px 25px;
@@ -75,12 +56,8 @@ function showToast(message, type = 'success', duration = 3000) {
     }, duration);
 }
 
-/**
- * تأكيد العملية
- */
 function confirmAction(message) {
     return new Promise((resolve) => {
-        // إنشاء modal مخصص
         const modal = document.createElement('div');
         modal.style.cssText = `
             position: fixed;
@@ -95,7 +72,7 @@ function confirmAction(message) {
 
         modal.innerHTML = `
             <div style="
-                background: #141414;
+                background: #161616;
                 border: 1px solid #333;
                 border-radius: 12px;
                 padding: 30px;
@@ -108,7 +85,7 @@ function confirmAction(message) {
                 <p style="color: #aaa; margin-bottom: 25px;">${message}</p>
                 <div style="display: flex; gap: 10px; justify-content: center;">
                     <button id="confirm-yes" style="
-                        background: linear-gradient(135deg, #d4af37, #aa8416);
+                        background: linear-gradient(135deg, #d4af37, #b8860b);
                         color: #000;
                         border: none;
                         padding: 10px 25px;
@@ -151,57 +128,6 @@ function confirmAction(message) {
     });
 }
 
-/**
- * عرض Loader
- */
-function showLoader(containerId, message = 'جاري التحميل...') {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-
-    container.innerHTML = `
-        <div style="text-align: center; padding: 40px;">
-            <div style="
-                width: 40px;
-                height: 40px;
-                border: 3px solid #222;
-                border-top-color: #d4af37;
-                border-radius: 50%;
-                animation: spin 1s linear infinite;
-                margin: 0 auto 15px;
-            "></div>
-            <p style="color: #aaa; font-size: 14px;">${message}</p>
-        </div>
-    `;
-}
-
-/**
- * إخفاء Loader
- */
-function hideLoader(containerId) {
-    const container = document.getElementById(containerId);
-    if (container) container.innerHTML = '';
-}
-
-/**
- * التحقق من صحة رقم الهاتف المصري
- */
-function validateEgyptianPhone(phone) {
-    const cleaned = phone.replace(/\D/g, '');
-    const regex = /^(01[0-2,5]{1}[0-9]{8})$/;
-    return regex.test(cleaned);
-}
-
-/**
- * التحقق من صحة البريد الإلكتروني
- */
-function validateEmail(email) {
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return regex.test(email);
-}
-
-/**
- * حفظ في LocalStorage بشكل آمن
- */
 function safeStorage(key, value) {
     try {
         localStorage.setItem(key, JSON.stringify(value));
@@ -212,9 +138,6 @@ function safeStorage(key, value) {
     }
 }
 
-/**
- * قراءة من LocalStorage بشكل آمن
- */
 function safeStorageRead(key, defaultValue = null) {
     try {
         const item = localStorage.getItem(key);
@@ -225,49 +148,9 @@ function safeStorageRead(key, defaultValue = null) {
     }
 }
 
-/**
- * إنشاء معرف فريد
- */
-function generateId() {
-    return Date.now().toString(36) + Math.random().toString(36).substr(2);
-}
-
-/**
- * تأخير (Debouncing)
- */
-function debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-    };
-}
-
-/**
- * تقليل (Throttling)
- */
-function throttle(func, limit) {
-    let inThrottle;
-    return function(...args) {
-        if (!inThrottle) {
-            func.apply(this, args);
-            inThrottle = true;
-            setTimeout(() => inThrottle = false, limit);
-        }
-    };
-}
-
-// ==========================================
-// Cart Utilities
-// ==========================================
-
 const CartUtils = {
     getCart() {
-        return safeStorageRead('sina_store_cart', []);
+        return safeStorageRead('sina_cart', []);
     },
 
     addItem(product) {
@@ -286,14 +169,14 @@ const CartUtils = {
             });
         }
 
-        safeStorage('sina_store_cart', cart);
+        safeStorage('sina_cart', cart);
         return cart;
     },
 
     removeItem(index) {
         const cart = this.getCart();
         cart.splice(index, 1);
-        safeStorage('sina_store_cart', cart);
+        safeStorage('sina_cart', cart);
         return cart;
     },
 
@@ -303,12 +186,12 @@ const CartUtils = {
             return this.removeItem(index);
         }
         cart[index].qty = qty;
-        safeStorage('sina_store_cart', cart);
+        safeStorage('sina_cart', cart);
         return cart;
     },
 
     clearCart() {
-        localStorage.removeItem('sina_store_cart');
+        localStorage.removeItem('sina_cart');
         return [];
     },
 
@@ -322,10 +205,6 @@ const CartUtils = {
         return cart.reduce((sum, item) => sum + item.qty, 0);
     }
 };
-
-// ==========================================
-// API Utilities
-// ==========================================
 
 const API = {
     async get(url) {
@@ -361,24 +240,14 @@ const API = {
     }
 };
 
-// ==========================================
-// Export for modules
-// ==========================================
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         formatPrice,
         formatDate,
         showToast,
         confirmAction,
-        showLoader,
-        hideLoader,
-        validateEgyptianPhone,
-        validateEmail,
         safeStorage,
         safeStorageRead,
-        generateId,
-        debounce,
-        throttle,
         CartUtils,
         API
     };
