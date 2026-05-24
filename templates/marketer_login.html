@@ -35,9 +35,9 @@
             color: #888;
             font-size: 14px;
             transition: all 0.3s;
+            text-decoration: none;
         }
         .nav-links a:hover { color: #d4af37; }
-
         .login-container {
             max-width: 420px;
             margin: 60px auto;
@@ -64,7 +64,6 @@
             flex-direction: column;
             gap: 15px;
         }
-        .input-group { position: relative; }
         .input-group input {
             width: 100%;
             padding: 14px 18px;
@@ -116,42 +115,15 @@
             margin-top: 10px;
             display: none;
         }
-        .success-msg {
-            color: #22c55e;
-            font-size: 13px;
-            margin-top: 10px;
-            display: none;
-        }
         .back-link {
             display: inline-block;
             margin-top: 20px;
             color: #888;
             font-size: 14px;
             transition: color 0.3s;
+            text-decoration: none;
         }
         .back-link:hover { color: #d4af37; }
-        .stats-preview {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin: 30px 0;
-        }
-        .stat-preview-box {
-            background: #111;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid #222;
-        }
-        .stat-preview-box .number {
-            font-size: 24px;
-            font-weight: bold;
-            color: #d4af37;
-        }
-        .stat-preview-box .label {
-            font-size: 12px;
-            color: #888;
-            margin-top: 5px;
-        }
     </style>
 </head>
 <body>
@@ -175,14 +147,12 @@
             </div>
             <button type="submit" class="login-btn" id="login-btn">تسجيل الدخول</button>
             <div class="error-msg" id="error-msg"></div>
-            <div class="success-msg" id="success-msg"></div>
         </form>
 
         <a href="/" class="back-link">⬅️ العودة للمتجر الرئيسي</a>
     </div>
 
     <script>
-        // التحقق من حالة تسجيل الدخول
         async function checkLoginStatus() {
             try {
                 const res = await fetch('/api/marketer/check');
@@ -201,10 +171,8 @@
             const pass = document.getElementById('mk-pass').value.trim();
             const btn = document.getElementById('login-btn');
             const errorDiv = document.getElementById('error-msg');
-            const successDiv = document.getElementById('success-msg');
 
             errorDiv.style.display = 'none';
-            successDiv.style.display = 'none';
             btn.disabled = true;
             btn.innerText = 'جاري التحقق...';
 
@@ -218,11 +186,7 @@
                 const data = await res.json();
 
                 if (data.success) {
-                    successDiv.innerText = '✅ ' + data.message + ' جاري التوجيه...';
-                    successDiv.style.display = 'block';
-                    setTimeout(() => {
-                        window.location.href = '/marketer_dashboard.html';
-                    }, 1000);
+                    window.location.href = '/marketer_dashboard.html';
                 } else {
                     errorDiv.innerText = '❌ ' + (data.message || 'بيانات الدخول غير صحيحة');
                     errorDiv.style.display = 'block';
