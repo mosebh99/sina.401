@@ -3,268 +3,642 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>إحصائيات المسوقين | سينا ستور</title>
+    <title>إدارة المسوقين والأفلييت | سينا ستور الأدمن</title>
     <link rel="icon" type="image/png" href="/static/css/logo.png.jpeg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #0a0a0a;
-            color: #fff;
-            min-height: 100vh;
+        :root {
+            --bg-main: #0a0a0a;
+            --bg-card: #141414;
+            --bg-input: #1a1a1a;
+            --gold: #d4af37;
+            --gold-hover: #b8860b;
+            --gold-light: rgba(212, 175, 55, 0.08);
+            --text-white: #ffffff;
+            --text-muted: #999999;
+            --success: #22c55e;
+            --pending: #f59e0b;
+            --danger: #ef4444;
+            --radius-lg: 16px;
+            --radius-md: 12px;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-white);
+            min-height: 100vh;
+            padding-bottom: 60px;
+        }
+
+        /* الهيدر الإداري الفاخر */
         header {
-            background: rgba(10,10,10,0.98);
+            background: rgba(20, 20, 20, 0.9);
             backdrop-filter: blur(20px);
-            padding: 12px 24px;
+            -webkit-backdrop-filter: blur(20px);
+            padding: 15px 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid rgba(212,175,55,0.1);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: var(--shadow);
         }
-        .logo {
+
+        .logo-section h1 {
             font-size: 20px;
             font-weight: 800;
-            background: linear-gradient(135deg, #d4af37, #b8860b);
+            background: linear-gradient(135deg, #ffffff, var(--gold));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-        }
-        .nav-links a {
-            color: #888;
-            font-size: 14px;
-            transition: color 0.3s;
-        }
-        .nav-links a:hover { color: #d4af37; }
-
-        .container { max-width: 900px; margin: 30px auto; padding: 0 20px; }
-        .search-card {
-            background: #161616;
-            border: 1px solid rgba(212,175,55,0.1);
-            border-radius: 12px;
-            padding: 30px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        .search-card h2 {
-            color: #d4af37;
-            margin-top: 0;
-            font-size: 22px;
-        }
-        .search-card p {
-            color: #888;
-            font-size: 14px;
-            margin-bottom: 20px;
-        }
-        .search-input-group {
             display: flex;
+            align-items: center;
             gap: 10px;
-            max-width: 400px;
-            margin: 0 auto;
-        }
-        .search-input {
-            flex: 1;
-            background: #111;
-            border: 1px solid #333;
-            padding: 12px 16px;
-            border-radius: 8px;
-            color: #fff;
-            font-size: 14px;
-            font-family: inherit;
-        }
-        .search-input:focus {
-            outline: none;
-            border-color: #d4af37;
-        }
-        .search-btn {
-            background: linear-gradient(135deg, #d4af37, #b8860b);
-            color: #000;
-            padding: 12px 25px;
-            border-radius: 8px;
-            font-weight: 700;
-            border: none;
-            cursor: pointer;
-            font-family: inherit;
-            transition: all 0.3s;
-        }
-        .search-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(212,175,55,0.3);
         }
 
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        .nav-links {
+            display: flex;
             gap: 15px;
-            margin: 20px 0;
         }
-        .stat-box {
-            background: #111;
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: var(--radius-md);
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--gold);
+            background: var(--gold-light);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        /* حاوية التصميم الرئيسية */
+        .admin-container {
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+
+        /* لوحة الفلاتر والبحث */
+        .action-bar {
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.03);
             padding: 20px;
-            border-radius: 8px;
-            border: 1px solid #222;
+            border-radius: var(--radius-lg);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            box-shadow: var(--shadow);
+        }
+
+        .search-wrapper {
+            position: relative;
+            flex: 1;
+            min-width: 280px;
+        }
+
+        .search-wrapper i {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .search-wrapper input {
+            width: 100%;
+            background: var(--bg-input);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 12px 45px 12px 15px;
+            border-radius: var(--radius-md);
+            color: white;
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .search-wrapper input:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.1);
+        }
+
+        .add-marketer-btn {
+            background: var(--gold);
+            color: var(--bg-main);
+            border: none;
+            padding: 12px 24px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+        }
+
+        .add-marketer-btn:hover {
+            background: var(--gold-hover);
+            transform: translateY(-2px);
+        }
+
+        /* شبكة الكروت الرئيسية للمسوقين */
+        .marketers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 25px;
+        }
+
+        .marketer-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .marketer-card:hover {
+            border-color: rgba(212, 175, 55, 0.2);
+            transform: translateY(-4px);
+        }
+
+        .card-header-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+        }
+
+        .m-title h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .m-title p {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .code-badge {
+            background: var(--gold-light);
+            color: var(--gold);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 12px;
+            font-family: monospace;
+        }
+
+        /* تفاصيل رصيد المسوق */
+        .financial-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .fin-box {
+            background: var(--bg-main);
+            padding: 12px;
+            border-radius: var(--radius-md);
             text-align: center;
         }
-        .stat-box .number {
-            font-size: 28px;
-            font-weight: bold;
-            color: #d4af37;
-        }
-        .stat-box .label {
-            font-size: 12px;
-            color: #888;
-            margin-top: 5px;
+
+        .fin-box span {
+            font-size: 11px;
+            color: var(--text-muted);
+            display: block;
+            margin-bottom: 4px;
         }
 
-        .orders-table {
+        .fin-box strong {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .fin-box.confirmed strong { color: var(--success); }
+        .fin-box.pending strong { color: var(--pending); }
+
+        /* أزرار التحكم في كارت المسوق */
+        .card-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: auto;
+        }
+
+        .action-btn {
+            padding: 10px;
+            border-radius: var(--radius-md);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            background: transparent;
+            transition: var(--transition);
+        }
+
+        .action-btn.view {
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            color: var(--gold);
+        }
+
+        .action-btn.view:hover {
+            background: var(--gold);
+            color: var(--bg-main);
+            font-weight: 700;
+        }
+
+        .action-btn.delete {
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+        }
+
+        .action-btn.delete:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* نافذة فحص طلبات وتفاصيل المسوق الفاخرة المدمجة */
+        .detail-section-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow);
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .detail-header h3 {
+            font-size: 18px;
+            color: var(--gold);
+        }
+
+        .close-detail-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 18px;
+            transition: var(--transition);
+        }
+
+        .close-detail-btn:hover { color: var(--danger); }
+
+        /* تصميم الجداول والمصفوفات للطلبات المسوق */
+        .table-responsive {
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
-        }
-        .orders-table th, .orders-table td {
-            padding: 12px;
-            border-bottom: 1px solid #222;
             text-align: right;
+            font-size: 14px;
         }
-        .orders-table th {
-            background: #111;
-            color: #d4af37;
-            font-size: 13px;
+
+        th {
+            background: rgba(255, 255, 255, 0.02);
+            padding: 14px 18px;
+            color: var(--text-muted);
+            font-weight: 600;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
+
+        td {
+            padding: 14px 18px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+        }
+
         .status-badge {
-            padding: 4px 12px;
+            padding: 4px 10px;
             border-radius: 20px;
             font-size: 12px;
-            font-weight: bold;
+            font-weight: 700;
         }
-        .status-pending { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
-        .status-shipping { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
-        .status-delivered { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
-        .status-returned { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
 
-        .login-link {
-            display: block;
-            text-align: center;
-            margin-top: 20px;
-            padding: 15px;
-            background: linear-gradient(135deg, rgba(212,175,55,0.1), rgba(184,134,11,0.05));
-            border: 1px solid rgba(212,175,55,0.2);
-            border-radius: 8px;
-            color: #d4af37;
-            text-decoration: none;
-            transition: all 0.3s;
+        .status-badge.status-pending { background: rgba(245, 158, 11, 0.1); color: var(--pending); }
+        .status-badge.status-shipping { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+        .status-badge.status-delivered { background: rgba(34, 197, 94, 0.1); color: var(--success); }
+        .status-badge.status-returned { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
+
+        /* التنبيهات الصامتة (Toast) */
+        .toast-notification {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            background: #161616;
+            border-right: 4px solid var(--gold);
+            color: #fff;
+            padding: 16px 24px;
+            border-radius: var(--radius-md);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+            z-index: 99999;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            animation: slideUp 0.3s ease-out;
         }
-        .login-link:hover {
-            background: linear-gradient(135deg, rgba(212,175,55,0.2), rgba(184,134,11,0.1));
-        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
     <header>
-        <div class="logo">✨ سينا ستور</div>
-        <div class="nav-links"><a href="/">⬅️ العودة للمتجر</a></div>
+        <div class="logo-section">
+            <h1><i class="fa-solid fa-chart-line" style="color: var(--gold);"></i> مركز تحكم الأفلييت والمسوقين</h1>
+        </div>
+        <nav class="nav-links">
+            <a href="/cashier.html"><i class="fa-solid fa-boxes-stacked"></i> لوحة المنتجات والطلبات</a>
+            <a href="/marketers.html" class="active"><i class="fa-solid fa-users"></i> إدارة المسوقين</a>
+        </nav>
     </header>
 
-    <div class="container">
-        <div class="search-card">
-            <h2>📊 إحصائيات المسوقين</h2>
-            <p>أدخل كود المسوق لمتابعة أرباحه وطلباته</p>
-
-            <div class="search-input-group">
-                <input type="text" id="marketer-code-input" class="search-input" placeholder="أدخل كود المسوق...">
-                <button class="search-btn" onclick="loadMarketerData()">بحث</button>
+    <main class="admin-container">
+        
+        <section class="action-bar">
+            <div class="search-wrapper">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="search-marketer-input" placeholder="ابحث باسم المسوق، الهاتف، أو الكود البديل الخاص به..." oninput="filterMarketersGrid()">
             </div>
+            <button class="add-marketer-btn" onclick="triggerCreateMarketer()">
+                <i class="fa-solid fa-user-plus"></i> إضافة مسوق أفلييت جديد
+            </button>
+        </section>
 
-            <a href="/marketer_login.html" class="login-link">
-                🔐 هل أنت مسوق؟ سجل دخولك من هنا
-            </a>
-        </div>
+        <section class="marketers-grid" id="marketers-cards-grid">
+            </section>
 
-        <div id="marketer-stats" style="display: none;">
-            <div class="stats-grid">
-                <div class="stat-box">
-                    <div class="number" id="stat-orders">0</div>
-                    <div class="label">إجمالي الطلبات</div>
-                </div>
-                <div class="stat-box">
-                    <div class="number" id="stat-sales">0</div>
-                    <div class="label">إجمالي المبيعات (ج.م)</div>
-                </div>
-                <div class="stat-box">
-                    <div class="number" id="stat-commission">0</div>
-                    <div class="label">العمولة المتوقعة (ج.م)</div>
-                </div>
+        <section class="detail-section-card" id="marketer-detail-card">
+            <div class="detail-header">
+                <h3><i class="fa-solid fa-receipt"></i> سجل الطلبات والأرباح التفصيلية للمسوق: <span id="detail-marketer-name" style="color:white;">-</span></h3>
+                <button class="close-detail-btn" onclick="closeMarketerDetail()"><i class="fa-solid fa-xmark"></i></button>
             </div>
-
-            <h3 style="color: #d4af37; margin-top: 30px;">📋 الطلبات المسجلة</h3>
-            <div style="overflow-x: auto;">
-                <table class="orders-table">
+            
+            <div class="table-responsive">
+                <table>
                     <thead>
                         <tr>
                             <th>رقم الطلب</th>
-                            <th>العميل</th>
-                            <th>الهاتف</th>
-                            <th>المبلغ</th>
-                            <th>الحالة</th>
-                            <th>التاريخ</th>
+                            <th>اسم العميل</th>
+                            <th>رقم الهاتف</th>
+                            <th>إجمالي الطلب</th>
+                            <th>حالة الطلب الحاليّة</th>
+                            <th>تاريخ تسجيل الطلب</th>
                         </tr>
                     </thead>
-                    <tbody id="marketer-orders-body">
-                    </tbody>
+                    <tbody id="marketer-orders-tbody">
+                        </tbody>
                 </table>
             </div>
-        </div>
-    </div>
+        </section>
+
+    </main>
 
     <script>
-        async function loadMarketerData() {
-            const code = document.getElementById('marketer-code-input').value.trim();
-            if (!code) { alert('من فضلك أدخل كود المسوق'); return; }
+        let allMarketersData = []; // مخزن البيانات الرئيسي لتسهيل البحث الفوري والمحلي
+
+        // توست التنبيهات المدمج
+        function showToast(message) {
+            const existing = document.querySelector('.toast-notification');
+            if (existing) existing.remove();
+
+            const toast = document.createElement('div');
+            toast.className = 'toast-notification';
+            toast.innerHTML = `<i class="fa-solid fa-circle-check" style="color: var(--gold)"></i> <span>${message}</span>`;
+            document.body.appendChild(toast);
+
+            setTimeout(() => { toast.remove(); }, 3000);
+        }
+
+        // جلب قائمة المسوقين بالكامل من قاعدة البيانات السحابية سوبابيز
+        async function loadMarketersList() {
+            try {
+                const res = await fetch('/api/marketers');
+                if (!res.ok) throw new Error("Failed to fetch data");
+                const data = await res.json();
+                
+                allMarketersData = data.marketers || [];
+                renderMarketersGrid(allMarketersData);
+            } catch (e) {
+                console.error("Error loading marketers:", e);
+                document.getElementById('marketers-cards-grid').innerHTML = `
+                    <div style="grid-column:1/-1; text-align:center; color:var(--text-muted); padding:30px;">
+                        ⚠️ فشل جلب بيانات المسوقين من السيرفر. برجاء التحقق من الاتصال.
+                    </div>
+                `;
+            }
+        }
+
+        // رندرة وبناء كروت شبكة المسوقين
+        function renderMarketersGrid(list) {
+            const grid = document.getElementById('marketers-cards-grid');
+            if (list.length === 0) {
+                grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:var(--text-muted); padding:30px;">لا يوجد مسوقين مطابقين للبحث حالياً</div>`;
+                return;
+            }
+
+            grid.innerHTML = list.map(m => {
+                return `
+                    <div class="marketer-card">
+                        <div class="card-header-info">
+                            <div class="m-title">
+                                <h3>${m.name}</h3>
+                                <p><i class="fa-solid fa-phone" style="font-size:11px;"></i> ${m.phone || 'بدون هاتف'}</p>
+                            </div>
+                            <span class="code-badge">كود: ${m.code}</span>
+                        </div>
+                        
+                        <div class="financial-row">
+                            <div class="fin-box confirmed">
+                                <span>أرباح مقبولة</span>
+                                <strong>${m.confirmed_earnings || 0} ج.م</strong>
+                            </div>
+                            <div class="fin-box pending">
+                                <span>أرباح معلقة</span>
+                                <strong>${m.pending_earnings || 0} ج.م</strong>
+                            </div>
+                        </div>
+
+                        <div class="card-actions">
+                            <button class="action-btn view" onclick="viewMarketerOrders('${m.code}', '${m.name.replace(/'/g, "\\'")}')">
+                                <i class="fa-solid fa-eye"></i> كشف الطلبات
+                            </button>
+                            <button class="action-btn delete" onclick="deleteMarketerAccount(${m.id})">
+                                <i class="fa-solid fa-trash-can"></i> حذف المسوق
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // فلترة وكتابة البحث المباشر السريع لتسهيل الأداء الفوري للعميل
+        function filterMarketersGrid() {
+            const query = document.getElementById('search-marketer-input').value.trim().toLowerCase();
+            if(!query) {
+                renderMarketersGrid(allMarketersData);
+                return;
+            }
+
+            const filtered = allMarketersData.filter(m => 
+                m.name.toLowerCase().includes(query) || 
+                (m.phone && m.phone.includes(query)) || 
+                m.code.toLowerCase().includes(query)
+            );
+            renderMarketersGrid(filtered);
+        }
+
+        // نافذة منبثقة أصلية وسريعة لإنشاء مسوق جديد وحفظه سحابياً مباشرة
+        async function triggerCreateMarketer() {
+            const name = prompt("برجاء إدخال الاسم الكامل للمسوق الجديد:");
+            if (!name) return;
+            const phone = prompt("برجاء إدخال رقم الهاتف المصري المكون من 11 رقم:");
+            if (!phone) return;
+            const password = prompt("تعيين كلمة مرور للمسوق للدخول بها إلى لوحته الحرة:");
+            if (!password) return;
 
             try {
-                const res = await fetch(`/api/marketers/stats/${code}`);
+                const res = await fetch('/api/marketers', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, phone, password })
+                });
+
+                if (res.ok) {
+                    const result = await res.json();
+                    showToast(`🎉 تم إضافة المسوق الجديد بنجاح بكود: ${result.code}`);
+                    loadMarketersList();
+                } else {
+                    const err = await res.json();
+                    alert(`❌ فشل الحفظ: ${err.error || 'حدث خطأ مجهول'}`);
+                }
+            } catch (e) {
+                alert("❌ فشل الاتصال بالسيرفر السحابي");
+            }
+        }
+
+        // جلب وعرض طلبات مسوق معين لتوثيق ومتابعة العمولات
+        async function viewMarketerOrders(code, name) {
+            document.getElementById('detail-marketer-name').innerText = name;
+            const tbody = document.getElementById('marketer-orders-tbody');
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding:20px;">⏳ جاري جلب ومزامنة سجل الطلبات...</td></tr>`;
+            
+            document.getElementById('marketer-detail-card').style.display = 'block';
+            window.scrollTo({
+                top: document.getElementById('marketer-detail-card').offsetTop - 100,
+                behavior: 'smooth'
+            });
+
+            try {
+                const res = await fetch(`/api/marketers/${code}/orders`);
+                if(!res.ok) throw new Error("Error loading orders");
                 const data = await res.json();
 
-                if (data.error) {
-                    alert('❌ ' + data.error);
-                    return;
-                }
-
-                document.getElementById('marketer-stats').style.display = 'block';
-                document.getElementById('stat-orders').innerText = data.stats.total_orders || 0;
-                document.getElementById('stat-sales').innerText = (data.stats.total_sales || 0).toFixed(2);
-                document.getElementById('stat-commission').innerText = (data.total_commission || 0).toFixed(2);
-
-                const tbody = document.getElementById('marketer-orders-body');
-                tbody.innerHTML = '';
-
                 if (!data.orders || data.orders.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#aaa;">لا توجد طلبات مسجلة</td></tr>';
+                    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding:20px;">لا توجد أي طلبات مسجلة بكود هذا المسوق حتى الآن.</td></tr>`;
                     return;
                 }
 
-                data.orders.forEach(o => {
+                tbody.innerHTML = data.orders.map(o => {
                     let statusClass = 'status-pending';
                     let statusText = '⏳ قيد المراجعة';
                     if (o.status === 'جاري الشحن') { statusClass = 'status-shipping'; statusText = '🚚 جاري الشحن'; }
                     else if (o.status === 'تم التسليم') { statusClass = 'status-delivered'; statusText = '✅ تم التسليم'; }
                     else if (o.status === 'مرتجع') { statusClass = 'status-returned'; statusText = '❌ مرتجع'; }
 
-                    tbody.innerHTML += `
+                    const dateStr = o.created_at ? new Date(o.created_at).toLocaleDateString('ar-EG') : '-';
+
+                    return `
                         <tr>
                             <td><strong>#${o.id}</strong></td>
-                            <td>${o.customer_name || '-'}</td>
+                            <td>${o.customer_name || 'عميل المتجر'}</td>
                             <td>${o.customer_phone || '-'}</td>
-                            <td style="color: #d4af37; font-weight: bold;">${o.total_price || 0} ج.م</td>
+                            <td style="color: var(--gold); font-weight: bold;">${o.total_price || 0} ج.م</td>
                             <td><span class="status-badge ${statusClass}">${statusText}</span></td>
-                            <td style="color: #888; font-size: 12px;">${o.created_at ? new Date(o.created_at).toLocaleDateString('ar-EG') : '-'}</td>
+                            <td style="color: var(--text-muted); font-size:12px;">${dateStr}</td>
                         </tr>
                     `;
-                });
+                }).join('');
+
             } catch (e) {
-                alert('❌ فشل الاتصال بالسيرفر');
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--danger); padding:20px;">❌ فشل جلب البيانات من السيرفر.</td></tr>`;
             }
         }
+
+        // إغلاق كشف الحساب والطلبات للمسوق
+        function closeMarketerDetail() {
+            document.getElementById('marketer-detail-card').style.display = 'none';
+        }
+
+        // حذف حساب مسوق بالكامل
+        async function deleteMarketerAccount(id) {
+            if(!confirm("⚠️ تحذير نهائي: هل أنت متأكد من حذف هذا المسوق بالكامل؟ سيتم مسح أرصدته وبيانات دخوله نهائياً من السيستم!")) return;
+            try {
+                const res = await fetch(`/api/marketers/${id}`, { method: 'DELETE' });
+                if(res.ok) {
+                    showToast("🗑️ تم حذف حساب المسوق وتصفية قيوده بنجاح!");
+                    closeMarketerDetail();
+                    loadMarketersList();
+                } else {
+                    const err = await res.json();
+                    alert(`❌ فشل الحذف: ${err.error || 'حدث خطأ مجهول'}`);
+                }
+            } catch(e) {
+                alert("❌ فشل الاتصال بالخادم الخلفي.");
+            }
+        }
+
+        // المزامنة والتشغيل التلقائي فور تحميل الهيكل بالكامل
+        window.addEventListener('DOMContentLoaded', loadMarketersList);
     </script>
 </body>
 </html>
