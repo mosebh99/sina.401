@@ -3,853 +3,508 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>سينا ستور | Sina 401 - ملحقات الموبايل</title>
+    <title>سينا ستور 401 | عالم الهواتف والأجهزة الذكية</title>
     <link rel="icon" type="image/png" href="/static/css/logo.png.jpeg">
-    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        /* ===== CSS INLINE - يشتغل فوراً ===== */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg-main: #0a0a0a;
+            --bg-card: #141414;
+            --bg-input: #1a1a1a;
+            --gold: #d4af37;
+            --gold-hover: #b8860b;
+            --gold-light: rgba(212, 175, 55, 0.08);
+            --text-white: #ffffff;
+            --text-muted: #999999;
+            --radius-lg: 16px;
+            --radius-md: 12px;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #0a0a0a;
-            color: #fff;
-            line-height: 1.5;
+            background-color: var(--bg-main);
+            color: var(--text-white);
+            min-height: 100vh;
             overflow-x: hidden;
         }
 
-        /* Header */
+        /* هيدر المتجر الاحترافي */
         header {
-            background: rgba(10,10,10,0.98);
+            background: rgba(20, 20, 20, 0.85);
             backdrop-filter: blur(20px);
-            padding: 12px 16px;
+            -webkit-backdrop-filter: blur(20px);
+            padding: 15px 25px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid rgba(212,175,55,0.1);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.15);
             position: sticky;
             top: 0;
             z-index: 1000;
+            box-shadow: var(--shadow);
         }
 
-        .logo {
+        .brand-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-section img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1px solid var(--gold);
+        }
+
+        .brand-section h1 {
             font-size: 20px;
-            font-weight: 800;
-            background: linear-gradient(135deg, #d4af37, #b8860b);
+            font-weight: 900;
+            background: linear-gradient(135deg, #ffffff, var(--gold));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
-        .header-actions {
+        .portal-btn {
+            background: var(--gold-light);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            color: var(--gold);
+            padding: 8px 16px;
+            border-radius: var(--radius-md);
+            font-size: 13px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .portal-btn:hover {
+            background: var(--gold);
+            color: var(--bg-main);
+        }
+
+        /* بنية هيرو الترحيب الفخم */
+        .hero-banner {
+            max-width: 1300px;
+            margin: 30px auto;
+            padding: 40px 20px;
+            text-align: center;
+            background: radial-gradient(circle at center, #161616 0%, var(--bg-main) 100%);
+            border-radius: var(--radius-lg);
+            position: relative;
+        }
+
+        .hero-banner h2 {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            color: #fff;
+        }
+
+        .hero-banner h2 span {
+            color: var(--gold);
+        }
+
+        .hero-banner p {
+            font-size: 14px;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto 25px;
+        }
+
+        /* ويدجت البحث وتتبع الحالات السريع */
+        .search-track-container {
+            max-width: 700px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .search-box {
+            position: relative;
+            width: 100%;
+        }
+
+        .search-box input {
+            width: 100%;
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 14px 20px 14px 50px;
+            border-radius: var(--radius-md);
+            color: white;
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.1);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 20px;
+            top: 50px;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 16px;
+        }
+
+        /* نظام تتبع الطلبات المبتكر */
+        .tracking-widget {
+            background: rgba(20, 20, 20, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            border-radius: var(--radius-md);
+            padding: 15px;
+        }
+
+        .track-form {
+            display: flex;
+            gap: 10px;
+        }
+
+        .track-form input {
+            flex: 1;
+            background: var(--bg-input);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 10px 15px;
+            border-radius: 8px;
+            color: white;
+            font-size: 13px;
+        }
+
+        .track-form button {
+            background: var(--gold);
+            color: var(--bg-main);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .track-form button:hover { background: var(--gold-hover); }
+
+        #tracking-result {
+            margin-top: 12px;
+            text-align: right;
+            font-size: 13px;
+        }
+
+        /* شبكة عرض كروت المنتجات */
+        .store-content {
+            max-width: 1300px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 25px;
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
-        .icon-btn {
-            background: #1a1a1a;
-            border: 1px solid #333;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            color: #fff;
-            cursor: pointer;
-            position: relative;
-        }
-
-        .badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: #ef4444;
-            color: #fff;
-            font-size: 11px;
-            font-weight: bold;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* Hero */
-        .hero {
-            text-align: center;
-            padding: 50px 20px 40px;
-            background: radial-gradient(ellipse at 50% 0%, rgba(212,175,55,0.1) 0%, transparent 60%);
-        }
-
-        .hero h1 {
-            font-size: 28px;
-            font-weight: 800;
-            margin-bottom: 10px;
-        }
-
-        .hero h1 span {
-            color: #d4af37;
-        }
-
-        .hero p {
-            color: #888;
-            font-size: 14px;
-            margin-bottom: 20px;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #d4af37, #b8860b);
-            color: #000;
-            padding: 12px 30px;
-            border-radius: 25px;
-            font-size: 15px;
-            font-weight: 700;
-            border: none;
-            cursor: pointer;
-            display: inline-block;
-        }
-
-        /* Search */
-        .search-section {
-            padding: 0 16px 20px;
-        }
-
-        .search-box {
-            width: 100%;
-            background: #1a1a1a;
-            border: 1px solid #333;
-            padding: 12px 16px;
-            border-radius: 25px;
-            color: #fff;
-            font-size: 14px;
-            font-family: inherit;
-        }
-
-        .search-box:focus {
-            outline: none;
-            border-color: #d4af37;
-        }
-
-        /* Categories */
-        .categories {
-            padding: 0 16px 20px;
-            display: flex;
-            gap: 8px;
-            overflow-x: auto;
-            scrollbar-width: none;
-        }
-
-        .categories::-webkit-scrollbar {
-            display: none;
-        }
-
-        .category-btn {
-            background: #1a1a1a;
-            border: 1px solid #333;
-            color: #888;
-            padding: 8px 18px;
-            border-radius: 20px;
-            font-size: 13px;
-            white-space: nowrap;
-            cursor: pointer;
-            font-family: inherit;
-        }
-
-        .category-btn.active {
-            background: linear-gradient(135deg, #d4af37, #b8860b);
-            color: #000;
-            border-color: #d4af37;
-            font-weight: 600;
-        }
-
-        /* Products */
-        .products-section {
-            padding: 0 16px 40px;
-        }
-
-        .section-title {
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 20px;
-            color: #d4af37;
+        .section-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.05);
         }
 
         .products-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 25px;
         }
 
-        @media (min-width: 768px) {
-            .products-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
-
-        @media (min-width: 1024px) {
-            .products-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
-        }
-
+        /* الكارت الفاخر لعرض الموبايل */
         .product-card {
-            background: #161616;
-            border: 1px solid rgba(212,175,55,0.1);
-            border-radius: 12px;
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.02);
+            border-radius: var(--radius-lg);
             overflow: hidden;
-            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            position: relative;
         }
 
         .product-card:hover {
-            transform: translateY(-5px);
-            border-color: rgba(212,175,55,0.3);
-            box-shadow: 0 8px 25px rgba(212,175,55,0.1);
+            transform: translateY(-6px);
+            border-color: rgba(212, 175, 55, 0.2);
         }
 
-        .product-img {
+        .card-img-wrapper {
             width: 100%;
-            height: 150px;
-            object-fit: cover;
-            background: #0d0d0d;
-        }
-
-        .product-info {
-            padding: 12px;
-        }
-
-        .product-name {
-            font-size: 13px;
-            font-weight: 600;
-            margin-bottom: 4px;
-            white-space: nowrap;
+            height: 240px;
+            background: #0f0f0f;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
             overflow: hidden;
-            text-overflow: ellipsis;
         }
 
-        .product-category {
-            font-size: 11px;
-            color: #666;
-            margin-bottom: 8px;
+        .card-img-wrapper img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            transition: var(--transition);
         }
 
-        .product-price {
-            font-size: 16px;
-            font-weight: 700;
-            color: #d4af37;
-            margin-bottom: 10px;
+        .product-card:hover .card-img-wrapper img {
+            transform: scale(1.04);
         }
 
-        .product-actions {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 6px;
-        }
-
-        .btn-small {
-            padding: 8px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            border: none;
-            cursor: pointer;
-            text-align: center;
-            font-family: inherit;
-        }
-
-        .btn-whatsapp {
-            background: #25d366;
-            color: #fff;
-        }
-
-        .btn-cart {
-            background: linear-gradient(135deg, #d4af37, #b8860b);
-            color: #000;
-        }
-
-        /* Cart Overlay */
-        .cart-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.8);
-            z-index: 2000;
-        }
-
-        .cart-overlay.show {
-            display: block;
-        }
-
-        .cart-sidebar {
-            position: fixed;
-            top: 0;
-            right: 0;
-            width: 100%;
-            max-width: 400px;
-            height: 100vh;
-            background: #0a0a0a;
-            border-left: 1px solid #333;
-            z-index: 2001;
-            transform: translateX(100%);
-            transition: transform 0.3s ease;
+        .card-details {
+            padding: 20px;
             display: flex;
             flex-direction: column;
+            flex-grow: 1;
+            gap: 8px;
         }
 
-        .cart-overlay.show .cart-sidebar {
-            transform: translateX(0);
+        .card-cat {
+            font-size: 11px;
+            color: var(--gold);
+            font-weight: 600;
+            text-transform: uppercase;
         }
 
-        .cart-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 16px;
-            border-bottom: 1px solid #333;
-        }
-
-        .cart-header h3 {
-            color: #d4af37;
-            font-size: 16px;
-        }
-
-        .cart-items {
-            flex: 1;
-            overflow-y: auto;
-            padding: 16px;
-        }
-
-        .cart-footer {
-            padding: 16px;
-            border-top: 1px solid #333;
-            background: #111;
-        }
-
-        /* Tracking */
-        .tracking-section {
-            padding: 0 16px 40px;
-        }
-
-        .tracking-box {
-            background: #161616;
-            border: 1px solid rgba(212,175,55,0.1);
-            border-radius: 12px;
-            padding: 20px;
-        }
-
-        .tracking-box h3 {
-            color: #d4af37;
-            margin-bottom: 15px;
-            font-size: 16px;
-        }
-
-        .tracking-input {
-            display: flex;
-            gap: 10px;
-        }
-
-        .tracking-input input {
-            flex: 1;
-            background: #0a0a0a;
-            border: 1px solid #333;
-            padding: 12px;
-            border-radius: 8px;
-            color: #fff;
-            font-size: 14px;
-            font-family: inherit;
-        }
-
-        .tracking-input input:focus {
-            outline: none;
-            border-color: #d4af37;
-        }
-
-        .tracking-input button {
-            background: linear-gradient(135deg, #d4af37, #b8860b);
-            color: #000;
-            padding: 12px 20px;
-            border-radius: 8px;
+        .card-title {
+            font-size: 15px;
             font-weight: 700;
-            border: none;
-            cursor: pointer;
-            font-family: inherit;
+            color: #fff;
+            line-height: 1.4;
+            height: 42px;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
         }
 
-        /* Footer */
-        footer {
-            background: #111;
-            border-top: 1px solid #222;
-            padding: 30px 16px;
-            text-align: center;
+        .card-price {
+            font-size: 18px;
+            font-weight: 800;
+            color: #fff;
+            margin-top: 5px;
         }
 
-        footer p {
-            color: #666;
+        .buy-now-btn {
+            background: transparent;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            color: var(--gold);
+            padding: 12px;
+            border-radius: var(--radius-md);
             font-size: 13px;
-            margin: 5px 0;
-        }
-
-        /* WhatsApp Float */
-        .whatsapp-float {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            width: 55px;
-            height: 55px;
-            background: #25d366;
-            border-radius: 50%;
+            font-weight: 700;
+            text-align: center;
+            text-decoration: none;
+            margin-top: auto;
+            transition: var(--transition);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 28px;
-            box-shadow: 0 4px 15px rgba(37,211,102,0.4);
-            z-index: 999;
-            text-decoration: none;
+            gap: 8px;
         }
 
-        /* Toast */
-        .toast {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            background: #161616;
-            border-right: 3px solid #d4af37;
-            padding: 15px 20px;
-            border-radius: 8px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            z-index: 9999;
-            display: none;
-            font-size: 14px;
-            max-width: 300px;
+        .buy-now-btn:hover {
+            background: var(--gold);
+            color: var(--bg-main);
+            border-color: var(--gold);
         }
 
-        .toast.show {
-            display: block;
-            animation: slideIn 0.3s ease;
-        }
-
-        @keyframes slideIn {
-            from { transform: translateX(-100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        /* Loading */
-        .loading {
+        /* فوتر المتجر */
+        footer {
+            background: #111;
             text-align: center;
-            padding: 40px;
-            color: #666;
+            padding: 20px;
+            font-size: 12px;
+            color: var(--text-muted);
+            border-top: 1px solid rgba(255, 255, 255, 0.02);
+            margin-top: 60px;
         }
 
-        .skeleton {
-            background: linear-gradient(90deg, #1a1a1a 25%, #222 50%, #1a1a1a 75%);
-            background-size: 200% 100%;
-            animation: shimmer 1.5s infinite;
-            border-radius: 12px;
-            height: 200px;
-        }
-
-        @keyframes shimmer {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
-
-        /* Menu */
-        .menu-dropdown {
-            display: none;
-            position: absolute;
-            top: 60px;
-            left: 16px;
-            background: #161616;
-            border: 1px solid #333;
-            border-radius: 12px;
-            min-width: 180px;
-            z-index: 1001;
-            overflow: hidden;
-        }
-
-        .menu-dropdown a {
-            display: block;
-            padding: 12px 16px;
-            font-size: 14px;
-            border-bottom: 1px solid #222;
-            transition: all 0.3s;
-        }
-
-        .menu-dropdown a:hover {
-            background: #d4af37;
-            color: #000;
-        }
-
-        .menu-dropdown a:last-child {
-            border-bottom: none;
+        /* رندرة الجوال والتجاوب */
+        @media (max-width: 768px) {
+            .hero-banner { padding: 30px 15px; margin: 15px; }
+            .hero-banner h2 { font-size: 24px; }
+            .products-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+            .card-img-wrapper { height: 160px; padding: 10px; }
+            .card-title { font-size: 13px; height: 36px; }
+            .card-price { font-size: 15px; }
+            .buy-now-btn { padding: 8px; font-size: 11px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Header -->
     <header>
-        <div class="logo">✨ سينا ستور</div>
-        <div class="header-actions">
-            <button class="icon-btn" onclick="toggleCart()">
-                🛒 <span id="cart-count" class="badge" style="display:none;">0</span>
-            </button>
-            <button class="icon-btn" onclick="toggleMenu()">☰</button>
+        <div class="brand-section">
+            <img src="/static/css/logo.png.jpeg" alt="سينا ستور" onerror="this.style.display='none'">
+            <h1>سينا ستور 401</h1>
         </div>
+        <a href="/marketer_login.html" class="portal-btn"><i class="fa-solid fa-users-viewfinder"></i> بوابة المسوقين</a>
     </header>
 
-    <!-- Menu Dropdown -->
-    <div class="menu-dropdown" id="menu-dropdown">
-        <a href="/">🏠 الرئيسية</a>
-        <a href="/marketer_login.html">📊 بوابة المسوقين</a>
-        <a href="/login.html">🔐 لوحة الإدارة</a>
-    </div>
-
-    <!-- Hero -->
-    <section class="hero">
-        <h1>👑 <span>سينا ستور</span></h1>
-        <p>أجود ملحقات الموبايل - كفرات، شواحن، سماعات وأكتر</p>
-        <button class="btn-primary" onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">
-            🛍️ تسوق الآن
-        </button>
-    </section>
-
-    <!-- Search -->
-    <section class="search-section">
-        <input type="text" class="search-box" id="search-box" placeholder="🔍 ابحث عن منتج..." oninput="loadProducts()">
-    </section>
-
-    <!-- Categories -->
-    <section class="categories" id="categories">
-        <button class="category-btn active" onclick="filterCategory('all')">الكل</button>
-    </section>
-
-    <!-- Products -->
-    <section class="products-section" id="products">
-        <h2 class="section-title">📦 منتجاتنا</h2>
-        <div class="products-grid" id="products-grid">
-            <div class="skeleton"></div>
-            <div class="skeleton"></div>
-            <div class="skeleton"></div>
-            <div class="skeleton"></div>
-        </div>
-    </section>
-
-    <!-- Cart Overlay -->
-    <div class="cart-overlay" id="cart-overlay" onclick="if(event.target===this)toggleCart()">
-        <div class="cart-sidebar">
-            <div class="cart-header">
-                <h3>🛒 سلة المشتريات</h3>
-                <button onclick="toggleCart()" style="background:none; border:none; color:#fff; font-size:20px; cursor:pointer;">✕</button>
-            </div>
-            <div class="cart-items" id="cart-items">
-                <div style="text-align:center; padding:40px; color:#666;">السلة فارغة</div>
-            </div>
-            <div class="cart-footer">
-                <div style="display:flex; justify-content:space-between; margin-bottom:15px; font-size:18px; font-weight:bold;">
-                    <span>الإجمالي:</span>
-                    <span style="color:#d4af37;"><span id="cart-total">0</span> ج.م</span>
+    <main>
+        <section class="hero-banner">
+            <h2>منصة <span>سينا ستور</span> لبيع الهواتف الذكية</h2>
+            <p>اكتشف أقوى عروض الموبايلات والأجهزة مع ميزة فحص ومعاينة المنتج يداً بيد قبل الدفع والاستلام لضمان جودة المصنع.</p>
+            
+            <div class="search-track-container">
+                <div class="search-box">
+                    <input type="text" id="store-search-input" placeholder="ابحث عن هاتف، ماركة، أو قسم معين..." oninput="filterStoreProducts()">
                 </div>
-                <form id="checkout-form" style="display:flex; flex-direction:column; gap:10px;">
-                    <input type="text" id="cust-name" placeholder="الاسم الكامل *" required style="padding:12px; border-radius:8px; border:1px solid #333; background:#0a0a0a; color:#fff; font-family:inherit;">
-                    <input type="tel" id="cust-phone" placeholder="رقم الهاتف *" required style="padding:12px; border-radius:8px; border:1px solid #333; background:#0a0a0a; color:#fff; font-family:inherit;">
-                    <input type="text" id="cust-address" placeholder="العنوان بالتفصيل *" required style="padding:12px; border-radius:8px; border:1px solid #333; background:#0a0a0a; color:#fff; font-family:inherit;">
-                    <input type="text" id="marketer-code" placeholder="كود المسوق (اختياري)" style="padding:12px; border-radius:8px; border:1px solid #333; background:#0a0a0a; color:#fff; font-family:inherit;">
-                    <div style="background:#1a1a1a; padding:10px; border-radius:8px; border:1px solid #333; margin:5px 0;">
-                        <p style="font-size:13px; color:#888; margin:0;">💰 الدفع: <strong style="color:#d4af37;">عند الاستلام فقط</strong></p>
-                    </div>
-                    <button type="submit" style="background:linear-gradient(135deg,#d4af37,#b8860b); color:#000; padding:14px; border-radius:8px; font-weight:700; border:none; cursor:pointer; font-family:inherit; font-size:16px;">
-                        ✅ تأكيد الطلب - الدفع عند الاستلام
-                    </button>
-                </form>
-            </div>
-        </div>
-    </div>
 
-    <!-- Tracking -->
-    <section class="tracking-section">
-        <div class="tracking-box">
-            <h3>📦 تتبع طلبك</h3>
-            <div class="tracking-input">
-                <input type="tel" id="track-phone" placeholder="رقم الهاتف...">
-                <button onclick="trackOrder()">تتبع</button>
+                <div class="tracking-widget">
+                    <form class="track-form" onsubmit="handleTrackCustomerOrder(event)">
+                        <input type="number" id="track-id-input" required placeholder="أدخل رقم طلبك لتتبع حالته فوراً...">
+                        <button type="submit"><i class="fa-solid fa-magnifying-glass"></i> تتبع</button>
+                    </form>
+                    <div id="tracking-result"></div>
+                </div>
             </div>
-            <div id="track-result"></div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Footer -->
+        <section class="store-content">
+            <h3 class="section-title"><i class="fa-solid fa-fire" style="color: var(--gold);"></i> أحدث الهواتف والأجهزة المتاحة حالياً</h3>
+            
+            <div class="products-grid" id="main-products-grid">
+                <div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;">
+                    <i class="fa-solid fa-spinner fa-spin" style="font-size: 24px; color: var(--gold); margin-bottom: 10px;"></i>
+                    <p>جاري مزامنة كتالوج الأجهزة الحية...</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
     <footer>
-        <p style="font-size:18px; font-weight:700; background:linear-gradient(135deg,#d4af37,#b8860b); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:10px;">✨ سينا ستور</p>
-        <p>وجهتك الأولى لملحقات الموبايل الفاخرة</p>
-        <p style="margin-top:15px;">📞 01065653401</p>
-        <p style="margin-top:20px; font-size:12px; color:#444;">© 2026 سينا ستور. جميع الحقوق محفوظة.</p>
+        <p>© 2026 سينا ستور 401 - جميع الحقوق محفوظة لـ إبراهيم لتجارة الإلكترونيات والموبايل.</p>
     </footer>
 
-    <!-- WhatsApp -->
-    <a href="https://wa.me/201065653401" class="whatsapp-float" target="_blank">💬</a>
-
-    <!-- Toast -->
-    <div class="toast" id="toast"></div>
-
-    <!-- Scripts -->
     <script>
-        let cart = JSON.parse(localStorage.getItem('sina_cart') || '[]');
-        let products = [];
-        let currentCategory = 'all';
+        let allProducts = [];
 
-        // Check for affiliate code in URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const affiliateCode = urlParams.get('ref');
-        if (affiliateCode) {
-            localStorage.setItem('affiliate_code', affiliateCode);
-        }
-
-        function toggleMenu() {
-            const menu = document.getElementById('menu-dropdown');
-            menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
-        }
-
-        // Close menu when clicking outside
-        document.addEventListener('click', function(e) {
-            const menu = document.getElementById('menu-dropdown');
-            const btn = document.querySelector('.icon-btn[onclick="toggleMenu()"]');
-            if (!menu.contains(e.target) && e.target !== btn) {
-                menu.style.display = 'none';
+        // 1. التقاط كود الأفلييت بذكاء من الرابط وتخزينه لحماية عمولات المسوقين
+        function catchAffiliateUrlCode() {
+            const params = new URLSearchParams(window.location.search);
+            const code = params.get('m') || params.get('ref') || params.get('code');
+            if (code) {
+                localStorage.setItem('affiliate_code', code);
+                console.log("🔒 تم توثيق كود تتبع المسوق سحابياً وجاهز للربط بالطلب:", code);
             }
-        });
-
-        function toggleCart() {
-            document.getElementById('cart-overlay').classList.toggle('show');
-            renderCart();
         }
 
-        function showToast(msg) {
-            const toast = document.getElementById('toast');
-            toast.innerText = msg;
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 3000);
-        }
+        // 2. جلب كتالوج المنتجات المعروضة بالكامل من قاعدة البيانات
+        async function fetchStoreProducts() {
+            catchAffiliateUrlCode();
+            const grid = document.getElementById('main-products-grid');
 
-        async function loadProducts() {
             try {
                 const res = await fetch('/api/products');
-                products = await res.json();
+                if (!res.ok) throw new Error("Fetch error");
+                allProducts = await res.json();
 
-                // Render categories
-                const cats = [...new Set(products.map(p => p.category).filter(c => c))];
-                const catContainer = document.getElementById('categories');
-                catContainer.innerHTML = `<button class="category-btn ${currentCategory==='all'?'active':''}" onclick="filterCategory('all')">الكل</button>`;
-                cats.forEach(c => {
-                    catContainer.innerHTML += `<button class="category-btn ${currentCategory===c?'active':''}" onclick="filterCategory('${c}')">${c}</button>`;
-                });
-
-                renderProducts();
-            } catch(e) {
-                document.getElementById('products-grid').innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:40px; color:#666;">فشل تحميل المنتجات</div>';
+                renderProducts(allProducts);
+            } catch (e) {
+                grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:var(--gold); padding:30px;">❌ حدث خطأ في الاتصال بالسيرفر، جاري المحاولة مجدداً.</div>`;
             }
         }
 
-        function filterCategory(cat) {
-            currentCategory = cat;
-            loadProducts();
-        }
-
-        function renderProducts() {
-            const grid = document.getElementById('products-grid');
-            const search = document.getElementById('search-box').value.toLowerCase();
-
-            let filtered = products.filter(p => {
-                const matchSearch = p.name.toLowerCase().includes(search);
-                const matchCat = currentCategory === 'all' || p.category === currentCategory;
-                return matchSearch && matchCat;
-            });
-
-            if (filtered.length === 0) {
-                grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:40px; color:#666;">لا توجد منتجات</div>';
+        // 3. رندرة وبناء كروت المنتجات داخل الشبكة
+        function renderProducts(list) {
+            const grid = document.getElementById('main-products-grid');
+            if (list.length === 0) {
+                grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:var(--text-muted); padding:30px;">لا توجد أجهزة متطابقة مع بحثك حالياً.</div>`;
                 return;
             }
 
-            grid.innerHTML = filtered.map(p => {
-                const affiliateLink = localStorage.getItem('affiliate_code') ? `?ref=${localStorage.getItem('affiliate_code')}` : '';
+            const fallbackImg = '/static/css/logo.png.jpeg';
+
+            grid.innerHTML = list.map(p => {
+                const img = p.image_url ? p.image_url : fallbackImg;
                 return `
-                <div class="product-card">
-                    <a href="/product_detail.html?id=${p.id}${affiliateLink}">
-                        <img src="${p.image_url || '/static/css/logo.png.jpeg'}" class="product-img" alt="${p.name}" onerror="this.src='/static/css/logo.png.jpeg'">
-                    </a>
-                    <div class="product-info">
-                        <div class="product-name">${p.name}</div>
-                        <div class="product-category">${p.category || 'عام'}</div>
-                        <div class="product-price">${p.selling_price} ج.م</div>
-                        <div class="product-actions">
-                            <button class="btn-small btn-whatsapp" onclick="window.open('https://wa.me/201065653401?text=أريد:${encodeURIComponent(p.name)}','_blank')">واتساب</button>
-                            <button class="btn-small btn-cart" onclick="addToCart(${p.id},'${p.name.replace(/'/g,"\'")}',${p.selling_price})">السلة</button>
+                    <div class="product-card">
+                        <div class="card-img-wrapper">
+                            <img src="${img}" alt="${p.name}" onerror="this.src='${fallbackImg}'">
                         </div>
-                    </div>
-                </div>
-            `}).join('');
-
-            updateCartBadge();
-        }
-
-        function addToCart(id, name, price) {
-            const existing = cart.find(i => i.id === id);
-            if (existing) existing.qty++;
-            else cart.push({id, name, price, qty: 1});
-            localStorage.setItem('sina_cart', JSON.stringify(cart));
-            updateCartBadge();
-            showToast('✅ أضيف للسلة');
-        }
-
-        function updateCartBadge() {
-            const count = cart.reduce((s, i) => s + i.qty, 0);
-            const badge = document.getElementById('cart-count');
-            badge.innerText = count;
-            badge.style.display = count > 0 ? 'flex' : 'none';
-        }
-
-        function renderCart() {
-            const container = document.getElementById('cart-items');
-            if (cart.length === 0) {
-                container.innerHTML = '<div style="text-align:center; padding:40px; color:#666;">السلة فارغة</div>';
-                document.getElementById('cart-total').innerText = '0';
-                return;
-            }
-
-            let total = 0;
-            container.innerHTML = cart.map((item, i) => {
-                total += item.price * item.qty;
-                return `
-                    <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid #222;">
-                        <div>
-                            <div style="font-weight:600; font-size:14px;">${item.name}</div>
-                            <div style="color:#888; font-size:12px;">${item.price} ج.م</div>
-                        </div>
-                        <div style="display:flex; align-items:center; gap:10px;">
-                            <div style="display:flex; align-items:center; gap:5px; background:#1a1a1a; border-radius:15px; padding:2px;">
-                                <button onclick="updateQty(${i},-1)" style="width:25px; height:25px; border-radius:50%; border:none; background:#333; color:#fff; cursor:pointer; font-family:inherit;">−</button>
-                                <span style="min-width:20px; text-align:center;">${item.qty}</span>
-                                <button onclick="updateQty(${i},1)" style="width:25px; height:25px; border-radius:50%; border:none; background:#333; color:#fff; cursor:pointer; font-family:inherit;">+</button>
-                            </div>
-                            <span style="color:#d4af37; font-weight:bold; min-width:60px; text-align:left;">${item.price*item.qty} ج.م</span>
-                            <button onclick="removeFromCart(${i})" style="background:none; border:none; color:#ef4444; cursor:pointer; font-size:16px;">🗑</button>
+                        <div class="card-details">
+                            <span class="card-cat">${p.category || 'أجهزة وهواتف'}</span>
+                            <h4 class="card-title">${p.name}</h4>
+                            <div class="card-price">${p.selling_price} ج.م</div>
+                            <a href="/product_detail/${p.id}" class="buy-now-btn">
+                                <i class="fa-solid fa-cart-plus"></i> عرض التفاصيل والشراء
+                            </a>
                         </div>
                     </div>
                 `;
             }).join('');
-
-            document.getElementById('cart-total').innerText = total;
         }
 
-        function updateQty(index, delta) {
-            cart[index].qty += delta;
-            if (cart[index].qty <= 0) cart.splice(index, 1);
-            localStorage.setItem('sina_cart', JSON.stringify(cart));
-            renderCart();
-            updateCartBadge();
+        // 4. نظام الفلترة والبحث الفوري أثناء الكتابة
+        function filterStoreProducts() {
+            const text = document.getElementById('store-search-input').value.toLowerCase().trim();
+            const filtered = allProducts.filter(p => 
+                p.name.toLowerCase().includes(text) || 
+                (p.category && p.category.toLowerCase().includes(text))
+            );
+            renderProducts(filtered);
         }
 
-        function removeFromCart(index) {
-            cart.splice(index, 1);
-            localStorage.setItem('sina_cart', JSON.stringify(cart));
-            renderCart();
-            updateCartBadge();
-        }
-
-        document.getElementById('checkout-form').addEventListener('submit', async (e) => {
+        // 5. تتبع حالة طلب العميل بالـ ID فوراً
+        async function handleTrackCustomerOrder(e) {
             e.preventDefault();
-            if (cart.length === 0) { showToast('السلة فارغة'); return; }
+            const orderId = document.getElementById('track-id-input').value.trim();
+            const resultBox = document.getElementById('tracking-result');
 
-            const btn = e.target.querySelector('button[type="submit"]');
-            btn.disabled = true;
-            btn.innerText = '⏳ جاري إرسال الطلب...';
-
-            // Get affiliate code if exists
-            const marketerCode = document.getElementById('marketer-code').value.trim() || localStorage.getItem('affiliate_code') || '';
+            resultBox.innerHTML = `<span style="color:var(--text-muted);"><i class="fa-solid fa-spinner fa-spin"></i> جاري البحث في السجلات...</span>`;
 
             try {
-                const res = await fetch('/api/orders', {
-                    method: 'POST',
-                    headers: {'Content-Type':'application/json'},
-                    body: JSON.stringify({
-                        customer_name: document.getElementById('cust-name').value,
-                        customer_phone: document.getElementById('cust-phone').value,
-                        customer_address: document.getElementById('cust-address').value,
-                        total_price: parseFloat(document.getElementById('cart-total').innerText),
-                        products: cart,
-                        marketer_code: marketerCode,
-                        status: 'قيد المراجعة'
-                    })
-                });
-
-                if (res.ok) {
-                    showToast('🎉 تم الطلب بنجاح! الدفع عند الاستلام');
-                    cart = [];
-                    localStorage.removeItem('sina_cart');
-                    localStorage.removeItem('affiliate_code');
-                    toggleCart();
-                    updateCartBadge();
-                    document.getElementById('checkout-form').reset();
-                }
-            } catch(e) {
-                showToast('❌ فشل الاتصال');
-            } finally {
-                btn.disabled = false;
-                btn.innerText = '✅ تأكيد الطلب - الدفع عند الاستلام';
-            }
-        });
-
-        async function trackOrder() {
-            const phone = document.getElementById('track-phone').value.trim();
-            const result = document.getElementById('track-result');
-            if (!phone) { showToast('أدخل رقم الهاتف'); return; }
-
-            result.innerHTML = '<p style="color:#888; margin-top:10px;">جاري البحث...</p>';
-
-            try {
-                const res = await fetch('/api/orders');
-                const orders = await res.json();
-                const myOrders = orders.filter(o => o.customer_phone === phone);
-
-                if (myOrders.length === 0) {
-                    result.innerHTML = '<p style="color:#ef4444; margin-top:10px;">لا توجد طلبات</p>';
+                const res = await fetch(`/api/orders/track?id=${orderId}`);
+                if (!res.ok) {
+                    resultBox.innerHTML = `<span style="color:#ef4444;">❌ لم نجد طلب مسجل بهذا الرقم في السيستم.</span>`;
                     return;
                 }
+                const order = await res.json();
 
-                result.innerHTML = myOrders.map(o => {
-                    let statusColor = '#d4af37';
-                    let statusText = '⏳ قيد المراجعة';
-                    if (o.status === 'جاري الشحن') { statusColor = '#3b82f6'; statusText = '🚚 جاري الشحن'; }
-                    else if (o.status === 'تم التسليم') { statusColor = '#22c55e'; statusText = '✅ تم التسليم'; }
-                    else if (o.status === 'مرتجع') { statusColor = '#ef4444'; statusText = '❌ مرتجع'; }
+                let badgeColor = '#f59e0b';
+                let statusIcon = '⏳';
+                if (order.status === 'جاري الشحن') { badgeColor = '#3b82f6'; statusIcon = '🚚'; }
+                else if (order.status === 'تم التسليم') { badgeColor = '#22c55e'; statusIcon = '✅'; }
+                else if (order.status === 'مرتجع') { badgeColor = '#ef4444'; statusIcon = '❌'; }
 
-                    return `
-                        <div style="background:#0a0a0a; border-radius:8px; padding:15px; margin-top:10px; border-right:3px solid ${statusColor};">
-                            <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                                <strong>طلب #${o.id}</strong>
-                                <span style="color:${statusColor}; font-size:12px;">${statusText}</span>
-                            </div>
-                            <div style="color:#888; font-size:13px;">
-                                <div>💰 ${o.total_price} ج.م</div>
-                                <div>📅 ${new Date(o.created_at).toLocaleDateString('ar-EG')}</div>
-                                ${o.marketer_code ? `<div>👤 كود المسوق: ${o.marketer_code}</div>` : ''}
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-            } catch(e) {
-                result.innerHTML = '<p style="color:#ef4444; margin-top:10px;">خطأ في الاتصال</p>';
+                resultBox.innerHTML = `
+                    <div style="background:rgba(255,255,255,0.02); border-right:3px solid ${badgeColor}; padding:12px; border-radius:6px; margin-top:10px;">
+                        <span style="font-weight:700;">حالة الطلب #${order.id}:</span> 
+                        <span style="color:${badgeColor}; font-weight:bold;">${statusIcon} ${order.status}</span>
+                        <div style="font-size:11px; color:var(--text-muted); margin-top:5px;">إجمالي الحساب: ${order.total_price} ج.م</div>
+                    </div>
+                `;
+            } catch(err) {
+                resultBox.innerHTML = `<span style="color:#ef4444;">❌ خطأ في الاتصال.</span>`;
             }
         }
 
-        // Init
-        loadProducts();
-        updateCartBadge();
+        // بدء التشغيل تلقائياً فور تحميل الصفحة
+        window.addEventListener('DOMContentLoaded', fetchStoreProducts);
     </script>
 </body>
 </html>
