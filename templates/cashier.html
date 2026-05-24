@@ -3,765 +3,264 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة التحكم الإدارية الفاخرة | سينا ستور</title>
+    <title>لوحة التحكم | سينا ستور</title>
     <link rel="icon" type="image/png" href="/static/css/logo.png.jpeg">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <style>
-        :root {
-            --bg-main: #0a0a0a;
-            --bg-card: #141414;
-            --bg-input: #1a1a1a;
-            --gold: #d4af37;
-            --gold-hover: #b8860b;
-            --gold-light: rgba(212, 175, 55, 0.08);
-            --text-white: #ffffff;
-            --text-muted: #999999;
-            --success: #22c55e;
-            --pending: #f59e0b;
-            --shipping: #3b82f6;
-            --danger: #ef4444;
-            --radius-lg: 16px;
-            --radius-md: 12px;
-            --shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            background-color: var(--bg-main);
-            color: var(--text-white);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0a0a;
+            color: #fff;
             min-height: 100vh;
-            padding-bottom: 50px;
         }
-
-        /* الهيدر الاحترافي الفاخر */
         header {
-            background: rgba(20, 20, 20, 0.9);
+            background: rgba(10,10,10,0.98);
             backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            padding: 15px 30px;
+            padding: 12px 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+            border-bottom: 1px solid rgba(212,175,55,0.1);
             position: sticky;
             top: 0;
             z-index: 1000;
-            box-shadow: var(--shadow);
         }
-
-        .logo-section h1 {
+        .logo {
             font-size: 20px;
             font-weight: 800;
-            background: linear-gradient(135deg, #ffffff, var(--gold));
+            background: linear-gradient(135deg, #d4af37, #b8860b);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+        }
+        .header-actions {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 15px;
         }
-
-        .nav-links {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .nav-links a {
-            color: var(--text-muted);
-            text-decoration: none;
+        .user-info {
+            color: #888;
             font-size: 13px;
-            font-weight: 600;
-            padding: 8px 16px;
-            border-radius: var(--radius-md);
-            transition: var(--transition);
         }
-
-        .nav-links a:hover, .nav-links a.active {
-            color: var(--gold);
-            background: var(--gold-light);
-            border: 1px solid rgba(212, 175, 55, 0.2);
+        .user-info span {
+            color: #d4af37;
+            font-weight: bold;
         }
-
         .logout-btn {
-            background: transparent;
-            border: 1px solid rgba(239, 68, 68, 0.2);
-            color: var(--danger);
-            padding: 8px 14px;
-            border-radius: var(--radius-md);
+            background: #ef4444;
+            color: #fff;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 13px;
-            font-weight: 600;
-            transition: var(--transition);
+            font-weight: bold;
+            transition: all 0.3s;
+            font-family: inherit;
         }
-
-        .logout-btn:hover {
-            background: var(--danger);
-            color: white;
+        .logout-btn:hover { background: #dc2626; }
+        .nav-links a {
+            color: #888;
+            font-size: 14px;
+            transition: color 0.3s;
         }
+        .nav-links a:hover { color: #d4af37; }
 
-        /* حاوية التصميم الرئيسية */
-        .container {
-            max-width: 1400px;
-            margin: 30px auto;
-            padding: 0 20px;
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 35px;
-        }
-
-        /* شبكة كروت البيانات السريعة المحدثة حياً */
-        .dashboard-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 20px;
-        }
-
-        .stat-card {
-            background: var(--bg-card);
-            border: 1px solid rgba(255, 255, 255, 0.03);
-            border-radius: var(--radius-lg);
-            padding: 24px;
+        .admin-container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
+        .tabs-nav {
             display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: var(--shadow);
-            transition: var(--transition);
-        }
-
-        .stat-card:hover {
-            transform: translateY(-4px);
-            border-color: rgba(212, 175, 55, 0.2);
-        }
-
-        .stat-info p {
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-bottom: 6px;
-            text-transform: uppercase;
-        }
-
-        .stat-info h3 {
-            font-size: 26px;
-            font-weight: 700;
-        }
-
-        .stat-icon {
-            font-size: 32px;
-            color: var(--gold);
-            opacity: 0.25;
-        }
-
-        /* الهيكل الإداري للأقسام الكبرى */
-        .management-section {
-            background: var(--bg-card);
-            border: 1px solid rgba(255, 255, 255, 0.02);
-            border-radius: var(--radius-lg);
-            padding: 24px;
-            box-shadow: var(--shadow);
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            padding-bottom: 15px;
-            margin-bottom: 20px;
-        }
-
-        .section-header h2 {
-            font-size: 18px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
             gap: 10px;
+            margin-bottom: 25px;
+            border-bottom: 1px solid #222;
+            padding-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            background: #111;
+            border: 1px solid #333;
+            color: #aaa;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: bold;
+            transition: 0.3s;
+            font-size: 14px;
+        }
+        .tab-btn.active {
+            background: linear-gradient(135deg, #d4af37, #b8860b);
+            color: #000;
+            border-color: #d4af37;
+        }
+        .tab-content {
+            display: none;
+            background: #161616;
+            border: 1px solid rgba(212,175,55,0.1);
+            padding: 25px;
+            border-radius: 12px;
+        }
+        .tab-content.active { display: block; }
+
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            text-align: right;
+        }
+        .admin-table th, .admin-table td {
+            padding: 12px;
+            border-bottom: 1px solid #222;
+        }
+        .admin-table th {
+            background: #111;
+            color: #d4af37;
+            font-size: 13px;
+        }
+        .admin-table tr:hover { background: rgba(255,255,255,0.02); }
+        .admin-table td { font-size: 14px; }
+        .status-select {
+            background: #111;
+            color: #fff;
+            border: 1px solid #333;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: inherit;
         }
 
-        .section-header h2 i { color: var(--gold); }
+        .upload-zone {
+            border: 2px dashed #333;
+            padding: 15px;
+            text-align: center;
+            border-radius: 8px;
+            background: #111;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .upload-zone:hover { border-color: #d4af37; }
+        .preview-img-container {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        .preview-img-container img {
+            width: 70px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid #d4af37;
+        }
 
-        /* الشاشات المنبثقة والنماذج الفرعية */
-        .flex-form-grid {
+        .stats-dashboard {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
-            margin-bottom: 20px;
-            background: var(--bg-main);
+            margin-bottom: 25px;
+        }
+        .stat-card {
+            background: #111;
+            border: 1px solid #222;
+            border-radius: 12px;
             padding: 20px;
-            border-radius: var(--radius-md);
-            border: 1px solid rgba(255, 255, 255, 0.03);
+            text-align: center;
         }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
+        .stat-card .icon { font-size: 30px; margin-bottom: 10px; }
+        .stat-card .value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #d4af37;
         }
-
-        .form-group label {
-            font-size: 12px;
-            color: var(--text-muted);
-            font-weight: 600;
-        }
-
-        .form-group input, .form-group select {
-            background: var(--bg-input);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 10px 14px;
-            border-radius: var(--radius-md);
-            color: white;
+        .stat-card .label {
             font-size: 13px;
-            transition: var(--transition);
+            color: #888;
+            margin-top: 5px;
         }
 
-        .form-group input:focus, .form-group select:focus {
-            outline: none;
-            border-color: var(--gold);
+        .chart-container {
+            background: #111;
+            border: 1px solid #222;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
         }
-
-        .submit-inline-btn {
-            background: var(--gold);
-            color: var(--bg-main);
-            border: none;
-            padding: 10px 20px;
-            border-radius: var(--radius-md);
-            cursor: pointer;
-            font-weight: 700;
-            font-size: 13px;
-            align-self: flex-end;
-            transition: var(--transition);
-        }
-
-        .submit-inline-btn:hover { background: var(--gold-hover); }
-
-        /* تنسيق الجداول والبيانات المتجاوبة للفحص */
-        .table-responsive {
-            overflow-x: auto;
-            border-radius: var(--radius-md);
-            border: 1px solid rgba(255, 255, 255, 0.03);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: right;
-            font-size: 13px;
-        }
-
-        th {
-            background: rgba(255, 255, 255, 0.02);
-            padding: 14px 16px;
-            color: var(--text-muted);
-            font-weight: 600;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        td {
-            padding: 14px 16px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.02);
-        }
-
-        tr:hover td { background: rgba(255, 255, 255, 0.01); }
-
-        /* أوسمة تعديل الحالات والعمولات */
-        .status-select {
-            background: var(--bg-input);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: white;
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 12px;
-            cursor: pointer;
-        }
-
-        .status-select.pending { color: var(--pending); }
-        .status-select.shipping { color: var(--shipping); }
-        .status-select.delivered { color: var(--success); }
-        .status-select.returned { color: var(--danger); }
-
-        .btn-action-small {
-            background: transparent;
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            color: var(--danger);
-            padding: 4px 10px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 11px;
-            transition: var(--transition);
-        }
-
-        .btn-action-small:hover { background: var(--danger); color: white; }
-
-        .prod-thumb-img {
-            width: 40px;
-            height: 40px;
-            object-fit: cover;
-            border-radius: 6px;
-            background: #222;
-        }
-
-        /* نظام التنبيهات الفوري */
-        .toast-notification {
-            position: fixed;
-            bottom: 30px;
-            left: 30px;
-            background: #161616;
-            border-right: 4px solid var(--gold);
-            color: #fff;
-            padding: 16px 24px;
-            border-radius: var(--radius-md);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
-            z-index: 99999;
+        .chart-bar {
             display: flex;
             align-items: center;
-            gap: 12px;
-            font-weight: 600;
-            animation: slideUp 0.3s ease-out;
+            margin: 8px 0;
+        }
+        .chart-bar-label {
+            width: 120px;
+            font-size: 13px;
+            color: #888;
+        }
+        .chart-bar-fill {
+            height: 24px;
+            background: linear-gradient(135deg, #d4af37, #b8860b);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 8px;
+            font-size: 12px;
+            font-weight: bold;
+            color: #000;
+        }
+        .chart-bar-bg {
+            flex: 1;
+            background: #222;
+            border-radius: 4px;
+            margin-left: 10px;
         }
 
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    </style>
-</head>
-<body>
-
-    <header>
-        <div class="logo-section">
-            <h1><i class="fa-solid fa-crown" style="color: var(--gold);"></i> مركز الإدارة والمبيعات الحية</h1>
-        </div>
-        <nav class="nav-links">
-            <a href="/cashier.html" class="active"><i class="fa-solid fa-boxes-stacked"></i> لوحة المنتجات والطلبات</a>
-            <a href="/marketers.html"><i class="fa-solid fa-users"></i> إدارة المسوقين</a>
-            <button class="logout-btn" onclick="logout()"><i class="fa-solid fa-sign-out-alt"></i> خروج</button>
-        </nav>
-    </header>
-
-    <main class="container">
-        
-        <section class="dashboard-stats">
-            <div class="stat-card">
-                <div class="stat-info">
-                    <p>إجمالي مبيعات المتجر</p>
-                    <h3 id="dash-total-sales">0 ج.م</h3>
-                </div>
-                <i class="fa-solid fa-sack-dollar stat-icon"></i>
-            </div>
-            <div class="stat-card">
-                <div class="stat-info">
-                    <p>إجمالي عدد الطلبات</p>
-                    <h3 id="dash-total-orders">0 طلب</h3>
-                </div>
-                <i class="fa-solid fa-cart-shopping stat-icon"></i>
-            </div>
-            <div class="stat-card">
-                <div class="stat-info">
-                    <p>المنتجات المعروضة</p>
-                    <h3 id="dash-total-products">0 منتج</h3>
-                </div>
-                <i class="fa-solid fa-box-open stat-icon"></i>
-            </div>
-            <div class="stat-card">
-                <div class="stat-info">
-                    <p>مسوقي الأفلييت النشطين</p>
-                    <h3 id="dash-total-marketers">0 مسوق</h3>
-                </div>
-                <i class="fa-solid fa-users-gear stat-icon"></i>
-            </div>
-        </section>
-
-        <section class="management-section">
-            <div class="section-header">
-                <h2><i class="fa-solid fa-receipt"></i> إدارة طلبات العملاء وتعديل الحالات الحية</h2>
-            </div>
-            
-            <div class="table-responsive">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>رقم الطلب</th>
-                            <th>العميل والموبايل</th>
-                            <th>المنتجات والكمية</th>
-                            <th>إجمالي الحساب</th>
-                            <th>كود المسوق</th>
-                            <th>تحديث حالة الطلب</th>
-                            <th>الإجراءات</th>
-                        </tr>
-                    </thead>
-                    <tbody id="admin-orders-tbody">
-                        <tr>
-                            <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 25px;">جاري جلب ومزامنة الطلبات السحابية...</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <section class="management-section">
-            <div class="section-header">
-                <h2><i class="fa-solid fa-box"></i> مستودع المنتجات وضبط هيكل العمولات الثابتة</h2>
-            </div>
-
-            <form id="product-form" class="flex-form-grid">
-                <div class="form-group">
-                    <label>اسم المنتج</label>
-                    <input type="text" id="p-name" required placeholder="مثال: موبايل شاومي بوكو">
-                </div>
-                <div class="form-group">
-                    <label>القسم</label>
-                    <input type="text" id="p-category" placeholder="موبايلات، مستعمل...">
-                </div>
-                <div class="form-group">
-                    <label>سعر البيع للمستهلك (ج.م)</label>
-                    <input type="number" id="p-price" required placeholder="0">
-                </div>
-                <div class="form-group">
-                    <label>عمولة المسوق الثابتة (ج.م)</label>
-                    <input type="number" id="p-commission" required placeholder="أدخل مبلغ العمولة بالجنيه">
-                </div>
-                <div class="form-group">
-                    <label>رابط صورة المنتج (اختياري)</label>
-                    <input type="url" id="p-image" placeholder="https://...">
-                </div>
-                <button type="submit" class="submit-inline-btn"><i class="fa-solid fa-plus"></i> حفظ المنتج</button>
-            </form>
-
-            <div class="table-responsive">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>الصورة</th>
-                            <th>اسم المنتج</th>
-                            <th>القسم</th>
-                            <th>سعر البيع</th>
-                            <th>عمولة المسوق الثابتة</th>
-                            <th>حالة العمولة</th>
-                            <th>الإجراءات</th>
-                        </tr>
-                    </thead>
-                    <tbody id="admin-products-tbody">
-                        </tbody>
-                </table>
-            </div>
-        </section>
-
-        <section class="management-section">
-            <div class="section-header">
-                <h2><i class="fa-solid fa-user-lock"></i> إدارة حسابات المستخدمين وموظفي الكاشير بالسيستم</h2>
-            </div>
-
-            <form id="user-form" class="flex-form-grid">
-                <div class="form-group">
-                    <label>اسم المستخدم (Username)</label>
-                    <input type="text" id="u-username" required placeholder="user_sina">
-                </div>
-                <div class="form-group">
-                    <label>كلمة المرور</label>
-                    <input type="password" id="u-password" required placeholder="******">
-                </div>
-                <div class="form-group">
-                    <label>الصلاحية</label>
-                    <select id="u-role">
-                        <option value="cashier">كاشير / موظف مبيعات</option>
-                        <option value="admin">مدير النظام (Admin)</option>
-                    </select>
-                </div>
-                <button type="submit" class="submit-inline-btn"><i class="fa-solid fa-user-shield"></i> إنشاء حساب</button>
-            </form>
-
-            <div class="table-responsive">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>اسم المستخدم</th>
-                            <th>الصلاحية الحالية</th>
-                            <th>الإجراءات</th>
-                        </tr>
-                    </thead>
-                    <tbody id="admin-users-tbody">
-                        </tbody>
-                </table>
-            </div>
-        </section>
-
-    </main>
-
-    <script>
-        // إظهار التنبيهات الفاخرة
-        function showToast(message) {
-            const existing = document.querySelector('.toast-notification');
-            if (existing) existing.remove();
-
-            const toast = document.createElement('div');
-            toast.className = 'toast-notification';
-            toast.innerHTML = `<i class="fa-solid fa-circle-check" style="color: var(--gold)"></i> <span>${message}</span>`;
-            document.body.appendChild(toast);
-
-            setTimeout(() => { toast.remove(); }, 3000);
+        .search-input {
+            background: #111;
+            border: 1px solid #333;
+            padding: 12px 16px;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+            font-family: inherit;
+            width: 100%;
+            transition: all 0.3s;
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: #d4af37;
         }
 
-        // 1. جلب الإحصائيات العامة للمتجر وتحديث الكروت العلوية
-        async function loadDashboardStats() {
-            try {
-                const res = await fetch('/api/stats/dashboard');
-                if(res.ok) {
-                    const data = await res.json();
-                    document.getElementById('dash-total-sales').innerText = `${data.total_sales} ج.م`;
-                    document.getElementById('dash-total-orders').innerText = `${data.total_orders} طلب`;
-                    document.getElementById('dash-total-products').innerText = `${data.total_products} منتج`;
-                    document.getElementById('dash-total-marketers').innerText = `${data.total_marketers} مسوق`;
-                }
-            } catch(e) { console.error("Error stats load", e); }
+        .btn-primary {
+            background: linear-gradient(135deg, #d4af37, #b8860b);
+            color: #000;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(212,175,55,0.3);
         }
 
-        // 2. جلب وإدارة طلبات المتجر مع تعديل وتغيير حالات العمولات والطلبات فوراً
-        async function loadAdminOrders() {
-            const tbody = document.getElementById('admin-orders-tbody');
-            try {
-                const res = await fetch('/api/orders');
-                if(!res.ok) throw new Error("Failed");
-                const orders = await res.json();
-
-                if(orders.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-muted); padding:20px;">لا توجد أي طلبات مسجلة في السيستم حالياً</td></tr>`;
-                    return;
-                }
-
-                tbody.innerHTML = orders.map(o => {
-                    let selectColorClass = 'pending';
-                    if(o.status === 'جاري الشحن') selectColorClass = 'shipping';
-                    if(o.status === 'تم التسليم') selectColorClass = 'delivered';
-                    if(o.status === 'مرتجع') selectColorClass = 'returned';
-
-                    // تفريغ وتنسيق باقة المنتجات المطلوبة داخل الخلية
-                    let prodsHtml = (o.products || []).map(p => `${p.name} (x${p.qty || 1})`).join('<br>');
-
-                    return `
-                        <tr>
-                            <td><strong>#${o.id}</strong></td>
-                            <td>${o.customer_name}<br><span style="color:var(--text-muted); font-size:11px;">📱 ${o.customer_phone}</span></td>
-                            <td style="font-size:12px; max-width:200px; overflow:hidden;">${prodsHtml}</td>
-                            <td style="color:var(--gold); font-weight:bold;">${o.total_price} ج.م</td>
-                            <td><span style="font-family:monospace; background:rgba(255,255,255,0.05); padding:2px 6px; border-radius:4px;">${o.marketer_code || '-'}</span></td>
-                            <td>
-                                <select class="status-select ${selectColorClass}" onchange="updateOrderStatus(${o.id}, this.value)">
-                                    <option value="قيد المراجعة" ${o.status==='قيد المراجعة'?'selected':''}>⏳ قيد المراجعة</option>
-                                    <option value="جاري الشحن" ${o.status==='جاري الشحن'?'selected':''}>🚚 جاري الشحن</option>
-                                    <option value="تم التسليم" ${o.status==='تم التسليم'?'selected':''}>✅ تم التسليم (تأكيد العمولات)</option>
-                                    <option value="مرتجع" ${o.status==='مرتجع'?'selected':''}>❌ مرتجع (إلغاء العمولات)</option>
-                                </select>
-                            </td>
-                            <td>
-                                <button class="btn-action-small" onclick="deleteOrderFromSystem(${o.id})"><i class="fa-solid fa-trash"></i></button>
-                            </td>
-                        </tr>
-                    `;
-                }).join('');
-
-            } catch (e) {
-                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--danger); padding:20px;">❌ فشل جلب ومزامنة الطلبات من السيرفر.</td></tr>`;
-            }
+        .btn-danger {
+            background: #ef4444;
+            color: #fff;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-family: inherit;
+            transition: all 0.3s;
         }
+        .btn-danger:hover { background: #dc2626; }
 
-        // تحديث حالة الطلب فوراً في قاعدة البيانات السحابية (لتحديث رصيد المسوق المرتبط)
-        async function updateOrderStatus(orderId, newStatus) {
-            try {
-                const res = await fetch(`/api/orders/${orderId}/status`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ status: newStatus })
-                });
-
-                if(res.ok) {
-                    showToast(`📊 تم تحديث الطلب #${orderId} إلى [${newStatus}] بنجاح ومزامنة حسابات المسوق!`);
-                    loadAdminOrders();
-                    loadDashboardStats();
-                } else { alert("حدث خطأ أثناء محاولة تعديل الحالة على السيرفر."); }
-            } catch(e) { alert("فشل الاتصال بالخادم."); }
-        }
-
-        // حذف طلب نهائياً من السيستم
-        async function deleteOrderFromSystem(id) {
-            if(!confirm("⚠️ هل أنت متأكد من مسح وإلغاء هذا الطلب نهائياً من قاعدة البيانات؟")) return;
-            try {
-                const res = await fetch(`/api/orders/${id}`, { method: 'DELETE' });
-                if(res.ok) {
-                    showToast("🗑️ تم حذف الطلب من السجلات بنجاح!");
-                    loadAdminOrders();
-                    loadDashboardStats();
-                }
-            } catch(e) { alert("خطأ في الاتصال."); }
-        }
-
-        // 3. جلب وعرض كتالوج المنتجات مع إمكانية تعديل وحفظ العمولات الثابتة
-        async function loadAdminProducts() {
-            const tbody = document.getElementById('admin-products-tbody');
-            try {
-                const res = await fetch('/api/products');
-                const prods = await res.json();
-
-                tbody.innerHTML = prods.map(p => {
-                    const fallback = '/static/css/logo.png.jpeg';
-                    const img = p.image_url ? p.image_url : fallback;
-                    const commState = p.commission_enabled ? '<span style="color:var(--success);">نشطة</span>' : '<span style="color:var(--text-muted);">موقوفة</span>';
-
-                    return `
-                        <tr>
-                            <td><img src="${img}" class="prod-thumb-img" onerror="this.src='${fallback}'"></td>
-                            <td><strong>${p.name}</strong></td>
-                            <td>${p.category || 'عام'}</td>
-                            <td>${p.selling_price} ج.م</td>
-                            <td style="color:var(--gold); font-weight:700;">${p.commission_amount || 0} ج.م</td>
-                            <td>${commState}</td>
-                            <td>
-                                <button class="btn-action-small" style="border-color:rgba(212,175,55,0.4); color:var(--gold);" onclick="toggleProdCommission(${p.id}, ${p.commission_enabled})">
-                                    <i class="fa-solid fa-power-off"></i> تفعيل/إيقاف
-                                </button>
-                                <button class="btn-action-small" onclick="deleteProductFromSystem(${p.id})">
-                                    <i class="fa-solid fa-trash-can"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    `;
-                }).join('');
-            } catch (e) { console.error("Error prod load", e); }
-        }
-
-        // حفظ منتج جديد أو تحديث عمولة عبر النموذج
-        document.getElementById('product-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const name = document.getElementById('p-name').value.trim();
-            const category = document.getElementById('p-category').value.trim();
-            const selling_price = parseFloat(document.getElementById('p-price').value);
-            const commission_amount = parseFloat(document.getElementById('p-commission').value);
-            const image_url = document.getElementById('p-image').value.trim();
-
-            try {
-                const res = await fetch('/api/products', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, category, selling_price, commission_amount, image_url, commission_enabled: true })
-                });
-
-                if(res.ok) {
-                    showToast("🎉 تم حفظ وتوثيق المنتج الجديد وضبط عمولته الثابتة بالسيستم!");
-                    document.getElementById('product-form').reset();
-                    loadAdminProducts();
-                    loadDashboardStats();
-                } else { alert("فشل الحفظ المباشر للمنتج."); }
-            } catch(err) { alert("خطأ اتصال."); }
-        });
-
-        // تفعيل أو تعطيل عمولة منتج معين بضغطة زر واحدة
-        async function toggleProdCommission(id, currentState) {
-            try {
-                const res = await fetch(`/api/products/${id}/commission-toggle`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ enabled: !currentState })
-                });
-                if(res.ok) {
-                    showToast("⚙️ تم تحديث حالة عمولة الأفلييت للمنتج!");
-                    loadAdminProducts();
-                }
-            } catch(e) { alert("فشل الاتصال بالخادم."); }
-        }
-
-        // حذف منتج بالكامل من السجلات
-        async function deleteProductFromSystem(id) {
-            if(!confirm("هل أنت متأكد تماماً من حذف هذا المنتج نهائياً من مستودعات المتجر؟")) return;
-            try {
-                const res = await fetch(`/api/products/${id}`, { method: 'DELETE' });
-                if(res.ok) {
-                    showToast("🗑️ تم مسح المنتج وتصفيته بنجاح.");
-                    loadAdminProducts();
-                    loadDashboardStats();
-                }
-            } catch(e) { alert("خطأ اتصال."); }
-        }
-
-        // 4. إدارة حسابات الموظفين ومستخدمي النظام الفرعيين (اللوحة الثالثة)
-        async function loadAdminUsers() {
-            const tbody = document.getElementById('admin-users-tbody');
-            try {
-                const res = await fetch('/api/users');
-                if(!res.ok) return;
-                const users = await res.json();
-
-                tbody.innerHTML = users.map(u => {
-                    return `
-                        <tr>
-                            <td>#${u.id}</td>
-                            <td><strong>${u.username}</strong></td>
-                            <td><span style="background:rgba(212,175,55,0.1); padding:2px 8px; border-radius:4px; font-size:12px;">${u.role}</span></td>
-                            <td>
-                                <button class="btn-action-small" onclick="deleteUserAccount(${u.id})"><i class="fa-solid fa-user-minus"></i> حذف</button>
-                            </td>
-                        </tr>
-                    `;
-                }).join('');
-            } catch(e) {}
-        }
-
-        // تسجيل وإنشاء حساب موظف/مدير جديد بالسيستم
-        document.getElementById('user-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const username = document.getElementById('u-username').value.trim();
-            const password = document.getElementById('u-password').value.trim();
-            const role = document.getElementById('u-role').value;
-
-            try {
-                const res = await fetch('/api/users', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password, role })
-                });
-
-                if(res.ok) {
-                    showToast("👤 تم إنشاء وتأمين الحساب الإداري الجديد للموظف!");
-                    document.getElementById('user-form').reset();
-                    loadAdminUsers();
-                } else {
-                    const err = await res.json();
-                    alert(`❌ خطأ: ${err.error || 'فشل الحفظ'}`);
-                }
-            } catch(err) { alert("فشل الاتصال."); }
-        });
-
-        // حذف مستخدم فرعي
-        async function deleteUserAccount(id) {
-            if(!confirm("هل ترغب في سحب صلاحيات وحذف هذا المستخدم نهائياً؟")) return;
-            try {
-                const res = await fetch(`/api/users/${id}`, { method: 'DELETE' });
-                if(res.ok) {
-                    showToast("🗑️ تم مسح المستخدم بنجاح!");
-                    loadAdminUsers();
-                }
-            } catch(e) { alert("فشل الاتصال."); }
-        }
-
-        // 5. تسجيل الخروج الآمن المباشر من النظام الإداري
-        async function logout() {
-            if(!confirm("هل تريد تسجيل الخروج والعودة لشاشة الدخول الرئيسية؟")) return;
-            try {
-                await fetch('/api/auth/logout', { method: 'POST' });
-                window.location.href = '/login.html';
-            } catch(e) { window.location.href = '/login.html'; }
-        }
-
-        // التشغيل التلقائي والمزامنة فور رندرة وتحميل الصفحة في المتصفح
-        window.addEventListener('DOMContentLoaded', () => {
-            loadDashboardStats();
-            loadAdminOrders();
-            loadAdminProducts();
-            loadAdminUsers();
-        });
-    </script>
-</body>
-</html>
+        .btn-success {
+            background: #22c55e;
+            color: #000;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 4px;
+           
