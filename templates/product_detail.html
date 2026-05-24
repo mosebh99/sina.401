@@ -39,7 +39,6 @@
             flex-direction: column;
         }
 
-        /* هيدر المتجر الفاخر */
         header {
             background: rgba(20, 20, 20, 0.85);
             backdrop-filter: blur(20px);
@@ -87,7 +86,6 @@
             color: var(--bg-main);
         }
 
-        /* حاوية تفاصيل المنتج الكبرى */
         .details-container {
             max-width: 1100px;
             margin: 40px auto;
@@ -98,7 +96,6 @@
             align-items: start;
         }
 
-        /* معرض صور واستعراض المنتج */
         .product-gallery {
             background: var(--bg-card);
             border: 1px solid rgba(255, 255, 255, 0.03);
@@ -118,15 +115,9 @@
             object-fit: contain;
             border-radius: var(--radius-md);
             background: #0f0f0f;
-            transition: var(--transition);
         }
 
-        /* معلومات الشراء والفحص والطلب السريع */
-        .product-info-panel {
-            display: flex;
-            flex-direction: column;
-            gap: 25px;
-        }
+        .product-info-panel { display: flex; flex-direction: column; gap: 25px; }
 
         .product-meta h2 {
             font-size: 28px;
@@ -155,13 +146,8 @@
             gap: 10px;
         }
 
-        .price-tag-large span {
-            font-size: 14px;
-            color: var(--text-muted);
-            font-weight: 400;
-        }
+        .price-tag-large span { font-size: 14px; color: var(--text-muted); font-weight: 400; }
 
-        /* بنية نموذج الشراء السريع والدفع عند الاستلام */
         .checkout-card {
             background: var(--bg-card);
             border: 1px solid rgba(212, 175, 55, 0.15);
@@ -182,18 +168,9 @@
             padding-bottom: 12px;
         }
 
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            margin-bottom: 16px;
-        }
+        .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
 
-        .form-group label {
-            font-size: 12px;
-            color: var(--text-muted);
-            font-weight: 600;
-        }
+        .form-group label { font-size: 12px; color: var(--text-muted); font-weight: 600; }
 
         .form-group input, .form-group textarea {
             background: var(--bg-input);
@@ -208,7 +185,6 @@
         .form-group input:focus, .form-group textarea:focus {
             outline: none;
             border-color: var(--gold);
-            box-shadow: 0 0 12px rgba(212, 175, 55, 0.1);
         }
 
         .order-submit-btn {
@@ -225,31 +201,12 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
-            box-shadow: 0 4px 20px rgba(212, 175, 55, 0.2);
             transition: var(--transition);
-            margin-top: 5px;
         }
 
-        .order-submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 25px rgba(212, 175, 55, 0.3);
-        }
+        .order-submit-btn:disabled { background: #333; color: #666; cursor: not-allowed; }
 
-        .order-submit-btn:disabled {
-            background: #333;
-            color: #666;
-            cursor: not-allowed;
-            box-shadow: none;
-            transform: none;
-        }
-
-        /* بار تنبيهات ومزايا المتجر التنافسية */
-        .features-badge-list {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-top: 10px;
-        }
+        .features-badge-list { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px; }
 
         .f-badge {
             background: rgba(255, 255, 255, 0.02);
@@ -263,9 +220,8 @@
             color: var(--text-muted);
         }
 
-        .f-badge i { color: var(--gold); font-size: 14px; }
+        .f-badge i { color: var(--gold); }
 
-        /* توست الإشعارات الفوري */
         .toast-notification {
             position: fixed;
             bottom: 30px;
@@ -286,13 +242,8 @@
 
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* التجاوب التام مع الجوال والشاشات الصغيرة */
         @media (max-width: 768px) {
-            .details-container {
-                grid-template-columns: 1fr;
-                gap: 25px;
-                margin: 20px auto;
-            }
+            .details-container { grid-template-columns: 1fr; gap: 25px; margin: 20px auto; }
             .product-gallery { position: relative; top: 0; }
             .product-meta h2 { font-size: 22px; }
             .price-tag-large { font-size: 26px; }
@@ -309,7 +260,6 @@
     </header>
 
     <main class="details-container">
-        
         <section class="product-gallery">
             <img id="detail-product-image" src="/static/css/logo.png.jpeg" alt="جاري التحميل...">
         </section>
@@ -354,14 +304,12 @@
                 <div class="f-badge"><i class="fa-solid fa-headset"></i> دعم فني وخدمة عملاء 24 ساعة</div>
             </div>
         </section>
-
     </main>
 
     <script>
         let currentProduct = null;
         let affiliateCode = null;
 
-        // إظهار التنبيهات الفاخرة المدمجة
         function showToast(message) {
             const existing = document.querySelector('.toast-notification');
             if (existing) existing.remove();
@@ -374,29 +322,25 @@
             setTimeout(() => { toast.remove(); }, 4000);
         }
 
-        // دالة التقاط كود الأفلييت والمسوق من الرابط بذكاء ومزامنتها محلياً في المتصفح
         function detectAffiliateCode() {
             const urlParams = new URLSearchParams(window.location.search);
-            // البحث عن الباراميترز المحتملة m أو ref أو code لضمان عدم ضياع أي عمولة
             const code = urlParams.get('m') || urlParams.get('ref') || urlParams.get('code');
             
             if (code) {
                 localStorage.setItem('affiliate_code', code);
                 affiliateCode = code;
-                console.log("🎯 تم رصد وتوثيق كود المسوق بنجاح في النظام:", code);
+                console.log("🎯 تم رصد وتوثيق كود المسوق صامتاً بنجاح:", code);
             } else {
-                // استرجاع الكود المحفوظ مسبقاً إذا كان العميل يتصفح الموقع لتفادي ضياع الكوكي والعمولة
                 affiliateCode = localStorage.getItem('affiliate_code');
             }
         }
 
-        // جلب تفاصيل المنتج سحابياً بناءً على الـ ID الممرر في مسار الصفحة
         async function loadProductDetail() {
-            detectAffiliateCode(); // استدعاء فحص كود الأفلييت أولاً
+            detectAffiliateCode();
 
-            // استخراج الـ ID من مسار الرابط الحالي
-            const pathParts = window.location.pathname.split('/');
-            const productId = pathParts[pathParts.length - 1] || pathParts[pathParts.length - 2];
+            // الإصلاح الجوهري لـ Vercel: لقط الـ ID مباشرة من الباراميتر الاستفهامي لمنع 404
+            const urlParams = new URLSearchParams(window.location.search);
+            const productId = urlParams.get('id');
 
             if (!productId || isNaN(productId)) {
                 document.getElementById('detail-product-name').innerText = "⚠️ لم يتم العثور على المنتج المطلوب.";
@@ -408,7 +352,6 @@
                 if (!res.ok) throw new Error("Product not found");
                 currentProduct = await res.json();
 
-                // رندرة وتحديث بيانات الواجهة حياً
                 document.title = `${currentProduct.name} | سينا ستور`;
                 document.getElementById('detail-product-name').innerText = currentProduct.name;
                 document.getElementById('detail-product-category').innerText = currentProduct.category || "أجهزة وهواتف";
@@ -420,11 +363,10 @@
                 }
             } catch (e) {
                 console.error("Error loading product details:", e);
-                document.getElementById('detail-product-name').innerText = "❌ حدث خطأ أثناء سحب تفاصيل المنتج من السيرفر السحابي.";
+                document.getElementById('detail-product-name').innerText = "❌ حدث خطأ أثناء سحب تفاصيل المنتج.";
             }
         }
 
-        // التعامل مع إرسال استمارة حجز وشراء المنتج وربطه بكود المسوق تلقائياً
         async function handlePlaceCustomerOrder(event) {
             event.preventDefault();
             if (!currentProduct) {
@@ -438,7 +380,7 @@
 
             const submitBtn = document.getElementById('order-submit-btn');
             submitBtn.disabled = true;
-            submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> جاري إرسال وتأمين طلبك...`;
+            submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> جاري إرسال طلبك...`;
 
             try {
                 const res = await fetch('/api/orders', {
@@ -449,41 +391,31 @@
                         customer_phone: phone,
                         customer_address: address,
                         total_price: currentProduct.selling_price,
-                        // إرسال مصفوفة المنتجات المتوافقة تماماً مع بنية الجداول الخلفية في السيرفر
                         products: [{
                             id: currentProduct.id,
                             name: currentProduct.name,
                             price: currentProduct.selling_price,
                             qty: 1
                         }],
-                        marketer_code: affiliateCode || null, // تمرير كود المسوق إن وجد لحساب عمولته الثابتة فوراً
+                        marketer_code: affiliateCode || null,
                         status: 'قيد المراجعة'
                     })
                 });
 
                 if (res.ok) {
-                    showToast("🎉 تم تسجيل وطلب المنتج بنجاح! سيقوم موظف خدمة العملاء بالاتصال بك لتأكيد الشحن فوراً.");
+                    showToast("🎉 تم تسجيل طلب المنتج بنجاح! سيتم التواصل معك لتأكيد الشحن فوراً.");
                     document.getElementById('customer-order-form').reset();
-                    // تصفية كود الأفلييت المحلي بعد نجاح الطلب لجهوزية العمليات القادمة
-                    if (urlHasAffiliateCode()) localStorage.removeItem('affiliate_code');
                 } else {
-                    showToast("❌ فشل إرسال الطلب. برجاء مراجعة البيانات والمحاولة مجدداً.");
+                    showToast("❌ فشل إرسال الطلب. برجاء المحاولة مجدداً.");
                 }
             } catch (e) {
-                showToast("❌ حدث خطأ في الاتصال بالخادم. تحقق من إنترنت جهازك.");
+                showToast("❌ حدث خطأ في الاتصال بالخادم.");
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = `<i class="fa-solid fa-circle-check"></i> تأكيد طلب الشراء الآن`;
             }
         }
 
-        // ميثود مساعدة لفحص إذا كان الرابط الحالي يحتوي بالفعل على كود
-        function urlHasAffiliateCode() {
-            const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.has('m') || urlParams.has('ref') || urlParams.has('code');
-        }
-
-        // تهيئة وتشغيل جلب البيانات بمجرد اكتمال رندرة الجداول
         window.addEventListener('DOMContentLoaded', loadProductDetail);
     </script>
 </body>
