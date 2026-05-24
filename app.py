@@ -21,7 +21,7 @@ def get_db_connection():
     return psycopg2.connect(DATABASE_URL, sslmode='require', connect_timeout=10)
 
 # ==========================================
-# تحديث قاعدة البيانات تلقائياً
+# تحديث قاعدة البيانات تلقائياً - إضافة عمود products_json
 # ==========================================
 
 def migrate_database():
@@ -29,10 +29,14 @@ def migrate_database():
         conn = get_db_connection()
         cur = conn.cursor()
         
-        # إضافة الأعمدة المفقودة إلى orders
+        # ✅ الأهم: إضافة عمود products_json إلى جدول orders
         cur.execute("""
             DO $$ 
             BEGIN 
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                              WHERE table_name='orders' AND column_name='products_json') THEN
+                    ALTER TABLE orders ADD COLUMN products_json TEXT;
+                END IF;
                 IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
                               WHERE table_name='orders' AND column_name='marketer_code') THEN
                     ALTER TABLE orders ADD COLUMN marketer_code VARCHAR(100) DEFAULT '';
@@ -130,12 +134,12 @@ def init_database():
                 customer_phone VARCHAR(50),
                 customer_address TEXT,
                 total_price REAL DEFAULT 0,
-                marketer_code VARCHAR(100) DEFAULT '',
-                marketer_commission REAL DEFAULT 0,
                 products_json TEXT,
                 status VARCHAR(50) DEFAULT 'قيد المراجعة',
-                payment_method VARCHAR(50) DEFAULT 'كاش',
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                marketer_code VARCHAR(100) DEFAULT '',
+                marketer_commission REAL DEFAULT 0,
+                payment_method VARCHAR(50) DEFAULT 'كاش'
             );
         """)
 
@@ -317,7 +321,7 @@ def delete_product(pid):
         return jsonify({"error": str(e)}), 500
 
 # ==========================================
-# API Orders
+# API Orders - تم إصلاح المشكلة هنا
 # ==========================================
 
 @app.route('/api/orders', methods=['GET'])
@@ -338,9 +342,12 @@ def get_orders():
 def create_order():
     try:
         data = request.json
+        print("📦收到的订单数据:", data)
+        
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=RealDictCursor)
         
+        # تحويل المنتجات إلى JSON
         products_json = json.dumps(data.get('products', []), ensure_ascii=False)
         marketer_code = data.get('marketer_code', '')
         
@@ -349,20 +356,22 @@ def create_order():
         for product in data.get('products', []):
             cur.execute("SELECT commission_egp FROM products WHERE id = %s;", (product.get('id'),))
             prod = cur.fetchone()
-            if prod and prod['commission_egp']:
+            if prod and prod.get('commission_egp'):
                 total_commission += prod['commission_egp'] * product.get('qty', 1)
         
+        # ✅ الاستعلام المعدل - الأعمدة بنفس ترتيب الجدول
         cur.execute("""
-            INSERT INTO orders (customer_name, customer_phone, customer_address, total_price, marketer_code, marketer_commission, products_json, payment_method)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s) RETURNING *;
+            INSERT INTO orders (customer_name, customer_phone, customer_address, total_price, products_json, status, marketer_code, marketer_commission, payment_method)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING *;
         """, (
             data.get('customer_name'),
             data.get('customer_phone'),
             data.get('customer_address'),
             data.get('total_price', 0),
+            products_json,
+            'قيد المراجعة',
             marketer_code,
             total_commission,
-            products_json,
             'كاش'
         ))
         
@@ -371,9 +380,11 @@ def create_order():
         cur.close()
         conn.close()
         
+        print(f"✅ تم إنشاء الطلب بنجاح! رقم الطلب: {order['id']}")
         return jsonify({"success": True, "order": order}), 201
+        
     except Exception as e:
-        print(f"Order error: {e}")
+        print(f"❌ خطأ في الطلب: {e}")
         return jsonify({"success": False, "error": str(e)}), 500
 
 @app.route('/api/orders/<int:oid>/status', methods=['PUT'])
@@ -555,20 +566,21 @@ def marketer_create_order():
         for product in data.get('products', []):
             cur.execute("SELECT commission_egp FROM products WHERE id = %s;", (product.get('id'),))
             prod = cur.fetchone()
-            if prod and prod['commission_egp']:
+            if prod and prod.get('commission_egp'):
                 total_commission += prod['commission_egp'] * product.get('qty', 1)
         
         cur.execute("""
-            INSERT INTO orders (customer_name, customer_phone, customer_address, total_price, marketer_code, marketer_commission, products_json, payment_method)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s) RETURNING *;
+            INSERT INTO orders (customer_name, customer_phone, customer_address, total_price, products_json, status, marketer_code, marketer_commission, payment_method)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING *;
         """, (
             data.get('customer_name'),
             data.get('customer_phone'),
             data.get('customer_address'),
             data.get('total_price', 0),
+            products_json,
+            'قيد المراجعة',
             marketer_code,
             total_commission,
-            products_json,
             'كاش'
         ))
         
