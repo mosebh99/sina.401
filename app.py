@@ -22,7 +22,7 @@ def get_db_connection():
     return psycopg2.connect(DATABASE_URL, sslmode='allow', connect_timeout=10)
 
 # ==========================================
-# إنشاء الجداول + بيانات افتراضية
+# إنشاء وتحديث الجداول (Database Migration)
 # ==========================================
 
 def init_database():
@@ -30,7 +30,7 @@ def init_database():
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        # جدول المنتجات
+        # 1. جدول المنتجات (مع دعم العمولة الثابتة بالجنيه وحالة التفعيل)
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS products (
                 id SERIAL PRIMARY KEY,
@@ -39,7 +39,9 @@ def init_database():
                 description TEXT,
                 selling_price REAL DEFAULT 0,
                 purchasing_price REAL DEFAULT 0,
-                commission REAL DEFAULT 0,
+                commission REAL DEFAULT 0, 
+                commission_amount REAL DEFAULT 0,
+                commission_enabled BOOLEAN DEFAULT TRUE,
                 stock_quantity INTEGER DEFAULT 0,
                 image_url TEXT,
                 extra_images TEXT,
@@ -47,7 +49,7 @@ def init_database():
             );
         """)
 
-        # جدول الطلبات
+        # 2. جدول الطلبات الأساسي
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS orders (
                 id SERIAL PRIMARY KEY,
@@ -63,7 +65,7 @@ def init_database():
             );
         """)
 
-        # جدول المسوقين (مع كلمة مرور)
+        # 3. جدول المسوقين
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS marketers (
                 id SERIAL PRIMARY KEY,
@@ -78,7 +80,48 @@ def init_database():
             );
         """)
 
-        # جدول المستخدمين (مدير + أدمن)
+        # 4. جدول طلبات الأفلييت (حفظ العمولة الثابتة وقت الشراء لضمان عدم تأثر الطلبات القديمة بالتعديلات المستقبلية)
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS affiliate_orders (
+                id SERIAL PRIMARY KEY,
+                order_id INTEGER REFERENCES orders(id) ON DELETE CASCADE,
+                marketer_code VARCHAR(50) NOT NULL,
+                product_id INTEGER,
+                product_name VARCHAR(255),
+                quantity INTEGER DEFAULT 1,
+                commission_per_item REAL DEFAULT 0,
+                total_commission REAL DEFAULT 0,
+                status VARCHAR(50) DEFAULT 'قيد المراجعة',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        """)
+
+        # 5. جدول سجل أرباح وحسابات المسوقين
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS affiliate_earnings (
+                id SERIAL PRIMARY KEY,
+                marketer_code VARCHAR(50) UNIQUE NOT NULL,
+                confirmed_earnings REAL DEFAULT 0,
+                pending_earnings REAL DEFAULT 0,
+                cancelled_earnings REAL DEFAULT 0,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        """)
+
+        # 6. سجل العمليات والإشعارات لكل حركة ماليّة
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS commission_logs (
+                id SERIAL PRIMARY KEY,
+                marketer_code VARCHAR(50) NOT NULL,
+                order_id INTEGER,
+                amount REAL NOT NULL,
+                action_type VARCHAR(50), -- 'إضافة عمولة معلقة', 'تأكيد أرباح', 'إلغاء عمولة'
+                notes TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        """)
+
+        # 7. جدول الإدارة والأدمن
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS users (
                 id SERIAL PRIMARY KEY,
@@ -90,43 +133,20 @@ def init_database():
             );
         """)
 
-        # التأكد من وجود كل الأعمدة (migration للجداول القديمة)
+        # تأمين التحديثات (Migrations) للأعمدة الجديدة في الجداول القائمة
         cursor.execute("""
             DO $$ 
             BEGIN 
-                IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
-                              WHERE table_name='marketers' AND column_name='password') THEN
-                    ALTER TABLE marketers ADD COLUMN password VARCHAR(255) NOT NULL DEFAULT '';
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='products' AND column_name='commission_amount') THEN
+                    ALTER TABLE products ADD COLUMN commission_amount REAL DEFAULT 0;
                 END IF;
-                IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
-                              WHERE table_name='marketers' AND column_name='commission_rate') THEN
-                    ALTER TABLE marketers ADD COLUMN commission_rate REAL DEFAULT 0;
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='products' AND column_name='commission_enabled') THEN
+                    ALTER TABLE products ADD COLUMN commission_enabled BOOLEAN DEFAULT TRUE;
                 END IF;
-                IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
-                              WHERE table_name='marketers' AND column_name='total_sales') THEN
-                    ALTER TABLE marketers ADD COLUMN total_sales REAL DEFAULT 0;
-                END IF;
-                IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
-                              WHERE table_name='marketers' AND column_name='total_commission') THEN
-                    ALTER TABLE marketers ADD COLUMN total_commission REAL DEFAULT 0;
-                END IF;
-            END $$;
-        """)
-
-        # Migration لجدول products
-        cursor.execute("""
-            DO $$ 
-            BEGIN 
-                IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
-                              WHERE table_name='products' AND column_name='purchasing_price') THEN
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='products' AND column_name='purchasing_price') THEN
                     ALTER TABLE products ADD COLUMN purchasing_price REAL DEFAULT 0;
                 END IF;
-                IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
-                              WHERE table_name='products' AND column_name='commission') THEN
-                    ALTER TABLE products ADD COLUMN commission REAL DEFAULT 0;
-                END IF;
-                IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
-                              WHERE table_name='products' AND column_name='extra_images') THEN
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='products' AND column_name='extra_images') THEN
                     ALTER TABLE products ADD COLUMN extra_images TEXT DEFAULT '[]';
                 END IF;
             END $$;
@@ -134,7 +154,7 @@ def init_database():
 
         conn.commit()
 
-        # إضافة مستخدم مدير افتراضي
+        # إضافة حساب الأدمن الافتراضي إذا لم يكن موجوداً
         admin_pass = os.environ.get('ADMIN_PASSWORD', 'MoSebA01065653401')
         hashed = generate_password_hash(admin_pass)
         cursor.execute("""
@@ -146,11 +166,54 @@ def init_database():
         conn.commit()
         cursor.close()
         conn.close()
-        print("Database initialized successfully!")
+        print("Database initialized and migrated successfully with fix-commission system!")
     except Exception as e:
-        print(f"Database error: {e}")
+        print(f"Database error during initialization: {e}")
 
 init_database()
+
+# الدالة المساعدة لتحديث أرصدة المسوق الذكية بناءً على الحالات
+def sync_marketer_balance(marketer_code):
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        
+        # حساب إجمالي المعلق
+        cur.execute("SELECT COALESCE(SUM(total_commission), 0) as amt FROM affiliate_orders WHERE marketer_code = %s AND status = 'قيد المراجعة';", (marketer_code,))
+        pending = cur.fetchone()['amt']
+        
+        # حساب إجمالي المكتمل
+        cur.execute("SELECT COALESCE(SUM(total_commission), 0) as amt FROM affiliate_orders WHERE marketer_code = %s AND status = 'تم التسليم';", (marketer_code,))
+        confirmed = cur.fetchone()['amt']
+        
+        # حساب إجمالي الملغي
+        cur.execute("SELECT COALESCE(SUM(total_commission), 0) as amt FROM affiliate_orders WHERE marketer_code = %s AND status = 'مرتجع';", (marketer_code,))
+        cancelled = cur.fetchone()['amt']
+        
+        # تحديث أو إنشاء في جدول affiliate_earnings
+        cur.execute("""
+            INSERT INTO affiliate_earnings (marketer_code, confirmed_earnings, pending_earnings, cancelled_earnings, updated_at)
+            VALUES (%s, %s, %s, %s, CURRENT_TIMESTAMP)
+            ON CONFLICT (marketer_code) DO UPDATE SET
+                confirmed_earnings = EXCLUDED.confirmed_earnings,
+                pending_earnings = EXCLUDED.pending_earnings,
+                cancelled_earnings = EXCLUDED.cancelled_earnings,
+                updated_at = CURRENT_TIMESTAMP;
+        """, (marketer_code, confirmed, pending, cancelled))
+        
+        # تحديث الحقول في جدول المسوقين الرئيسي للمحافظة على التوافق الرجعي
+        cur.execute("""
+            UPDATE marketers SET 
+                total_commission = %s,
+                total_sales = (SELECT COALESCE(SUM(orders.total_price), 0) FROM orders WHERE orders.marketer_code = %s AND orders.status = 'تم التسليم')
+            WHERE code = %s;
+        """, (confirmed, marketer_code, marketer_code))
+        
+        conn.commit()
+        cur.close()
+        conn.close()
+    except Exception as e:
+        print(f"Error syncing marketer balance: {e}")
 
 # ==========================================
 # Middleware للصلاحيات
@@ -202,6 +265,7 @@ def login_page():
     return render_template('login.html')
 
 @app.route('/marketers.html')
+@admin_required
 def marketers_page():
     return render_template('marketers.html')
 
@@ -219,7 +283,7 @@ def product_detail_page():
     return render_template('product_detail.html')
 
 # ==========================================
-# API تسجيل الدخول - الإدارة
+# APIs الحسابات والإدارة
 # ==========================================
 
 @app.route('/api/auth/login', methods=['POST'])
@@ -227,7 +291,6 @@ def api_login():
     data = request.json
     username = data.get('username', '').strip()
     password = data.get('password', '').strip()
-
     try:
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=RealDictCursor)
@@ -241,13 +304,7 @@ def api_login():
             session['username'] = user['username']
             session['role'] = user['role']
             session['name'] = user['name']
-            return jsonify({
-                "success": True,
-                "message": "تم تسجيل الدخول بنجاح",
-                "role": user['role'],
-                "name": user['name']
-            })
-
+            return jsonify({"success": True, "message": "تم تسجيل الدخول بنجاح", "role": user['role'], "name": user['name']})
         return jsonify({"success": False, "message": "بيانات الدخول غير صحيحة"}), 401
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -259,15 +316,7 @@ def api_logout():
 
 @app.route('/api/auth/check', methods=['GET'])
 def check_auth():
-    return jsonify({
-        "authenticated": 'user_id' in session,
-        "role": session.get('role'),
-        "name": session.get('name')
-    })
-
-# ==========================================
-# API المستخدمين (مدير فقط)
-# ==========================================
+    return jsonify({"authenticated": 'user_id' in session, "role": session.get('role'), "name": session.get('name')})
 
 @app.route('/api/users', methods=['GET', 'POST'])
 @manager_required
@@ -275,14 +324,12 @@ def api_users():
     try:
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=RealDictCursor)
-
         if request.method == 'GET':
             cur.execute("SELECT id, username, role, name, created_at FROM users ORDER BY id DESC;")
             users = cur.fetchall()
             cur.close()
             conn.close()
             return jsonify(users)
-
         elif request.method == 'POST':
             data = request.json
             hashed = generate_password_hash(data.get('password', '123456'))
@@ -302,11 +349,10 @@ def api_users():
 @manager_required
 def delete_user(uid):
     try:
-        conn = get_db_connection()
-        cur = conn.cursor()
-        # ما ينفعش يحذف نفسه
         if uid == session.get('user_id'):
             return jsonify({"error": "لا يمكن حذف حسابك الحالي"}), 400
+        conn = get_db_connection()
+        cur = conn.cursor()
         cur.execute("DELETE FROM users WHERE id = %s;", (uid,))
         conn.commit()
         cur.close()
@@ -316,7 +362,7 @@ def delete_user(uid):
         return jsonify({"error": str(e)}), 500
 
 # ==========================================
-# API المنتجات
+# API المنتجات (إضافة/تعديل مع دعم العمولات بالجنيه)
 # ==========================================
 
 @app.route('/api/products', methods=['GET', 'POST'])
@@ -332,20 +378,18 @@ def api_products():
             return jsonify(products)
 
         elif request.method == 'POST':
-            # التحقق من الصلاحيات
             if 'user_id' not in session or session.get('role') not in ['manager', 'admin']:
-                return jsonify({"error": "غير مصرح"}), 403
-
+                return jsonify({"error": "غير مصرح لك بالإجراء"}), 403
             data = request.json
             cur = conn.cursor(cursor_factory=RealDictCursor)
             cur.execute("""
-                INSERT INTO products (name, category, description, selling_price, purchasing_price, commission, stock_quantity, image_url, extra_images)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING *;
+                INSERT INTO products (name, category, description, selling_price, purchasing_price, commission_amount, commission_enabled, stock_quantity, image_url, extra_images)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING *;
             """, (
                 data.get('name'), data.get('category'), data.get('description'),
-                data.get('selling_price', 0), data.get('purchasing_price', 0),
-                data.get('commission', 0), data.get('stock_quantity', 0),
-                data.get('image_url'), data.get('extra_images', '[]')
+                float(data.get('selling_price', 0)), float(data.get('purchasing_price', 0)),
+                float(data.get('commission_amount', 0)), data.get('commission_enabled', True),
+                int(data.get('stock_quantity', 0)), data.get('image_url'), data.get('extra_images', '[]')
             ))
             new_product = cur.fetchone()
             conn.commit()
@@ -368,25 +412,24 @@ def product_detail(pid):
             conn.close()
             if product:
                 return jsonify(product)
-            return jsonify({"error": "Product not found"}), 404
+            return jsonify({"error": "المنتج غير موجود"}), 404
 
         elif request.method == 'PUT':
             if 'user_id' not in session or session.get('role') not in ['manager', 'admin']:
-                return jsonify({"error": "غير مصرح"}), 403
-
+                return jsonify({"error": "غير مصرح لك بالإجراء"}), 403
             data = request.json
             cur.execute("""
                 UPDATE products SET
                     name = %s, category = %s, description = %s,
                     selling_price = %s, purchasing_price = %s,
-                    commission = %s, stock_quantity = %s,
-                    image_url = %s, extra_images = %s
+                    commission_amount = %s, commission_enabled = %s, 
+                    stock_quantity = %s, image_url = %s, extra_images = %s
                 WHERE id = %s RETURNING *;
             """, (
                 data.get('name'), data.get('category'), data.get('description'),
-                data.get('selling_price', 0), data.get('purchasing_price', 0),
-                data.get('commission', 0), data.get('stock_quantity', 0),
-                data.get('image_url'), data.get('extra_images', '[]'), pid
+                float(data.get('selling_price', 0)), float(data.get('purchasing_price', 0)),
+                float(data.get('commission_amount', 0)), data.get('commission_enabled', True),
+                int(data.get('stock_quantity', 0)), data.get('image_url'), data.get('extra_images', '[]'), pid
             ))
             updated = cur.fetchone()
             conn.commit()
@@ -396,19 +439,17 @@ def product_detail(pid):
 
         elif request.method == 'DELETE':
             if 'user_id' not in session or session.get('role') not in ['manager', 'admin']:
-                return jsonify({"error": "غير مصرح"}), 403
-
+                return jsonify({"error": "غير مصرح لك بالإجراء"}), 403
             cur.execute("DELETE FROM products WHERE id = %s;", (pid,))
             conn.commit()
             cur.close()
             conn.close()
             return jsonify({"success": True})
-
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 # ==========================================
-# API الطلبات
+# API الطلبات وإدارة العمولات التلقائية الثابتة بالجنيه
 # ==========================================
 
 @app.route('/api/orders', methods=['GET', 'POST'])
@@ -430,21 +471,57 @@ def api_orders():
             items_data = data.get('products') or data.get('items') or []
             products_json_str = json.dumps(items_data, ensure_ascii=False)
             total_val = data.get('total_price') or data.get('total_val') or 0
-            marketer_code = data.get('marketer_code', '')
-            marketer_id = data.get('marketer_id', '')
+            marketer_code = data.get('marketer_code', '').strip()
 
+            # إدراج الطلب الأساسي أولاً بوضع "قيد المراجعة"
             cur.execute("""
-                INSERT INTO orders (customer_name, customer_phone, customer_address, total_price, marketer_id, marketer_code, products_json, status)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s) RETURNING *;
+                INSERT INTO orders (customer_name, customer_phone, customer_address, total_price, marketer_code, products_json, status)
+                VALUES (%s, %s, %s, %s, %s, %s, %s) RETURNING *;
             """, (
                 data.get('customer_name'), data.get('customer_phone'), data.get('customer_address'),
-                float(total_val), marketer_id, marketer_code, products_json_str,
-                data.get('status', 'قيد المراجعة')
+                float(total_val), marketer_code, products_json_str, 'قيد المراجعة'
             ))
             new_order = cur.fetchone()
+            order_id = new_order['id']
+
+            # إذا تم تقديم الطلب عبر كود مسوق صالح، نقوم بحساب وحفظ العمولات الثابتة فوراً
+            if marketer_code:
+                cur.execute("SELECT * FROM marketers WHERE code = %s;", (marketer_code,))
+                m_profile = cur.fetchone()
+                
+                if m_profile:
+                    for item in items_data:
+                        p_id = item.get('id')
+                        qty = int(item.get('qty', 1))
+                        
+                        # سحب قيمة العمولة الحالية للمنتج لمعرفة هل هي مفعلة وما قيمتها الثابتة بالجنيه
+                        cur.execute("SELECT commission_amount, commission_enabled FROM products WHERE id = %s;", (p_id,))
+                        prod = cur.fetchone()
+                        
+                        if prod and prod['commission_enabled']:
+                            comm_per_item = float(prod['commission_amount'])
+                            total_item_comm = comm_per_item * qty
+                            
+                            # حفظ تفاصيل العمولة ثابتة داخل الطلب (تأمين العمولات القديمة)
+                            cur.execute("""
+                                INSERT INTO affiliate_orders (order_id, marketer_code, product_id, product_name, quantity, commission_per_item, total_commission, status)
+                                VALUES (%s, %s, %s, %s, %s, %s, %s, 'قيد المراجعة');
+                            """, (order_id, marketer_code, p_id, item.get('name'), qty, comm_per_item, total_item_comm))
+                            
+                            # إدراج سجل العمليات كإشعار للعمولة المعلقة
+                            cur.execute("""
+                                INSERT INTO commission_logs (marketer_code, order_id, amount, action_type, notes)
+                                VALUES (%s, %s, %s, 'إضافة عمولة معلقة', %s);
+                            """, (marketer_code, order_id, total_item_comm, f"عمولة معلقة للمنتج {item.get('name')} عدد {qty}"))
+            
             conn.commit()
             cur.close()
             conn.close()
+
+            # مزامنة وتحديث رصيد المسوق مباشرة بعد تقديم الطلب
+            if marketer_code:
+                sync_marketer_balance(marketer_code)
+
             return jsonify(new_order), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -462,31 +539,65 @@ def order_detail(oid):
             conn.close()
             if order:
                 return jsonify(order)
-            return jsonify({"error": "Order not found"}), 404
+            return jsonify({"error": "الطلب غير موجود"}), 404
 
         elif request.method == 'PUT':
             data = request.json
-            cur.execute("""
-                UPDATE orders SET status = %s WHERE id = %s RETURNING *;
-            """, (data.get('status'), oid))
-            updated = cur.fetchone()
+            new_status = data.get('status').strip() # قيد المراجعة، جاري الشحن، تم التسليم، مرتجع
+            
+            # سحب كود المسوق المرتبط بالطلب إن وجد
+            cur.execute("SELECT marketer_code FROM orders WHERE id = %s;", (oid,))
+            order_data = cur.fetchone()
+            m_code = order_data['marketer_code'] if order_data else None
+
+            # تحديث حالة الطلب الرئيسي
+            cur.execute("UPDATE orders SET status = %s WHERE id = %s RETURNING *;", (new_status, oid))
+            updated_order = cur.fetchone()
+
+            if m_code:
+                # تحديث حالة العمولات التابعة للطلب في جدول affiliate_orders تلقائياً
+                cur.execute("UPDATE affiliate_orders SET status = %s WHERE order_id = %s RETURNING *;", (new_status, oid))
+                updated_aff_items = cur.fetchall()
+
+                # تسجيل لوج العمليات والإشعارات المالية بناءً على التغير الجديد للحالة
+                for aff_item in updated_aff_items:
+                    action = 'تأكيد أرباح' if new_status == 'تم التسليم' else ('إلغاء عمولة' if new_status == 'مرتجع' else 'تعديل حالة العمولة')
+                    notes = f"تم نقل عمولة منتج {aff_item['product_name']} إلى حالة {new_status} بناءً على تحديث الأدمن للطلب."
+                    
+                    cur.execute("""
+                        INSERT INTO commission_logs (marketer_code, order_id, amount, action_type, notes)
+                        VALUES (%s, %s, %s, %s, %s);
+                    """, (m_code, oid, aff_item['total_commission'], action, notes))
+
             conn.commit()
             cur.close()
             conn.close()
-            return jsonify(updated)
+
+            # إعادة مزامنة وتحديث فوري لأرصدة وأرباح المسوق مباشرة
+            if m_code:
+                sync_marketer_balance(m_code)
+
+            return jsonify(updated_order)
 
         elif request.method == 'DELETE':
+            # سحب كود المسوق قبل المسح للمزامنة
+            cur.execute("SELECT marketer_code FROM orders WHERE id = %s;", (oid,))
+            order_data = cur.fetchone()
+            m_code = order_data['marketer_code'] if order_data else None
+
             cur.execute("DELETE FROM orders WHERE id = %s;", (oid,))
             conn.commit()
             cur.close()
             conn.close()
-            return jsonify({"success": True})
 
+            if m_code:
+                sync_marketer_balance(m_code)
+            return jsonify({"success": True})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 # ==========================================
-# API المسوقين
+# APIs حسابات المسوق والـ Dashboard الاحترافي
 # ==========================================
 
 @app.route('/api/marketers', methods=['GET', 'POST'])
@@ -509,15 +620,15 @@ def api_marketers():
             cur = conn.cursor(cursor_factory=RealDictCursor)
             cur.execute("""
                 INSERT INTO marketers (name, phone, code, password, commission_rate, total_sales, total_commission)
-                VALUES (%s, %s, %s, %s, %s, %s, %s) RETURNING id, name, phone, code, commission_rate, total_sales, total_commission, created_at;
-            """, (
-                data.get('name'), data.get('phone'), data.get('code'),
-                hashed_pass, data.get('commission_rate', 0), 0, 0
-            ))
+                VALUES (%s, %s, %s, %s, %s, 0, 0) RETURNING id, name, phone, code, commission_rate, total_sales, total_commission, created_at;
+            """, (data.get('name'), data.get('phone'), data.get('code'), hashed_pass, 0))
             new_marketer = cur.fetchone()
             conn.commit()
             cur.close()
             conn.close()
+            
+            # إنشاء سجل أرباح أولي مصفّر للمسوق الجديد
+            sync_marketer_balance(data.get('code'))
             return jsonify(new_marketer), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -536,152 +647,4 @@ def delete_marketer(mid):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@app.route('/api/marketers/stats/<code>', methods=['GET'])
-def marketer_stats(code):
-    try:
-        conn = get_db_connection()
-        cur = conn.cursor(cursor_factory=RealDictCursor)
-
-        cur.execute("""
-            SELECT COUNT(*) as total_orders, COALESCE(SUM(total_price), 0) as total_sales
-            FROM orders WHERE marketer_code = %s;
-        """, (code,))
-        stats = cur.fetchone()
-
-        cur.execute("""
-            SELECT * FROM orders WHERE marketer_code = %s ORDER BY id DESC;
-        """, (code,))
-        orders = cur.fetchall()
-
-        # حساب العمولة بناءً على كل طلب
-        total_commission = 0
-        for order in orders:
-            if order['products_json']:
-                try:
-                    items = json.loads(order['products_json'])
-                    for item in items:
-                        # نحسب العمولة بناءً على نسبة المنتج
-                        cur.execute("SELECT commission FROM products WHERE id = %s;", (item.get('id'),))
-                        prod = cur.fetchone()
-                        if prod:
-                            commission = (prod['commission'] / 100) * (item.get('price', 0) * item.get('qty', 1))
-                            total_commission += commission
-                except:
-                    pass
-
-        cur.close()
-        conn.close()
-        return jsonify({
-            "stats": stats,
-            "orders": orders,
-            "total_commission": round(total_commission, 2)
-        })
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-# ==========================================
-# API تسجيل دخول المسوق
-# ==========================================
-
-@app.route('/api/marketer/login', methods=['POST'])
-def marketer_login():
-    data = request.json
-    code = data.get('code', '').strip()
-    password = data.get('password', '').strip()
-
-    try:
-        conn = get_db_connection()
-        cur = conn.cursor(cursor_factory=RealDictCursor)
-        cur.execute("SELECT * FROM marketers WHERE code = %s;", (code,))
-        marketer = cur.fetchone()
-        cur.close()
-        conn.close()
-
-        if marketer and check_password_hash(marketer['password'], password):
-            session['marketer_id'] = marketer['id']
-            session['marketer_code'] = marketer['code']
-            session['marketer_name'] = marketer['name']
-            return jsonify({
-                "success": True,
-                "message": "تم تسجيل الدخول بنجاح",
-                "code": marketer['code'],
-                "name": marketer['name']
-            })
-
-        return jsonify({"success": False, "message": "كود المسوق أو كلمة المرور غير صحيحة"}), 401
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-@app.route('/api/marketer/logout', methods=['POST'])
-def marketer_logout():
-    session.pop('marketer_id', None)
-    session.pop('marketer_code', None)
-    session.pop('marketer_name', None)
-    return jsonify({"success": True, "message": "تم تسجيل الخروج"})
-
-@app.route('/api/marketer/check', methods=['GET'])
-def check_marketer_auth():
-    return jsonify({
-        "authenticated": 'marketer_id' in session,
-        "code": session.get('marketer_code'),
-        "name": session.get('marketer_name')
-    })
-
-@app.route('/api/marketer/profile', methods=['GET'])
-@marketer_required
-def marketer_profile():
-    try:
-        conn = get_db_connection()
-        cur = conn.cursor(cursor_factory=RealDictCursor)
-        cur.execute("SELECT id, name, phone, code, commission_rate, total_sales, total_commission FROM marketers WHERE id = %s;", (session['marketer_id'],))
-        profile = cur.fetchone()
-        cur.close()
-        conn.close()
-        return jsonify(profile)
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-# ==========================================
-# API الإحصائيات
-# ==========================================
-
-@app.route('/api/stats/dashboard', methods=['GET'])
-@admin_required
-def dashboard_stats():
-    try:
-        conn = get_db_connection()
-        cur = conn.cursor(cursor_factory=RealDictCursor)
-
-        cur.execute("SELECT COALESCE(SUM(total_price), 0) as total_sales FROM orders;")
-        total_sales = cur.fetchone()['total_sales']
-
-        cur.execute("SELECT COUNT(*) as total_orders FROM orders;")
-        total_orders = cur.fetchone()['total_orders']
-
-        cur.execute("SELECT COUNT(*) as total_products FROM products;")
-        total_products = cur.fetchone()['total_products']
-
-        cur.execute("SELECT COUNT(*) as total_marketers FROM marketers;")
-        total_marketers = cur.fetchone()['total_marketers']
-
-        cur.execute("""
-            SELECT status, COUNT(*) as count
-            FROM orders GROUP BY status;
-        """)
-        orders_by_status = cur.fetchall()
-
-        cur.close()
-        conn.close()
-
-        return jsonify({
-            "total_sales": total_sales,
-            "total_orders": total_orders,
-            "total_products": total_products,
-            "total_marketers": total_marketers,
-            "orders_by_status": orders_by_status
-        })
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-if __name__ == '__main__':
-    app.run(debug=True)
+# API الإحصائيات الكاملة وعرض المبيعات للمسوق الفردي بالتفصيل
