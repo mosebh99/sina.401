@@ -3,71 +3,368 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تفاصيل الهاتف | سينا ستور</title>
+    <title>تفاصيل المنتج | سينا ستور</title>
+    <link rel="icon" type="image/png" href="/static/css/logo.png.jpeg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --primary: #d4af37; --bg-dark: #0a0a0a; --bg-card: #141414; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background-color: var(--bg-dark); color: #fff; padding: 20px; }
-        .container { max-width: 900px; margin: 30px auto; background-color: var(--bg-card); border: 1px solid rgba(212,175,55,0.2); border-radius: 12px; padding: 30px; display: flex; gap: 30px; flex-wrap: wrap; }
-        .prod-image { flex: 1; min-width: 300px; max-height: 400px; object-fit: cover; border-radius: 8px; background-color: #1a1a1a; }
-        .prod-details { flex: 1; min-width: 300px; display: flex; flex-direction: column; justify-content: center; }
-        h2 { color: var(--primary); margin-bottom: 15px; font-size: 28px; }
-        .price { font-size: 24px; color: var(--primary); font-weight: bold; margin-bottom: 20px; }
-        form { margin-top: 20px; display: flex; flex-direction: column; gap: 15px; }
-        input, textarea { width: 100%; padding: 12px; border-radius: 6px; border: 1px solid #333; background-color: #1a1a1a; color: #fff; }
-        button { background: linear-gradient(135deg, var(--primary), #b8860b); color: #000; border: none; padding: 14px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 16px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Cairo', 'Segoe UI', sans-serif;
+            background: #f8f9fa;
+            color: #333;
+            direction: rtl;
+        }
+        .header {
+            background: #2c2c2c;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo {
+            font-size: 22px;
+            font-weight: bold;
+            color: white;
+        }
+        .logo span { color: #e67e22; }
+        .back-btn {
+            background: #e67e22;
+            color: white;
+            padding: 8px 20px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        .product-detail {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .product-gallery {
+            flex: 1;
+            min-width: 300px;
+            padding: 20px;
+        }
+        .main-img {
+            width: 100%;
+            height: 350px;
+            object-fit: cover;
+            border-radius: 12px;
+        }
+        .thumbnails {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        .thumbnails img {
+            width: 70px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        .thumbnails img.active {
+            border-color: #e67e22;
+        }
+        .product-info {
+            flex: 1;
+            min-width: 300px;
+            padding: 30px;
+        }
+        .product-name {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        .product-category {
+            color: #888;
+            margin-bottom: 15px;
+        }
+        .product-price {
+            font-size: 28px;
+            color: #e67e22;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .product-stock {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin-bottom: 20px;
+        }
+        .in-stock { background: #22c55e20; color: #22c55e; }
+        .low-stock { background: #f59e0b20; color: #f59e0b; }
+        .out-stock { background: #ef444420; color: #ef4444; }
+        .product-desc {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+        .product-actions {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .product-actions button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .btn-whatsapp {
+            background: #25d366;
+            color: white;
+        }
+        .btn-cart {
+            background: #2c2c2c;
+            color: white;
+        }
+        .order-form {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+        }
+        .order-form h3 {
+            margin-bottom: 15px;
+        }
+        .order-form input, .order-form select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-family: inherit;
+        }
+        .order-form button {
+            width: 100%;
+            padding: 
+                        padding: 12px;
+            background: #e67e22;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #2c2c2c;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            z-index: 9999;
+            display: none;
+        }
+        @media (max-width: 768px) {
+            .product-detail { flex-direction: column; }
+            .main-img { height: 250px; }
+        }
     </style>
 </head>
 <body>
-    <div class="container" id="product-container">
-        <p style="text-align:center; width:100%;">جاري تحميل تفاصيل الهاتف...</p>
+
+    <header class="header">
+        <div class="logo">سينا <span>ستور</span></div>
+        <a href="/" class="back-btn"><i class="fas fa-arrow-right"></i> العودة للمتجر</a>
+    </header>
+
+    <div class="container">
+        <div class="product-detail" id="productDetail">
+            <div style="text-align: center; padding: 50px; width: 100%;">جاري تحميل المنتج...</div>
+        </div>
     </div>
 
+    <div class="toast" id="toast"></div>
+
     <script>
-        const pId = new URLSearchParams(window.location.search).get('id');
+        const productId = new URLSearchParams(window.location.search).get('id');
+        let currentProduct = null;
+        let affiliateCode = new URLSearchParams(window.location.search).get('ref') || localStorage.getItem('affiliate_code') || '';
+
+        if (affiliateCode) localStorage.setItem('affiliate_code', affiliateCode);
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.innerText = message;
+            toast.style.display = 'block';
+            setTimeout(() => toast.style.display = 'none', 3000);
+        }
+
         async function loadProduct() {
-            if(!pId) return;
+            if (!productId) {
+                window.location.href = '/';
+                return;
+            }
+
             try {
-                const response = await fetch(`/api/products/${pId}`);
-                const p = await response.json();
-                const img = p.image_url || 'https://via.placeholder.com/400x400/141414/d4af37?text=Sina+Store+401';
-                document.getElementById('product-container').innerHTML = `
-                    <img class="prod-image" src="${img}" alt="${p.name}">
-                    <div class="prod-details">
-                        <h2>${p.name}</h2>
-                        <div class="price">${p.selling_price} ج.م</div>
-                        <p style="color:#aaa;">الفئة: ${p.category}</p>
-                        <form onsubmit="submitOrder(event, ${p.selling_price}, '${p.name}')">
-                            <input type="text" id="c-name" placeholder="اسم العميل بالكامل" required>
-                            <input type="tel" id="c-phone" placeholder="رقم الهاتف" required>
-                            <textarea id="c-address" placeholder="العنوان بالتفصيل" rows="3" required></textarea>
-                            <button type="submit">تأكيد طلب الشراء الآن</button>
-                        </form>
-                    </div>`;
-            } catch {
-                document.getElementById('product-container').innerHTML = '<p style="color:red;">فشل تحميل المنتج.</p>';
+                const res = await fetch('/api/products');
+                const products = await res.json();
+                currentProduct = products.find(p => p.id == productId);
+
+                if (!currentProduct) {
+                    document.getElementById('productDetail').innerHTML = `
+                        <div style="text-align: center; padding: 50px; width: 100%;">
+                            <p style="color: #ef4444;">❌ المنتج غير موجود</p>
+                            <a href="/" style="color: #e67e22;">العودة للمتجر</a>
+                        </div>
+                    `;
+                    return;
+                }
+
+                let stockClass = 'in-stock';
+                let stockText = `✅ متوفر: ${currentProduct.stock_quantity || 0} قطعة`;
+                if ((currentProduct.stock_quantity || 0) <= 5 && (currentProduct.stock_quantity || 0) > 0) {
+                    stockClass = 'low-stock';
+                    stockText = `⚠️ باقي كمية محدودة: ${currentProduct.stock_quantity} قطعة`;
+                } else if ((currentProduct.stock_quantity || 0) === 0) {
+                    stockClass = 'out-stock';
+                    stockText = '❌ غير متوفر حالياً';
+                }
+
+                let thumbnailsHtml = '';
+                if (currentProduct.extra_images) {
+                    try {
+                        let extra = typeof currentProduct.extra_images === 'string' ? JSON.parse(currentProduct.extra_images) : currentProduct.extra_images;
+                        if (Array.isArray(extra) && extra.length > 0) {
+                            thumbnailsHtml = extra.map((url, i) => `
+                                <img src="${url}" onclick="changeMainImage('${url}', this)" ${i === 0 ? 'class="active"' : ''}>
+                            `).join('');
+                        }
+                    } catch(e) {}
+                }
+
+                document.getElementById('productDetail').innerHTML = `
+                    <div class="product-gallery">
+                        <img id="mainImage" src="${currentProduct.image_url || '/static/css/logo.png.jpeg'}" class="main-img" onerror="this.src='/static/css/logo.png.jpeg'">
+                        <div class="thumbnails">
+                            <img src="${currentProduct.image_url || '/static/css/logo.png.jpeg'}" onclick="changeMainImage('${currentProduct.image_url || '/static/css/logo.png.jpeg'}', this)" class="active">
+                            ${thumbnailsHtml}
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <h1 class="product-name">${currentProduct.name}</h1>
+                        <div class="product-category"><i class="fas fa-tag"></i> ${currentProduct.category || 'عام'}</div>
+                        <div class="product-price">${currentProduct.selling_price} ج.م</div>
+                        <div class="product-stock ${stockClass}">${stockText}</div>
+                        <div class="product-desc">${currentProduct.description || 'لا توجد تفاصيل إضافية لهذا المنتج.'}</div>
+                        <div class="product-actions">
+                            <button class="btn-whatsapp" onclick="window.open('https://wa.me/201065653401?text=أريد شراء: ${encodeURIComponent(currentProduct.name)}', '_blank')">
+                                <i class="fab fa-whatsapp"></i> طلب عبر واتساب
+                            </button>
+                            <button class="btn-cart" onclick="addToCart()">
+                                <i class="fas fa-cart-plus"></i> أضف للسلة
+                            </button>
+                        </div>
+                        <div class="order-form">
+                            <h3><i class="fas fa-truck"></i> اطلب الآن - توصيل سريع</h3>
+                            <input type="text" id="customerName" placeholder="الاسم الكامل" required>
+                            <input type="tel" id="customerPhone" placeholder="رقم الهاتف" required>
+                            <input type="text" id="customerAddress" placeholder="العنوان بالتفصيل" required>
+                            <select id="paymentMethod">
+                                <option value="كاش">💰 الدفع عند الاستلام</option>
+                                <option value="تحويل">🏦 تحويل بنكي</option>
+                                <option value="vodafone">📱 فودافون كاش</option>
+                            </select>
+                            <button onclick="submitDirectOrder()">✅ تأكيد الطلب</button>
+                        </div>
+                    </div>
+                `;
+            } catch (e) {
+                document.getElementById('productDetail').innerHTML = `<div style="text-align:center; padding:50px;">❌ خطأ في تحميل المنتج</div>`;
             }
         }
 
-        async function submitOrder(e, price, name) {
-            e.preventDefault();
-            const orderData = {
-                customer_name: document.getElementById('c-name').value,
-                customer_phone: document.getElementById('c-phone').value,
-                customer_address: document.getElementById('c-address').value,
-                total_price: price,
-                products: [{id: parseInt(pId), name: name, qty: 1}],
-                marketer_code: localStorage.getItem('marketer_ref_code') || null
-            };
-            try {
-                const res = await fetch('/api/orders', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(orderData) });
-                const result = await res.json();
-                if(result.success) {
-                    alert(`🎉 تم تسجيل طلبك بنجاح! رقم طلبك هو: #${result.order_id} احتفظ به لتتبع حالة الشحن.`);
-                    window.location.href = '/';
-                }
-            } catch { alert('حدث خطأ أثناء إرسال الطلب.'); }
+        function changeMainImage(url, element) {
+            document.getElementById('mainImage').src = url;
+            document.querySelectorAll('.thumbnails img').forEach(img => img.classList.remove('active'));
+            element.classList.add('active');
         }
+
+        function addToCart() {
+            let cart = JSON.parse(localStorage.getItem('sina_cart') || '[]');
+            const existing = cart.find(item => item.id === currentProduct.id);
+            if (existing) {
+                existing.qty++;
+            } else {
+                cart.push({
+                    id: currentProduct.id,
+                    name: currentProduct.name,
+                    price: currentProduct.selling_price,
+                    qty: 1,
+                    image: currentProduct.image_url
+                });
+            }
+            localStorage.setItem('sina_cart', JSON.stringify(cart));
+            showToast('✅ تم إضافة المنتج إلى السلة');
+        }
+
+        async function submitDirectOrder() {
+            const name = document.getElementById('customerName').value.trim();
+            const phone = document.getElementById('customerPhone').value.trim();
+            const address = document.getElementById('customerAddress').value.trim();
+            const payment = document.getElementById('paymentMethod').value;
+
+            if (!name || !phone || !address) {
+                showToast('❌ يرجى ملء جميع الحقول');
+                return;
+            }
+
+            const btn = document.querySelector('.order-form button');
+            btn.disabled = true;
+            btn.innerText = 'جاري الإرسال...';
+
+            try {
+                const res = await fetch('/api/orders', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        customer_name: name,
+                        customer_phone: phone,
+                        customer_address: address,
+                        total_price: currentProduct.selling_price,
+                        products: [{ id: currentProduct.id, name: currentProduct.name, price: currentProduct.selling_price, qty: 1 }],
+                        marketer_code: affiliateCode,
+                        payment_method: payment
+                    })
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    showToast('🎉 تم الطلب بنجاح! سيتم التواصل معك قريباً');
+                    document.getElementById('customerName').value = '';
+                    document.getElementById('customerPhone').value = '';
+                    document.getElementById('customerAddress').value = '';
+                } else {
+                    showToast('❌ فشل إرسال الطلب: ' + (data.error || 'خطأ غير معروف'));
+                }
+            } catch (err) {
+                showToast('❌ فشل الاتصال بالسيرفر');
+            } finally {
+                btn.disabled = false;
+                btn.innerText = '✅ تأكيد الطلب';
+            }
+        }
+
         loadProduct();
     </script>
 </body>
