@@ -21,7 +21,85 @@ def get_db_connection():
     return psycopg2.connect(DATABASE_URL, sslmode='require', connect_timeout=10)
 
 # ==========================================
-# إنشاء الجداول (بالتعديلات الجديدة)
+# تحديث قاعدة البيانات تلقائياً
+# ==========================================
+
+def migrate_database():
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        
+        # إضافة الأعمدة المفقودة إلى orders
+        cur.execute("""
+            DO $$ 
+            BEGIN 
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                              WHERE table_name='orders' AND column_name='marketer_code') THEN
+                    ALTER TABLE orders ADD COLUMN marketer_code VARCHAR(100) DEFAULT '';
+                END IF;
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                              WHERE table_name='orders' AND column_name='marketer_commission') THEN
+                    ALTER TABLE orders ADD COLUMN marketer_commission REAL DEFAULT 0;
+                END IF;
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                              WHERE table_name='orders' AND column_name='payment_method') THEN
+                    ALTER TABLE orders ADD COLUMN payment_method VARCHAR(50) DEFAULT 'كاش';
+                END IF;
+            END $$;
+        """)
+        
+        # إضافة الأعمدة المفقودة إلى products
+        cur.execute("""
+            DO $$ 
+            BEGIN 
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                              WHERE table_name='products' AND column_name='commission_egp') THEN
+                    ALTER TABLE products ADD COLUMN commission_egp REAL DEFAULT 0;
+                END IF;
+            END $$;
+        """)
+        
+        # إضافة الأعمدة المفقودة إلى marketers
+        cur.execute("""
+            DO $$ 
+            BEGIN 
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                              WHERE table_name='marketers' AND column_name='balance') THEN
+                    ALTER TABLE marketers ADD COLUMN balance REAL DEFAULT 0;
+                END IF;
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                              WHERE table_name='marketers' AND column_name='total_earned') THEN
+                    ALTER TABLE marketers ADD COLUMN total_earned REAL DEFAULT 0;
+                END IF;
+            END $$;
+        """)
+        
+        # إنشاء جدول withdraw_requests
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS withdraw_requests (
+                id SERIAL PRIMARY KEY,
+                marketer_id INTEGER,
+                marketer_code VARCHAR(50),
+                amount REAL DEFAULT 0,
+                vodafone_number VARCHAR(50),
+                status VARCHAR(50) DEFAULT 'قيد المراجعة',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                processed_at TIMESTAMP
+            );
+        """)
+        
+        conn.commit()
+        cur.close()
+        conn.close()
+        print("✅ Database migration completed!")
+    except Exception as e:
+        print(f"Migration error: {e}")
+
+# تشغيل التحديث عند بدء التشغيل
+migrate_database()
+
+# ==========================================
+# إنشاء الجداول الأساسية
 # ==========================================
 
 def init_database():
@@ -29,7 +107,6 @@ def init_database():
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        # جدول المنتجات (مع عمولة بالجنيه)
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS products (
                 id SERIAL PRIMARY KEY,
@@ -46,7 +123,6 @@ def init_database():
             );
         """)
 
-        # جدول الطلبات (مع إضافة marketer_code و marketer_commission)
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS orders (
                 id SERIAL PRIMARY KEY,
@@ -54,7 +130,7 @@ def init_database():
                 customer_phone VARCHAR(50),
                 customer_address TEXT,
                 total_price REAL DEFAULT 0,
-                marketer_code VARCHAR(100),
+                marketer_code VARCHAR(100) DEFAULT '',
                 marketer_commission REAL DEFAULT 0,
                 products_json TEXT,
                 status VARCHAR(50) DEFAULT 'قيد المراجعة',
@@ -63,7 +139,6 @@ def init_database():
             );
         """)
 
-        # جدول المسوقين (مع رصيد وطلبات سحب)
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS marketers (
                 id SERIAL PRIMARY KEY,
@@ -78,21 +153,6 @@ def init_database():
             );
         """)
 
-        # جدول طلبات السحب للمسوقين
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS withdraw_requests (
-                id SERIAL PRIMARY KEY,
-                marketer_id INTEGER REFERENCES marketers(id),
-                marketer_code VARCHAR(50),
-                amount REAL NOT NULL,
-                vodafone_number VARCHAR(50),
-                status VARCHAR(50) DEFAULT 'قيد المراجعة',
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                processed_at TIMESTAMP
-            );
-        """)
-
-        # جدول المستخدمين
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS users (
                 id SERIAL PRIMARY KEY,
@@ -104,18 +164,8 @@ def init_database():
             );
         """)
 
-        # تحديث الجداول القديمة إذا وجدت
-        try:
-            cursor.execute("ALTER TABLE products ADD COLUMN IF NOT EXISTS commission_egp REAL DEFAULT 0;")
-            cursor.execute("ALTER TABLE orders ADD COLUMN IF NOT EXISTS marketer_commission REAL DEFAULT 0;")
-            cursor.execute("ALTER TABLE marketers ADD COLUMN IF NOT EXISTS balance REAL DEFAULT 0;")
-            cursor.execute("ALTER TABLE marketers ADD COLUMN IF NOT EXISTS total_earned REAL DEFAULT 0;")
-        except:
-            pass
-
         conn.commit()
 
-        # إضافة مستخدم مدير افتراضي
         hashed = generate_password_hash('MoSebA01065653401')
         cursor.execute("""
             INSERT INTO users (username, password, role, name)
@@ -126,9 +176,9 @@ def init_database():
         conn.commit()
         cursor.close()
         conn.close()
-        print("✅ Database initialized successfully!")
+        print("✅ Database initialized!")
     except Exception as e:
-        print(f"❌ Database error: {e}")
+        print(f"Init error: {e}")
 
 init_database()
 
@@ -189,7 +239,7 @@ def product_detail():
     return render_template('product_detail.html')
 
 # ==========================================
-# API Products (مع عمولة بالجنيه)
+# API Products
 # ==========================================
 
 @app.route('/api/products', methods=['GET'])
@@ -267,7 +317,7 @@ def delete_product(pid):
         return jsonify({"error": str(e)}), 500
 
 # ==========================================
-# API Orders (الدفع عند الاستلام فقط)
+# API Orders
 # ==========================================
 
 @app.route('/api/orders', methods=['GET'])
@@ -297,7 +347,6 @@ def create_order():
         # حساب العمولة الإجمالية للمسوق (بالجنيه)
         total_commission = 0
         for product in data.get('products', []):
-            # جلب عمولة المنتج من قاعدة البيانات
             cur.execute("SELECT commission_egp FROM products WHERE id = %s;", (product.get('id'),))
             prod = cur.fetchone()
             if prod and prod['commission_egp']:
@@ -337,18 +386,19 @@ def update_order_status(oid):
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=RealDictCursor)
         
-        # جلب الطلب قبل التحديث
         cur.execute("SELECT * FROM orders WHERE id = %s;", (oid,))
         order = cur.fetchone()
         
-        # تحديث الحالة
         cur.execute("UPDATE orders SET status=%s WHERE id=%s RETURNING *;", (new_status, oid))
         updated_order = cur.fetchone()
         
         # إذا تم التسليم، أضف العمولة للمسوق
-        if new_status == 'تم التسليم' and order and order['marketer_code'] and order['marketer_commission'] > 0:
-            cur.execute("UPDATE marketers SET balance = balance + %s, total_earned = total_earned + %s WHERE code = %s;", 
-                       (order['marketer_commission'], order['marketer_commission'], order['marketer_code']))
+        if new_status == 'تم التسليم' and order and order.get('marketer_code') and order.get('marketer_commission', 0) > 0:
+            cur.execute("""
+                UPDATE marketers 
+                SET balance = balance + %s, total_earned = total_earned + %s 
+                WHERE code = %s;
+            """, (order['marketer_commission'], order['marketer_commission'], order['marketer_code']))
         
         conn.commit()
         cur.close()
@@ -375,7 +425,7 @@ def track_order():
         return jsonify({"error": str(e)}), 500
 
 # ==========================================
-# API Marketers (بدون رابط - يدخل بيانات العميل)
+# API Marketers
 # ==========================================
 
 @app.route('/api/marketers', methods=['GET'])
@@ -470,11 +520,9 @@ def marketer_stats():
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=RealDictCursor)
         
-        # جلب الطلبات الخاصة بهذا المسوق
         cur.execute("SELECT * FROM orders WHERE marketer_code = %s ORDER BY id DESC;", (code,))
         orders = cur.fetchall()
         
-        # جلب بيانات المسوق
         cur.execute("SELECT * FROM marketers WHERE code = %s;", (code,))
         marketer = cur.fetchone()
         
@@ -491,10 +539,6 @@ def marketer_stats():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# ==========================================
-# API المسوق يضيف طلب جديد (بدون رابط)
-# ==========================================
-
 @app.route('/api/marketer/create_order', methods=['POST'])
 @marketer_required
 def marketer_create_order():
@@ -507,7 +551,6 @@ def marketer_create_order():
         
         products_json = json.dumps(data.get('products', []), ensure_ascii=False)
         
-        # حساب العمولة الإجمالية
         total_commission = 0
         for product in data.get('products', []):
             cur.execute("SELECT commission_egp FROM products WHERE id = %s;", (product.get('id'),))
@@ -539,7 +582,7 @@ def marketer_create_order():
         return jsonify({"success": False, "error": str(e)}), 500
 
 # ==========================================
-# API طلبات السحب (Withdraw Requests)
+# API Withdraw Requests
 # ==========================================
 
 @app.route('/api/withdraw/request', methods=['POST'])
@@ -556,7 +599,6 @@ def request_withdraw():
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=RealDictCursor)
         
-        # التحقق من الرصيد
         cur.execute("SELECT balance FROM marketers WHERE id = %s;", (session['marketer_id'],))
         marketer = cur.fetchone()
         
@@ -565,17 +607,12 @@ def request_withdraw():
             conn.close()
             return jsonify({"success": False, "error": "الرصيد غير كافي"}), 400
         
-        # إنشاء طلب سحب
         cur.execute("""
             INSERT INTO withdraw_requests (marketer_id, marketer_code, amount, vodafone_number, status)
             VALUES (%s, %s, %s, %s, 'قيد المراجعة') RETURNING *;
         """, (session['marketer_id'], session['marketer_code'], amount, vodafone_number))
         
         withdraw_request = cur.fetchone()
-        
-        # خصم الرصيد مؤقتاً (سيتم الخصم النهائي عند الموافقة)
-        # cur.execute("UPDATE marketers SET balance = balance - %s WHERE id = %s;", (amount, session['marketer_id']))
-        
         conn.commit()
         cur.close()
         conn.close()
@@ -603,12 +640,11 @@ def get_withdraw_requests():
 def process_withdraw_request(rid):
     try:
         data = request.json
-        new_status = data.get('status')  # 'مقبول' or 'مرفوض'
+        new_status = data.get('status')
         
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=RealDictCursor)
         
-        # جلب طلب السحب
         cur.execute("SELECT * FROM withdraw_requests WHERE id = %s;", (rid,))
         withdraw_request = cur.fetchone()
         
@@ -616,11 +652,9 @@ def process_withdraw_request(rid):
             return jsonify({"error": "Request not found"}), 404
         
         if new_status == 'مقبول':
-            # خصم الرصيد نهائياً
             cur.execute("UPDATE marketers SET balance = balance - %s WHERE id = %s;", 
                        (withdraw_request['amount'], withdraw_request['marketer_id']))
         
-        # تحديث حالة الطلب
         cur.execute("""
             UPDATE withdraw_requests SET status=%s, processed_at=NOW() WHERE id=%s RETURNING *;
         """, (new_status, rid))
@@ -746,6 +780,12 @@ def dashboard_stats():
         cur.execute("SELECT COUNT(*) as total_marketers FROM marketers;")
         total_marketers = cur.fetchone()['total_marketers']
         
+        cur.execute("""
+            SELECT status, COUNT(*) as count
+            FROM orders GROUP BY status;
+        """)
+        orders_by_status = cur.fetchall()
+        
         cur.close()
         conn.close()
         
@@ -753,7 +793,8 @@ def dashboard_stats():
             "total_sales": total_sales,
             "total_orders": total_orders,
             "total_products": total_products,
-            "total_marketers": total_marketers
+            "total_marketers": total_marketers,
+            "orders_by_status": orders_by_status
         })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
