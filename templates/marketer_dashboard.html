@@ -54,7 +54,7 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
         }
         .stat-card {
             background: white;
@@ -68,78 +68,69 @@
             font-weight: bold;
             color: #e67e22;
         }
-        .stat-card .label {
-            color: #888;
-            margin-top: 8px;
-        }
-        .link-box {
+        .card {
             background: white;
-            padding: 25px;
             border-radius: 12px;
-            margin-bottom: 40px;
+            padding: 25px;
+            margin-bottom: 30px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
-        .link-box h3 {
-            margin-bottom: 15px;
+        .card h3 {
             color: #e67e22;
+            margin-bottom: 20px;
         }
-        .link-input {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
+        .form-group {
+            margin-bottom: 15px;
         }
-        .link-input input {
-            flex: 1;
-            padding: 12px;
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
             border: 1px solid #ddd;
             border-radius: 8px;
             font-family: inherit;
-            background: #f8f9fa;
         }
-        .copy-btn {
-            background: #2c2c2c;
+        .product-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+        .product-row select {
+            flex: 2;
+            padding: 8px;
+        }
+        .product-row input {
+            width: 80px;
+            padding: 8px;
+        }
+        .product-row button {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .btn-primary {
+            background: #e67e22;
             color: white;
             border: none;
             padding: 12px 25px;
             border-radius: 8px;
             cursor: pointer;
-        }
-        .products-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 25px;
-            margin-bottom: 40px;
-        }
-        .product-card {
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
-        .product-img {
-            width: 100%;
-            height: 180px;
-            object-fit: cover;
-        }
-        .product-info {
-            padding: 15px;
-        }
-        .product-name {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-        .product-price {
-            color: #e67e22;
             font-weight: bold;
-            margin-bottom: 10px;
-        }
-        .affiliate-btn {
             width: 100%;
-            padding: 10px;
-            background: #e67e22;
+        }
+        .btn-secondary {
+            background: #2c2c2c;
             color: white;
             border: none;
+            padding: 12px 25px;
             border-radius: 8px;
             cursor: pointer;
         }
@@ -174,8 +165,26 @@
             z-index: 9999;
             display: none;
         }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            max-width: 400px;
+            width: 90%;
+        }
         @media (max-width: 768px) {
-            .products-grid { grid-template-columns: repeat(2, 1fr); gap: 15px; }
             .stats-grid { grid-template-columns: repeat(2, 1fr); }
         }
     </style>
@@ -183,74 +192,129 @@
 <body>
 
     <header class="header">
-        <div class="logo">سينا <span>ستور</span> - بوابة المسوقين</div>
+        <div
+                    <div class="logo">سينا <span>ستور</span> - بوابة المسوقين</div>
         <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</button>
     </header>
 
     <div class="container">
-        <div class="welcome-card" id="welcomeCard">
+        <div class="welcome-card">
             <h2 id="welcomeName">مرحباً بك في بوابة المسوقين</h2>
-            <p>شارك الرابط الخاص بك واكسب عمولة على كل عملية شراء</p>
+            <p>أضف طلبات عملائك وتابع أرباحك</p>
         </div>
 
         <div class="stats-grid">
             <div class="stat-card">
+                <div class="number" id="balance">0 ج.م</div>
+                <div class="label">الرصيد المتاح</div>
+            </div>
+            <div class="stat-card">
+                <div class="number" id="totalEarned">0 ج.م</div>
+                <div class="label">إجمالي الأرباح</div>
+            </div>
+            <div class="stat-card">
                 <div class="number" id="totalOrders">0</div>
-                <div class="label">إجمالي الطلبات</div>
-            </div>
-            <div class="stat-card">
-                <div class="number" id="totalSales">0 ج.م</div>
-                <div class="label">إجمالي المبيعات</div>
-            </div>
-            <div class="stat-card">
-                <div class="number" id="totalCommission">0 ج.م</div>
-                <div class="label">العمولة المستحقة</div>
+                <div class="label">عدد الطلبات</div>
             </div>
         </div>
 
-        <div class="link-box">
-            <h3><i class="fas fa-link"></i> رابط التسويق الخاص بك</h3>
-            <p>انسخ هذا الرابط وانشره على وسائل التواصل الاجتماعي</p>
-            <div class="link-input">
-                <input type="text" id="affiliateLink" readonly>
-                <button class="copy-btn" onclick="copyLink()"><i class="fas fa-copy"></i> نسخ</button>
+        <!-- إضافة طلب جديد (بدون رابط) -->
+        <div class="card">
+            <h3><i class="fas fa-plus-circle"></i> إضافة طلب جديد للعميل</h3>
+            <form id="newOrderForm">
+                <div class="form-group">
+                    <label>اسم العميل</label>
+                    <input type="text" id="customerName" required placeholder="الاسم الكامل">
+                </div>
+                <div class="form-group">
+                    <label>رقم هاتف العميل</label>
+                    <input type="tel" id="customerPhone" required placeholder="01xxxxxxxxx">
+                </div>
+                <div class="form-group">
+                    <label>عنوان العميل</label>
+                    <input type="text" id="customerAddress" required placeholder="العنوان بالتفصيل">
+                </div>
+                
+                <label>المنتجات المطلوبة</label>
+                <div id="productsList"></div>
+                <button type="button" class="btn-secondary" onclick="addProductRow()" style="margin: 10px 0; width: auto;">
+                    <i class="fas fa-plus"></i> إضافة منتج
+                </button>
+                
+                <div class="form-group">
+                    <label>الإجمالي</label>
+                    <input type="text" id="orderTotal" readonly style="background: #f0f0f0; font-weight: bold;">
+                </div>
+                
+                <button type="submit" class="btn-primary"><i class="fas fa-check"></i> تأكيد الطلب</button>
+            </form>
+        </div>
+
+        <!-- طلب سحب الرصيد -->
+        <div class="card">
+            <h3><i class="fas fa-money-bill-wave"></i> طلب سحب الأرباح</h3>
+            <div class="form-group">
+                <label>المبلغ المطلوب سحبه</label>
+                <input type="number" id="withdrawAmount" placeholder="أدخل المبلغ">
             </div>
+            <div class="form-group">
+                <label>رقم فودافون كاش</label>
+                <input type="tel" id="vodafoneNumber" placeholder="01xxxxxxxxx">
+            </div>
+            <button class="btn-primary" onclick="requestWithdraw()"><i class="fas fa-download"></i> طلب سحب</button>
         </div>
 
-        <h2 style="margin-bottom: 20px;">📦 منتجات للتسويق</h2>
-        <div class="products-grid" id="productsGrid">
-            <div style="text-align: center; grid-column: 1/-1; padding: 40px;">جاري تحميل المنتجات...</div>
-        </div>
-
-        <h2 style="margin: 30px 0 20px;">📋 طلباتي</h2>
+        <!-- طلباتي -->
+        <h2 style="margin: 30px 0 20px;"><i class="fas fa-shopping-cart"></i> طلباتي</h2>
         <div style="overflow-x: auto;">
             <table class="orders-table">
                 <thead>
                     <tr>
                         <th>رقم الطلب</th>
                         <th>العميل</th>
+                        <th>الهاتف</th>
                         <th>المبلغ</th>
+                        <th>عمولتي</th>
                         <th>الحالة</th>
                         <th>التاريخ</th>
                     </tr>
                 </thead>
                 <tbody id="ordersBody">
-                    <tr><td colspan="5" style="text-align: center;">جاري التحميل...</td></tr>
+                    <tr><td colspan="7" style="text-align: center;">جاري التحميل...</td></tr>
                 </tbody>
             </table>
+        </div>
+    </div>
+
+    <!-- Modal لطلبات السحب -->
+    <div class="modal" id="withdrawModal">
+        <div class="modal-content">
+            <h3 style="color: #e67e22; margin-bottom: 15px;"><i class="fas fa-check-circle"></i> طلب سحب</h3>
+            <p id="modalMessage"></p>
+            <button onclick="closeModal()" class="btn-secondary" style="margin-top: 15px; width: 100%;">إغلاق</button>
         </div>
     </div>
 
     <div class="toast" id="toast"></div>
 
     <script>
-        let baseUrl = window.location.origin;
+        let products = [];
+        let productRows = [];
 
         function showToast(message) {
             const toast = document.getElementById('toast');
             toast.innerText = message;
             toast.style.display = 'block';
             setTimeout(() => toast.style.display = 'none', 3000);
+        }
+
+        function showModal(message) {
+            document.getElementById('modalMessage').innerText = message;
+            document.getElementById('withdrawModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('withdrawModal').style.display = 'none';
         }
 
         async function checkAuth() {
@@ -262,9 +326,8 @@
                     return;
                 }
                 document.getElementById('welcomeName').innerHTML = `👋 مرحباً ${data.name || 'مسوق'} (كود: ${data.code})`;
-                document.getElementById('affiliateLink').value = `${baseUrl}/?ref=${data.code}`;
                 loadStats();
-                loadProducts();
+                loadProductsForSelect();
             } catch (e) {
                 window.location.href = '/marketer_login.html';
             }
@@ -278,20 +341,18 @@
                     console.error(data.error);
                     return;
                 }
+                document.getElementById('balance').innerText = (data.balance || 0).toFixed(2) + ' ج.م';
+                document.getElementById('totalEarned').innerText = (data.total_earned || 0).toFixed(2) + ' ج.م';
                 document.getElementById('totalOrders').innerText = data.orders?.length || 0;
-                const totalSales = data.orders?.reduce((sum, o) => sum + (o.total_price || 0), 0) || 0;
-                document.getElementById('totalSales').innerText = totalSales.toFixed(0) + ' ج.م';
-                document.getElementById('totalCommission').innerText = (data.available_balance || 0).toFixed(0) + ' ج.م';
 
                 const tbody = document.getElementById('ordersBody');
                 if (!data.orders || data.orders.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">لا توجد طلبات حتى الآن</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">لا توجد طلبات حتى الآن</td></tr>';
                     return;
                 }
 
                 tbody.innerHTML = data.orders.map(o => {
                     let statusClass = '';
-                    let statusText = o.status;
                     if (o.status === 'قيد المراجعة') statusClass = 'status-pending';
                     else if (o.status === 'جاري الشحن') statusClass = 'status-shipping';
                     else if (o.status === 'تم التسليم') statusClass = 'status-delivered';
@@ -300,8 +361,10 @@
                         <tr>
                             <td>#${o.id}</td>
                             <td>${o.customer_name || '-'}</td>
+                            <td>${o.customer_phone || '-'}</td>
                             <td>${o.total_price || 0} ج.م</td>
-                            <td class="${statusClass}">${statusText}</td>
+                            <td style="color: #22c55e; font-weight: bold;">${o.marketer_commission || 0} ج.م</td>
+                            <td class="${statusClass}">${o.status}</td>
                             <td>${new Date(o.created_at).toLocaleDateString('ar-EG')}</td>
                         </tr>
                     `;
@@ -311,50 +374,181 @@
             }
         }
 
-        async function loadProducts() {
+        async function loadProductsForSelect() {
             try {
                 const res = await fetch('/api/products');
-                const products = await res.json();
-                const grid = document.getElementById('productsGrid');
-
-                if (!products || products.length === 0) {
-                    grid.innerHTML = '<div style="text-align: center; grid-column: 1/-1; padding: 40px;">لا توجد منتجات متاحة</div>';
-                    return;
-                }
-
-                grid.innerHTML = products.map(p => {
-                    const affiliateUrl = `${baseUrl}/product_detail.html?id=${p.id}&ref=${localStorage.getItem('affiliate_code')}`;
-                    return `
-                        <div class="product-card">
-                            <img src="${p.image_url || '/static/css/logo.png.jpeg'}" class="product-img" onerror="this.src='/static/css/logo.png.jpeg'">
-                            <div class="product-info">
-                                <div class="product-name">${p.name}</div>
-                                <div class="product-price">${p.selling_price} ج.م</div>
-                                <button class="affiliate-btn" onclick="copyProductLink('${affiliateUrl}', '${p.name.replace(/'/g, "\\'")}')">
-                                    <i class="fas fa-link"></i> نسخ رابط المنتج
-                                </button>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
+                products = await res.json();
+                addProductRow(); // إضافة أول صف منتج
             } catch (e) {
-                document.getElementById('productsGrid').innerHTML = '<div style="text-align: center; grid-column: 1/-1; padding: 40px; color: red;">❌ فشل تحميل المنتجات</div>';
                 console.error('Products load error:', e);
             }
         }
 
-        function copyLink() {
-            const link = document.getElementById('affiliateLink');
-            link.select();
-            document.execCommand('copy');
-            showToast('✅ تم نسخ رابط التسويق!');
+        function addProductRow() {
+            const rowId = Date.now();
+            const container = document.getElementById('productsList');
+            const row = document.createElement('div');
+            row.className = 'product-row';
+            row.id = `product-row-${rowId}`;
+            
+            let options = '<option value="">اختر منتج</option>';
+            products.forEach(p => {
+                options += `<option value="${p.id}" data-price="${p.selling_price}" data-commission="${p.commission_egp || 0}">${p.name} - ${p.selling_price} ج.م (عمولة: ${p.commission_egp || 0} ج.م)</option>`;
+            });
+            
+            row.innerHTML = `
+                <select onchange="updateProductPrice(this, '${rowId}')">
+                    ${options}
+                </select>
+                <input type="number" id="qty-${rowId}" placeholder="الكمية" value="1" min="1" onchange="calculateTotal()">
+                <input type="text" id="price-${rowId}" placeholder="السعر" readonly style="background:#f0f0f0; width:100px;">
+                <button onclick="removeProductRow('${rowId}')"><i class="fas fa-trash"></i></button>
+            `;
+            
+            container.appendChild(row);
+            productRows.push(rowId);
         }
 
-        function copyProductLink(url, name) {
-            navigator.clipboard.writeText(url);
-            showToast(`✅ تم نسخ رابط ${name}`);
+        function updateProductPrice(select, rowId) {
+            const selectedOption = select.options[select.selectedIndex];
+            const price = selectedOption.getAttribute('data-price');
+            document.getElementById(`price-${rowId}`).value = price ? price + ' ج.م' : '';
+            calculateTotal();
         }
 
+        function removeProductRow(rowId) {
+            const row = document.getElementById(`product-row-${rowId}`);
+            if (row) row.remove();
+            productRows = productRows.filter(id => id !== rowId);
+            calculateTotal();
+        }
+
+        function calculateTotal() {
+            let total = 0;
+            productRows.forEach(rowId => {
+                const select = document.querySelector(`#product-row-${rowId} select`);
+                const qty = document.getElementById(`qty-${rowId}`).value;
+                if (select && select.value) {
+                    const selectedOption = select.options[select.selectedIndex];
+                    const price = parseFloat(selectedOption.getAttribute('data-price')) || 0;
+                    total += price * (parseInt(qty) || 1);
+                }
+            });
+            document.getElementById('orderTotal').value = total.toFixed(2) + ' ج.م';
+        }
+
+        document.getElementById('newOrderForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const customerName = document.getElementById('customerName').value.trim();
+            const customerPhone = document.getElementById('customerPhone').value.trim();
+            const customerAddress = document.getElementById('customerAddress').value.trim();
+            
+            if (!customerName || !customerPhone || !customerAddress) {
+                showToast('❌ يرجى ملء جميع بيانات العميل');
+                return;
+            }
+            
+            // جمع المنتجات المختارة
+            const orderProducts = [];
+            for (const rowId of productRows) {
+                const select = document.querySelector(`#product-row-${rowId} select`);
+                const qty = document.getElementById(`qty-${rowId}`).value;
+                if (select && select.value) {
+                    const selectedOption = select.options[select.selectedIndex];
+                    const productId = select.value;
+                    const productName = selectedOption.text.split(' - ')[0];
+                    const price = parseFloat(selectedOption.getAttribute('data-price'));
+                    orderProducts.push({
+                        id: parseInt(productId),
+                        name: productName,
+                        price: price,
+                        qty: parseInt(qty) || 1
+                    });
+                }
+            }
+            
+            if (orderProducts.length === 0) {
+                showToast('❌ يرجى إضافة منتج واحد على الأقل');
+                return;
+            }
+            
+            const totalPrice = orderProducts.reduce((sum, p) => sum + (p.price * p.qty), 0);
+            
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.disabled = true;
+            btn.innerText = 'جاري إرسال الطلب...';
+            
+            try {
+                const res = await fetch('/api/marketer/create_order', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        customer_name: customerName,
+                        customer_phone: customerPhone,
+                        customer_address: customerAddress,
+                        total_price: totalPrice,
+                        products: orderProducts
+                    })
+                });
+                
+                const data = await res.json();
+                if (data.success) {
+                    showToast('🎉 تم إرسال الطلب بنجاح!');
+                    document.getElementById('newOrderForm').reset();
+                    document.getElementById('productsList').innerHTML = '';
+                    productRows = [];
+                    addProductRow();
+                    loadStats();
+                } else {
+                    showToast('❌ فشل إرسال الطلب: ' + (data.error || 'خطأ غير معروف'));
+                }
+            } catch (err) {
+                showToast('❌ فشل الاتصال بالسيرفر');
+            } finally {
+                btn.disabled = false;
+                btn.innerText = 'تأكيد الطلب';
+            }
+        });
+        
+        async function requestWithdraw() {
+            const amount = parseFloat(document.getElementById('withdrawAmount').value);
+            const vodafoneNumber = document.getElementById('vodafoneNumber').value.trim();
+            
+            if (!amount || amount <= 0) {
+                showToast('❌ يرجى إدخال مبلغ صحيح');
+                return;
+            }
+            
+            if (!vodafoneNumber || vodafoneNumber.length < 11) {
+                showToast('❌ يرجى إدخال رقم فودافون كاش صحيح');
+                return;
+            }
+            
+            try {
+                const res = await fetch('/api/withdraw/request', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        amount: amount,
+                        vodafone_number: vodafoneNumber
+                    })
+                });
+                
+                const data = await res.json();
+                if (data.success) {
+                    showModal('✅ تم إرسال طلب السحب بنجاح! سيتم مراجعته من قبل الإدارة.');
+                    document.getElementById('withdrawAmount').value = '';
+                    document.getElementById('vodafoneNumber').value = '';
+                    loadStats();
+                } else {
+                    showToast('❌ فشل طلب السحب: ' + (data.error || 'خطأ غير معروف'));
+                }
+            } catch (err) {
+                showToast('❌ فشل الاتصال بالسيرفر');
+            }
+        }
+        
         async function logout() {
             if (!confirm('تسجيل الخروج؟')) return;
             try {
@@ -364,7 +558,7 @@
                 window.location.href = '/marketer_login.html';
             }
         }
-
+        
         checkAuth();
     </script>
 </body>
