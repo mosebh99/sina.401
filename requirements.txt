@@ -4,3 +4,6 @@ Flask-Cors==4.0.0
 gunicorn==21.2.0
 whitenoise==6.6.0
 Werkzeug==3.0.1
+
+python-dotenv
+flask-limiter
