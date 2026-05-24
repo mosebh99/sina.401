@@ -2,137 +2,744 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>سينا ستور 401 | عالم الهواتف الذكية</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>سينا ستور | Sina 401 - ملحقات الموبايل</title>
+    <link rel="icon" type="image/png" href="/static/css/logo.png.jpeg">
     <style>
-        :root {
-            --primary: #d4af37;
-            --primary-hover: #b8860b;
-            --bg-dark: #0a0a0a;
-            --bg-card: #141414;
-            --border-gold: rgba(212, 175, 55, 0.2);
-            --text-gray: #aaa;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            line-height: 1.5;
+            overflow-x: hidden;
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background-color: var(--bg-dark); color: #ffffff; padding-bottom: 60px; }
-        header { background-color: var(--bg-card); border-bottom: 2px solid var(--primary); padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
-        .logo { font-size: 24px; font-weight: bold; color: var(--primary); text-decoration: none; }
-        .nav-links { display: flex; gap: 20px; align-items: center; }
-        .nav-links a { color: #fff; text-decoration: none; font-size: 15px; transition: color 0.3s; }
-        .nav-links a:hover { color: var(--primary); }
-        .btn-panel { background: linear-gradient(135deg, var(--primary), var(--primary-hover)); color: #000; padding: 8px 16px; border-radius: 6px; font-weight: bold; }
-        .hero { text-align: center; padding: 50px 20px; background: linear-gradient(to bottom, #111, var(--bg-dark)); }
-        .hero h1 { font-size: 36px; color: var(--primary); margin-bottom: 10px; }
-        .search-container { max-width: 600px; margin: 20px auto 0; display: flex; gap: 10px; }
-        .search-container input { flex: 1; padding: 12px 20px; border-radius: 8px; border: 1px solid #333; background-color: #1a1a1a; color: #fff; font-size: 16px; }
-        .search-container input:focus { border-color: var(--primary); outline: none; }
-        .products-section { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
-        .section-title { font-size: 24px; color: var(--primary); margin-bottom: 25px; border-right: 4px solid var(--primary); padding-right: 10px; }
-        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; }
-        .product-card { background-color: var(--bg-card); border: 1px solid var(--border-gold); border-radius: 12px; overflow: hidden; transition: transform 0.3s; display: flex; flex-direction: column; }
-        .product-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(212, 175, 55, 0.1); }
-        .product-img { width: 100%; height: 230px; object-fit: cover; background-color: #1a1a1a; }
-        .product-info { padding: 20px; display: flex; flex-direction: column; flex-grow: 1; }
-        .product-name { font-size: 18px; font-weight: bold; margin-bottom: 10px; }
-        .product-price { font-size: 20px; color: var(--primary); font-weight: bold; margin-bottom: 15px; }
-        .commission-badge { background-color: rgba(34, 197, 94, 0.15); color: #22c55e; padding: 6px 12px; border-radius: 6px; font-size: 13px; font-weight: bold; margin-bottom: 15px; text-align: center; border: 1px solid rgba(34, 197, 94, 0.3); }
-        .view-btn { background: transparent; border: 1px solid var(--primary); color: var(--primary); padding: 10px; border-radius: 6px; text-align: center; text-decoration: none; font-weight: bold; transition: 0.3s; margin-top: auto; }
-        .view-btn:hover { background: var(--primary); color: #000; }
-        .track-section { background-color: var(--bg-card); border: 1px solid var(--border-gold); max-width: 600px; margin: 40px auto; padding: 30px; border-radius: 12px; text-align: center; }
-        .track-result { margin-top: 20px; padding: 15px; background-color: #1a1a1a; border-radius: 8px; display: none; }
+        header {
+            background: rgba(10,10,10,0.98);
+            backdrop-filter: blur(20px);
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(212,175,55,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .logo {
+            font-size: 20px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #d4af37, #b8860b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .icon-btn {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #fff;
+            cursor: pointer;
+            position: relative;
+        }
+        .badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ef4444;
+            color: #fff;
+            font-size: 11px;
+            font-weight: bold;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .hero {
+            text-align: center;
+            padding: 50px 20px 40px;
+            background: radial-gradient(ellipse at 50% 0%, rgba(212,175,55,0.1) 0%, transparent 60%);
+        }
+        .hero h1 {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+        .hero h1 span {
+            color: #d4af37;
+        }
+        .hero p {
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #d4af37, #b8860b);
+            color: #000;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 15px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            display: inline-block;
+        }
+        .search-section {
+            padding: 0 16px 20px;
+        }
+        .search-box {
+            width: 100%;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            padding: 12px 16px;
+            border-radius: 25px;
+            color: #fff;
+            font-size: 14px;
+            font-family: inherit;
+        }
+        .search-box:focus {
+            outline: none;
+            border-color: #d4af37;
+        }
+        .categories {
+            padding: 0 16px 20px;
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        .categories::-webkit-scrollbar {
+            display: none;
+        }
+        .category-btn {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            color: #888;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 13px;
+            white-space: nowrap;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        .category-btn.active {
+            background: linear-gradient(135deg, #d4af37, #b8860b);
+            color: #000;
+            border-color: #d4af37;
+            font-weight: 600;
+        }
+        .products-section {
+            padding: 0 16px 40px;
+        }
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #d4af37;
+        }
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        @media (min-width: 768px) {
+            .products-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        @media (min-width: 1024px) {
+            .products-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        .product-card {
+            background: #161616;
+            border: 1px solid rgba(212,175,55,0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(212,175,55,0.3);
+            box-shadow: 0 8px 25px rgba(212,175,55,0.1);
+        }
+        .product-img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            background: #0d0d0d;
+        }
+        .product-info {
+            padding: 12px;
+        }
+        .product-name {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .product-category {
+            font-size: 11px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        .product-price {
+            font-size: 16px;
+            font-weight: 700;
+            color: #d4af37;
+            margin-bottom: 10px;
+        }
+        .product-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+        }
+        .btn-small {
+            padding: 8px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            text-align: center;
+            font-family: inherit;
+        }
+        .btn-whatsapp {
+            background: #25d366;
+            color: #fff;
+        }
+        .btn-cart {
+            background: linear-gradient(135deg, #d4af37, #b8860b);
+            color: #000;
+        }
+        .cart-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 2000;
+        }
+        .cart-overlay.show {
+            display: block;
+        }
+        .cart-sidebar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 100%;
+            max-width: 400px;
+            height: 100vh;
+            background: #0a0a0a;
+            border-left: 1px solid #333;
+            z-index: 2001;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        .cart-overlay.show .cart-sidebar {
+            transform: translateX(0);
+        }
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            border-bottom: 1px solid #333;
+        }
+        .cart-header h3 {
+            color: #d4af37;
+            font-size: 16px;
+        }
+        .cart-items {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+        }
+        .cart-footer {
+            padding: 16px;
+            border-top: 1px solid #333;
+            background: #111;
+        }
+        .tracking-section {
+            padding: 0 16px 40px;
+        }
+        .tracking-box {
+            background: #161616;
+            border: 1px solid rgba(212,175,55,0.1);
+            border-radius: 12px;
+            padding: 20px;
+        }
+        .tracking-box h3 {
+            color: #d4af37;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        .tracking-input {
+            display: flex;
+            gap: 10px;
+        }
+        .tracking-input input {
+            flex: 1;
+            background: #0a0a0a;
+            border: 1px solid #333;
+            padding: 12px;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+            font-family: inherit;
+        }
+        .tracking-input input:focus {
+            outline: none;
+            border-color: #d4af37;
+        }
+        .tracking-input button {
+            background: linear-gradient(135deg, #d4af37, #b8860b);
+            color: #000;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        footer {
+            background: #111;
+            border-top: 1px solid #222;
+            padding: 30px 16px;
+            text-align: center;
+        }
+        footer p {
+            color: #666;
+            font-size: 13px;
+            margin: 5px 0;
+        }
+        .whatsapp-float {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 55px;
+            height: 55px;
+            background: #25d366;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            box-shadow: 0 4px 15px rgba(37,211,102,0.4);
+            z-index: 999;
+            text-decoration: none;
+        }
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #161616;
+            border-right: 3px solid #d4af37;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            z-index: 9999;
+            display: none;
+            font-size: 14px;
+            max-width: 300px;
+        }
+        .toast.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(-100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .menu-dropdown {
+            display: none;
+            position: absolute;
+            top: 60px;
+            left: 16px;
+            background: #161616;
+            border: 1px solid #333;
+            border-radius: 12px;
+            min-width: 180px;
+            z-index: 1001;
+            overflow: hidden;
+        }
+        .menu-dropdown a {
+            display: block;
+            padding: 12px 16px;
+            font-size: 14px;
+            border-bottom: 1px solid #222;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: #fff;
+        }
+        .menu-dropdown a:hover {
+            background: #d4af37;
+            color: #000;
+        }
+        .menu-dropdown a:last-child {
+            border-bottom: none;
+        }
     </style>
 </head>
 <body>
+
     <header>
-        <a href="/" class="logo">✨ سينا ستور 401</a>
-        <div class="nav-links">
-            <a href="#track-box">🔍 تتبع طلبك</a>
-            <a href="/marketer_login.html">🤝 انضم كمسوق</a>
-            <a href="/login.html" class="btn-panel">🔐 الإدارة</a>
+        <div class="logo">✨ سينا ستور</div>
+        <div class="header-actions">
+            <button class="icon-btn" onclick="toggleCart()">
+                🛒 <span id="cart-count" class="badge" style="display:none;">0</span>
+            </button>
+            <button class="icon-btn" onclick="toggleMenu()">☰</button>
         </div>
     </header>
 
-    <div class="hero">
-        <h1>عالم الهواتف الذكية الفاخرة</h1>
-        <p>موزع معتمد لأحدث الموبايلات بأفضل الأسعار وأقوى العروض</p>
-        <div class="search-container">
-            <input type="text" id="search-input" oninput="filterProducts()" placeholder="ابحث عن الموبايل الآن...">
+    <div class="menu-dropdown" id="menu-dropdown">
+        <a href="/">🏠 الرئيسية</a>
+        <a href="/marketer_login.html">📊 بوابة المسوقين</a>
+        <a href="/login.html">🔐 لوحة الإدارة</a>
+    </div>
+
+    <section class="hero">
+        <h1>👑 <span>سينا ستور</span></h1>
+        <p>أجود ملحقات الموبايل - كفرات، شواحن، سماعات وأكتر</p>
+        <button class="btn-primary" onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">
+            🛍️ تسوق الآن
+        </button>
+    </section>
+
+    <section class="search-section">
+        <input type="text" class="search-box" id="search-box" placeholder="🔍 ابحث عن منتج..." oninput="loadProducts()">
+    </section>
+
+    <section class="categories" id="categories">
+        <button class="category-btn active" onclick="filterCategory('all')">الكل</button>
+    </section>
+
+    <section class="products-section" id="products">
+        <h2 class="section-title">📦 منتجاتنا</h2>
+        <div class="products-grid" id="products-grid">
+            <div style="text-align:center; padding:40px; color:#666;">جاري التحميل...</div>
+        </div>
+    </section>
+
+    <div class="cart-overlay" id="cart-overlay" onclick="if(event.target===this)toggleCart()">
+        <div class="cart-sidebar">
+            <div class="cart-header">
+                <h3>🛒 سلة المشتريات</h3>
+                <button onclick="toggleCart()" style="background:none; border:none; color:#fff; font-size:20px; cursor:pointer;">✕</button>
+            </div>
+            <div class="cart-items" id="cart-items">
+                <div style="text-align:center; padding:40px; color:#666;">السلة فارغة</div>
+            </div>
+            <div class="cart-footer">
+                <div style="display:flex; justify-content:space-between; margin-bottom:15px; font-size:18px; font-weight:bold;">
+                    <span>الإجمالي:</span>
+                    <span style="color:#d4af37;"><span id="cart-total">0</span> ج.م</span>
+                </div>
+                <form id="checkout-form" style="display:flex; flex-direction:column; gap:10px;">
+                    <input type="text" id="cust-name" placeholder="الاسم الكامل *" required style="padding:12px; border-radius:8px; border:1px solid #333; background:#0a0a0a; color:#fff; font-family:inherit;">
+                    <input type="tel" id="cust-phone" placeholder="رقم الهاتف *" required style="padding:12px; border-radius:8px; border:1px solid #333; background:#0a0a0a; color:#fff; font-family:inherit;">
+                    <input type="text" id="cust-address" placeholder="العنوان بالتفصيل *" required style="padding:12px; border-radius:8px; border:1px solid #333; background:#0a0a0a; color:#fff; font-family:inherit;">
+                    <input type="text" id="marketer-code" placeholder="كود المسوق (اختياري)" style="padding:12px; border-radius:8px; border:1px solid #333; background:#0a0a0a; color:#fff; font-family:inherit;">
+                    <div style="background:#1a1a1a; padding:10px; border-radius:8px; border:1px solid #333; margin:5px 0;">
+                        <p style="font-size:13px; color:#888; margin:0;">💰 الدفع: <strong style="color:#d4af37;">عند الاستلام فقط</strong></p>
+                    </div>
+                    <button type="submit" style="background:linear-gradient(135deg,#d4af37,#b8860b); color:#000; padding:14px; border-radius:8px; font-weight:700; border:none; cursor:pointer; font-family:inherit; font-size:16px;">
+                        ✅ تأكيد الطلب - الدفع عند الاستلام
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 
-    <div class="products-section">
-        <div class="section-title">📱 الهواتف المتاحة</div>
-        <div class="products-grid" id="products-list"></div>
-    </div>
-
-    <div class="track-section" id="track-box">
-        <h3 style="color:var(--primary); margin-bottom:15px;">🔍 تتبع حالة شحن طلبك</h3>
-        <div class="search-container">
-            <input type="number" id="track-id" placeholder="أدخل رقم الطلب هنا...">
-            <button onclick="trackOrder()" style="background: var(--primary); color: #000; border: none; padding: 0 20px; border-radius: 8px; font-weight: bold; cursor: pointer;">تتبع</button>
+    <section class="tracking-section">
+        <div class="tracking-box">
+            <h3>📦 تتبع طلبك</h3>
+            <div class="tracking-input">
+                <input type="tel" id="track-phone" placeholder="رقم الهاتف...">
+                <button onclick="trackOrder()">تتبع</button>
+            </div>
+            <div id="track-result"></div>
         </div>
-        <div class="track-result" id="track-res"></div>
-    </div>
+    </section>
+
+    <footer>
+        <p style="font-size:18px; font-weight:700; background:linear-gradient(135deg,#d4af37,#b8860b); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:10px;">✨ سينا ستور</p>
+        <p>وجهتك الأولى لملحقات الموبايل الفاخرة</p>
+        <p style="margin-top:15px;">📞 01065653401</p>
+        <p style="margin-top:20px; font-size:12px; color:#444;">© 2026 سينا ستور. جميع الحقوق محفوظة.</p>
+    </footer>
+
+    <a href="https://wa.me/201065653401" class="whatsapp-float" target="_blank">💬</a>
+
+    <div class="toast" id="toast"></div>
 
     <script>
-        let allProducts = [];
-        const urlParams = new URLSearchParams(window.location.search);
-        const refCode = urlParams.get('ref');
-        if (refCode) localStorage.setItem('marketer_ref_code', refCode);
+        let cart = JSON.parse(localStorage.getItem('sina_cart') || '[]');
+        let products = [];
+        let currentCategory = 'all';
 
-        async function fetchProducts() {
-            const grid = document.getElementById('products-list');
+        const urlParams = new URLSearchParams(window.location.search);
+        const affiliateCode = urlParams.get('ref');
+        if (affiliateCode) {
+            localStorage.setItem('affiliate_code', affiliateCode);
+        }
+
+        function toggleMenu() {
+            const menu = document.getElementById('menu-dropdown');
+            menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+        }
+
+        document.addEventListener('click', function(e) {
+            const menu = document.getElementById('menu-dropdown');
+            const btn = document.querySelector('.icon-btn[onclick="toggleMenu()"]');
+            if (menu && !menu.contains(e.target) && e.target !== btn) {
+                menu.style.display = 'none';
+            }
+        });
+
+        function toggleCart() {
+            document.getElementById('cart-overlay').classList.toggle('show');
+            renderCart();
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.innerText = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        async function loadProducts() {
             try {
-                const response = await fetch('/api/products');
-                allProducts = await response.json();
-                displayProducts(allProducts);
-            } catch (err) {
-                grid.innerHTML = '<p style="text-align:center;color:red;">خطأ في الاتصال بالسيرفر.</p>';
+                const res = await fetch('/api/products');
+                products = await res.json();
+
+                const cats = [...new Set(products.map(p => p.category).filter(c => c))];
+                const catContainer = document.getElementById('categories');
+                catContainer.innerHTML = `<button class="category-btn ${currentCategory==='all'?'active':''}" onclick="filterCategory('all')">الكل</button>`;
+                cats.forEach(c => {
+                    catContainer.innerHTML += `<button class="category-btn ${currentCategory===c?'active':''}" onclick="filterCategory('${c}')">${c}</button>`;
+                });
+
+                renderProducts();
+            } catch(e) {
+                document.getElementById('products-grid').innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:40px; color:#666;">فشل تحميل المنتجات</div>';
             }
         }
 
-        function displayProducts(products) {
-            const grid = document.getElementById('products-list');
-            if (products.length === 0) {
-                grid.innerHTML = '<p style="text-align:center;color:#888;width:100%;">لا توجد منتجات متاحة حالياً.</p>';
+        function filterCategory(cat) {
+            currentCategory = cat;
+            renderProducts();
+        }
+
+        function renderProducts() {
+            const grid = document.getElementById('products-grid');
+            const search = document.getElementById('search-box').value.toLowerCase();
+
+            let filtered = products.filter(p => {
+                const matchSearch = p.name.toLowerCase().includes(search);
+                const matchCat = currentCategory === 'all' || p.category === currentCategory;
+                return matchSearch && matchCat;
+            });
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:40px; color:#666;">لا توجد منتجات</div>';
                 return;
             }
-            const activeRef = localStorage.getItem('marketer_ref_code');
-            grid.innerHTML = products.map(p => {
-                const badge = activeRef ? `<div class="commission-badge">💸 عمولتك: ${p.commission} ج.م</div>` : '';
-                const img = p.image_url || 'https://via.placeholder.com/300x230/141414/d4af37?text=Sina+Store+401';
+
+            grid.innerHTML = filtered.map(p => {
+                const affiliateLink = localStorage.getItem('affiliate_code') ? `?ref=${localStorage.getItem('affiliate_code')}` : '';
                 return `
-                    <div class="product-card">
-                        <img class="product-img" src="${img}" alt="${p.name}">
-                        <div class="product-info">
-                            <div class="product-name">${p.name}</div>
-                            <div class="product-price">${p.selling_price} ج.م</div>
-                            ${badge}
-                            <a href="/product_detail.html?id=${p.id}" class="view-btn">عرض التفاصيل والشراء</a>
+                <div class="product-card">
+                    <a href="/product_detail.html?id=${p.id}${affiliateLink}">
+                        <img src="${p.image_url || '/static/css/logo.png.jpeg'}" class="product-img" alt="${p.name}" onerror="this.src='/static/css/logo.png.jpeg'">
+                    </a>
+                    <div class="product-info">
+                        <div class="product-name">${p.name}</div>
+                        <div class="product-category">${p.category || 'عام'}</div>
+                        <div class="product-price">${p.selling_price} ج.م</div>
+                        <div class="product-actions">
+                            <button class="btn-small btn-whatsapp" onclick="window.open('https://wa.me/201065653401?text=أريد:${encodeURIComponent(p.name)}','_blank')">واتساب</button>
+                            <button class="btn-small btn-cart" onclick="addToCart(${p.id},'${p.name.replace(/'/g,"\\'")}',${p.selling_price})">السلة</button>
                         </div>
-                    </div>`;
-            }).join('');
+                    </div>
+                </div>
+            `}).join('');
+            updateCartBadge();
         }
 
-        function filterProducts() {
-            const term = document.getElementById('search-input').value.toLowerCase();
-            displayProducts(allProducts.filter(p => p.name.toLowerCase().includes(term)));
+        function addToCart(id, name, price) {
+            const existing = cart.find(i => i.id === id);
+            if (existing) existing.qty++;
+            else cart.push({id, name, price, qty: 1});
+            localStorage.setItem('sina_cart', JSON.stringify(cart));
+            updateCartBadge();
+            showToast('✅ أضيف للسلة');
         }
+
+        function updateCartBadge() {
+            const count = cart.reduce((s, i) => s + i.qty, 0);
+            const badge = document.getElementById('cart-count');
+            badge.innerText = count;
+            badge.style.display = count > 0 ? 'flex' : 'none';
+        }
+
+        function renderCart() {
+            const container = document.getElementById('cart-items');
+            if (cart.length === 0) {
+                container.innerHTML = '<div style="text-align:center; padding:40px; color:#666;">السلة فارغة</div>';
+                document.getElementById('cart-total').innerText = '0';
+                return;
+            }
+
+            let total = 0;
+            container.innerHTML = cart.map((item, i) => {
+                total += item.price * item.qty;
+                return `
+                    <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid #222;">
+                        <div>
+                            <div style="font-weight:600; font-size:14px;">${item.name}</div>
+                            <div style="color:#888; font-size:12px;">${item.price} ج.م</div>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <div style="display:flex; align-items:center; gap:5px; background:#1a1a1a; border-radius:15px; padding:2px;">
+                                <button onclick="updateQty(${i},-1)" style="width:25px; height:25px; border-radius:50%; border:none; background:#333; color:#fff; cursor:pointer;">−</button>
+                                <span style="min-width:20px; text-align:center;">${item.qty}</span>
+                                <button onclick="updateQty(${i},1)" style="width:25px; height:25px; border-radius:50%; border:none; background:#333; color:#fff; cursor:pointer;">+</button>
+                            </div>
+                            <span style="color:#d4af37; font-weight:bold; min-width:60px; text-align:left;">${item.price*item.qty} ج.م</span>
+                            <button onclick="removeFromCart(${i})" style="background:none; border:none; color:#ef4444; cursor:pointer; font-size:16px;">🗑</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            document.getElementById('cart-total').innerText = total;
+        }
+
+        function updateQty(index, delta) {
+            cart[index].qty += delta;
+            if (cart[index].qty <= 0) cart.splice(index, 1);
+            localStorage.setItem('sina_cart', JSON.stringify(cart));
+            renderCart();
+            updateCartBadge();
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            localStorage.setItem('sina_cart', JSON.stringify(cart));
+            renderCart();
+            updateCartBadge();
+        }
+
+        document.getElementById('checkout-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (cart.length === 0) { showToast('السلة فارغة'); return; }
+
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.disabled = true;
+            btn.innerText = '⏳ جاري إرسال الطلب...';
+
+            const marketerCode = document.getElementById('marketer-code').value.trim() || localStorage.getItem('affiliate_code') || '';
+
+            try {
+                const res = await fetch('/api/orders', {
+                    method: 'POST',
+                    headers: {'Content-Type':'application/json'},
+                    body: JSON.stringify({
+                        customer_name: document.getElementById('cust-name').value,
+                        customer_phone: document.getElementById('cust-phone').value,
+                        customer_address: document.getElementById('cust-address').value,
+                        total_price: parseFloat(document.getElementById('cart-total').innerText),
+                        products: cart,
+                        marketer_code: marketerCode,
+                        status: 'قيد المراجعة'
+                    })
+                });
+
+                if (res.ok) {
+                    showToast('🎉 تم الطلب بنجاح! الدفع عند الاستلام');
+                    cart = [];
+                    localStorage.removeItem('sina_cart');
+                    localStorage.removeItem('affiliate_code');
+                    toggleCart();
+                    updateCartBadge();
+                    document.getElementById('checkout-form').reset();
+                } else {
+                    showToast('❌ فشل إرسال الطلب');
+                }
+            } catch(e) {
+                showToast('❌ فشل الاتصال');
+            } finally {
+                btn.disabled = false;
+                btn.innerText = '✅ تأكيد الطلب - الدفع عند الاستلام';
+            }
+        });
 
         async function trackOrder() {
-            const id = document.getElementById('track-id').value;
-            const res = document.getElementById('track-res');
-            if(!id) return;
-            res.style.display = 'block'; res.innerText = 'جاري البحث...';
+            const phone = document.getElementById('track-phone').value.trim();
+            const result = document.getElementById('track-result');
+            if (!phone) { showToast('أدخل رقم الهاتف'); return; }
+
+            result.innerHTML = '<p style="color:#888; margin-top:10px;">جاري البحث...</p>';
+
             try {
-                const response = await fetch(`/api/orders/track?id=${id}`);
-                const data = await response.json();
-                if(response.ok && data.id) {
-                    res.innerHTML = `📦 الطلب <span style="color:var(--primary)">#${data.id}</span> حالته: <span style="color:#22c55e">[ ${data.status} ]</span>`;
-                } else { res.innerText = '❌ الرقم غير مسجل بالسيستم.'; }
-            } catch { res.innerText = 'خطأ في الاتصال.'; }
+                const res = await fetch('/api/orders');
+                const orders = await res.json();
+                const myOrders = orders.filter(o => o.customer_phone === phone);
+
+                if (myOrders.length === 0) {
+                    result.innerHTML = '<p style="color:#ef4444; margin-top:10px;">لا توجد طلبات</p>';
+                    return;
+                }
+
+                result.innerHTML = myOrders.map(o => {
+                    let statusColor = '#d4af37';
+                    let statusText = '⏳ قيد المراجعة';
+                    if (o.status === 'جاري الشحن') { statusColor = '#3b82f6'; statusText = '🚚 جاري الشحن'; }
+                    else if (o.status === 'تم التسليم') { statusColor = '#22c55e'; statusText = '✅ تم التسليم'; }
+                    else if (o.status === 'مرتجع') { statusColor = '#ef4444'; statusText = '❌ مرتجع'; }
+
+                    return `
+                        <div style="background:#0a0a0a; border-radius:8px; padding:15px; margin-top:10px; border-right:3px solid ${statusColor};">
+                            <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                                <strong>طلب #${o.id}</strong>
+                                <span style="color:${statusColor}; font-size:12px;">${statusText}</span>
+                            </div>
+                            <div style="color:#888; font-size:13px;">
+                                <div>💰 ${o.total_price} ج.م</div>
+                                <div>📅 ${new Date(o.created_at).toLocaleDateString('ar-EG')}</div>
+                                ${o.marketer_code ? `<div>👤 كود المسوق: ${o.marketer_code}</div>` : ''}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } catch(e) {
+                result.innerHTML = '<p style="color:#ef4444; margin-top:10px;">خطأ في الاتصال</p>';
+            }
         }
-        document.addEventListener('DOMContentLoaded', fetchProducts);
+
+        loadProducts();
+        updateCartBadge();
     </script>
 </body>
 </html>
