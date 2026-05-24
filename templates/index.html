@@ -38,7 +38,6 @@
             overflow-x: hidden;
         }
 
-        /* هيدر المتجر الاحترافي */
         header {
             background: rgba(20, 20, 20, 0.85);
             backdrop-filter: blur(20px);
@@ -58,6 +57,7 @@
             display: flex;
             align-items: center;
             gap: 12px;
+            cursor: pointer;
         }
 
         .brand-section img {
@@ -92,7 +92,6 @@
             color: var(--bg-main);
         }
 
-        /* بنية هيرو الترحيب الفخم */
         .hero-banner {
             max-width: 1300px;
             margin: 30px auto;
@@ -100,7 +99,6 @@
             text-align: center;
             background: radial-gradient(circle at center, #161616 0%, var(--bg-main) 100%);
             border-radius: var(--radius-lg);
-            position: relative;
         }
 
         .hero-banner h2 {
@@ -110,9 +108,7 @@
             color: #fff;
         }
 
-        .hero-banner h2 span {
-            color: var(--gold);
-        }
+        .hero-banner h2 span { color: var(--gold); }
 
         .hero-banner p {
             font-size: 14px;
@@ -121,7 +117,6 @@
             margin: 0 auto 25px;
         }
 
-        /* ويدجت البحث وتتبع الحالات السريع */
         .search-track-container {
             max-width: 700px;
             margin: 0 auto;
@@ -130,20 +125,18 @@
             gap: 15px;
         }
 
-        .search-box {
-            position: relative;
-            width: 100%;
-        }
+        .search-box { position: relative; width: 100%; }
 
         .search-box input {
             width: 100%;
             background: var(--bg-card);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 14px 20px 14px 50px;
+            padding: 14px 20px;
             border-radius: var(--radius-md);
             color: white;
             font-size: 14px;
             transition: var(--transition);
+            text-align: center;
         }
 
         .search-box input:focus {
@@ -152,16 +145,6 @@
             box-shadow: 0 0 15px rgba(212, 175, 55, 0.1);
         }
 
-        .search-box i {
-            position: absolute;
-            left: 20px;
-            top: 50px;
-            transform: translateY(-50%);
-            color: var(--text-muted);
-            font-size: 16px;
-        }
-
-        /* نظام تتبع الطلبات المبتكر */
         .tracking-widget {
             background: rgba(20, 20, 20, 0.6);
             border: 1px solid rgba(255, 255, 255, 0.03);
@@ -169,10 +152,7 @@
             padding: 15px;
         }
 
-        .track-form {
-            display: flex;
-            gap: 10px;
-        }
+        .track-form { display: flex; gap: 10px; }
 
         .track-form input {
             flex: 1;
@@ -196,20 +176,9 @@
             transition: var(--transition);
         }
 
-        .track-form button:hover { background: var(--gold-hover); }
+        #tracking-result { margin-top: 12px; text-align: right; font-size: 13px; }
 
-        #tracking-result {
-            margin-top: 12px;
-            text-align: right;
-            font-size: 13px;
-        }
-
-        /* شبكة عرض كروت المنتجات */
-        .store-content {
-            max-width: 1300px;
-            margin: 40px auto;
-            padding: 0 20px;
-        }
+        .store-content { max-width: 1300px; margin: 40px auto; padding: 0 20px; }
 
         .section-title {
             font-size: 20px;
@@ -233,7 +202,6 @@
             gap: 25px;
         }
 
-        /* الكارت الفاخر لعرض الموبايل */
         .product-card {
             background: var(--bg-card);
             border: 1px solid rgba(255, 255, 255, 0.02);
@@ -243,7 +211,6 @@
             transition: var(--transition);
             display: flex;
             flex-direction: column;
-            position: relative;
         }
 
         .product-card:hover {
@@ -259,7 +226,6 @@
             justify-content: center;
             align-items: center;
             padding: 15px;
-            overflow: hidden;
         }
 
         .card-img-wrapper img {
@@ -267,10 +233,6 @@
             max-height: 100%;
             object-fit: contain;
             transition: var(--transition);
-        }
-
-        .product-card:hover .card-img-wrapper img {
-            transform: scale(1.04);
         }
 
         .card-details {
@@ -285,7 +247,6 @@
             font-size: 11px;
             color: var(--gold);
             font-weight: 600;
-            text-transform: uppercase;
         }
 
         .card-title {
@@ -328,10 +289,8 @@
         .buy-now-btn:hover {
             background: var(--gold);
             color: var(--bg-main);
-            border-color: var(--gold);
         }
 
-        /* فوتر المتجر */
         footer {
             background: #111;
             text-align: center;
@@ -342,7 +301,6 @@
             margin-top: 60px;
         }
 
-        /* رندرة الجوال والتجاوب */
         @media (max-width: 768px) {
             .hero-banner { padding: 30px 15px; margin: 15px; }
             .hero-banner h2 { font-size: 24px; }
@@ -357,7 +315,7 @@
 <body>
 
     <header>
-        <div class="brand-section">
+        <div class="brand-section" onclick="window.location.href='/'">
             <img src="/static/css/logo.png.jpeg" alt="سينا ستور" onerror="this.style.display='none'">
             <h1>سينا ستور 401</h1>
         </div>
@@ -386,10 +344,9 @@
 
         <section class="store-content">
             <h3 class="section-title"><i class="fa-solid fa-fire" style="color: var(--gold);"></i> أحدث الهواتف والأجهزة المتاحة حالياً</h3>
-            
             <div class="products-grid" id="main-products-grid">
                 <div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;">
-                    <i class="fa-solid fa-spinner fa-spin" style="font-size: 24px; color: var(--gold); margin-bottom: 10px;"></i>
+                    <i class="fa-solid fa-spinner fa-spin" style="font-size: 24px; color: var(--gold);"></i>
                     <p>جاري مزامنة كتالوج الأجهزة الحية...</p>
                 </div>
             </div>
@@ -403,17 +360,15 @@
     <script>
         let allProducts = [];
 
-        // 1. التقاط كود الأفلييت بذكاء من الرابط وتخزينه لحماية عمولات المسوقين
         function catchAffiliateUrlCode() {
             const params = new URLSearchParams(window.location.search);
             const code = params.get('m') || params.get('ref') || params.get('code');
             if (code) {
                 localStorage.setItem('affiliate_code', code);
-                console.log("🔒 تم توثيق كود تتبع المسوق سحابياً وجاهز للربط بالطلب:", code);
+                console.log("🔒 تم توثيق كود تتبع المسوق بنجاح:", code);
             }
         }
 
-        // 2. جلب كتالوج المنتجات المعروضة بالكامل من قاعدة البيانات
         async function fetchStoreProducts() {
             catchAffiliateUrlCode();
             const grid = document.getElementById('main-products-grid');
@@ -422,18 +377,16 @@
                 const res = await fetch('/api/products');
                 if (!res.ok) throw new Error("Fetch error");
                 allProducts = await res.json();
-
                 renderProducts(allProducts);
             } catch (e) {
-                grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:var(--gold); padding:30px;">❌ حدث خطأ في الاتصال بالسيرفر، جاري المحاولة مجدداً.</div>`;
+                grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:var(--gold); padding:30px;">❌ حدث خطأ في الاتصال بالسيرفر.</div>`;
             }
         }
 
-        // 3. رندرة وبناء كروت المنتجات داخل الشبكة
         function renderProducts(list) {
             const grid = document.getElementById('main-products-grid');
             if (list.length === 0) {
-                grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:var(--text-muted); padding:30px;">لا توجد أجهزة متطابقة مع بحثك حالياً.</div>`;
+                grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:var(--text-muted); padding:30px;">لا توجد أجهزة متطابقة مع بحثك.</div>`;
                 return;
             }
 
@@ -450,7 +403,7 @@
                             <span class="card-cat">${p.category || 'أجهزة وهواتف'}</span>
                             <h4 class="card-title">${p.name}</h4>
                             <div class="card-price">${p.selling_price} ج.م</div>
-                            <a href="/product_detail/${p.id}" class="buy-now-btn">
+                            <a href="/product_detail.html?id=${p.id}" class="buy-now-btn">
                                 <i class="fa-solid fa-cart-plus"></i> عرض التفاصيل والشراء
                             </a>
                         </div>
@@ -459,7 +412,6 @@
             }).join('');
         }
 
-        // 4. نظام الفلترة والبحث الفوري أثناء الكتابة
         function filterStoreProducts() {
             const text = document.getElementById('store-search-input').value.toLowerCase().trim();
             const filtered = allProducts.filter(p => 
@@ -469,18 +421,17 @@
             renderProducts(filtered);
         }
 
-        // 5. تتبع حالة طلب العميل بالـ ID فوراً
         async function handleTrackCustomerOrder(e) {
             e.preventDefault();
             const orderId = document.getElementById('track-id-input').value.trim();
             const resultBox = document.getElementById('tracking-result');
 
-            resultBox.innerHTML = `<span style="color:var(--text-muted);"><i class="fa-solid fa-spinner fa-spin"></i> جاري البحث في السجلات...</span>`;
+            resultBox.innerHTML = `<span><i class="fa-solid fa-spinner fa-spin"></i> جاري البحث...</span>`;
 
             try {
                 const res = await fetch(`/api/orders/track?id=${orderId}`);
                 if (!res.ok) {
-                    resultBox.innerHTML = `<span style="color:#ef4444;">❌ لم نجد طلب مسجل بهذا الرقم في السيستم.</span>`;
+                    resultBox.innerHTML = `<span style="color:#ef4444;">❌ لم نجد طلب مسجل بهذا الرقم.</span>`;
                     return;
                 }
                 const order = await res.json();
@@ -503,7 +454,6 @@
             }
         }
 
-        // بدء التشغيل تلقائياً فور تحميل الصفحة
         window.addEventListener('DOMContentLoaded', fetchStoreProducts);
     </script>
 </body>
