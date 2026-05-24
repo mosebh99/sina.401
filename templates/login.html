@@ -3,73 +3,201 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تسجيل دخول الإدارة | سينا ستور 401</title>
+    <title>تسجيل الدخول الإداري | سينا ستور</title>
+    <link rel="icon" type="image/png" href="/static/css/logo.png.jpeg">
     <style>
-        :root {
-            --primary: #d4af37;
-            --primary-hover: #b8860b;
-            --bg-dark: #0a0a0a;
-            --bg-card: #141414;
-            --border-gold: rgba(212, 175, 55, 0.2);
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background: var(--bg-dark); color: #fff; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
-        .login-container { max-width: 400px; width: 100%; background: var(--bg-card); border: 1px solid var(--border-gold); padding: 30px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.7); text-align: center; }
-        .logo { font-size: 26px; font-weight: bold; color: var(--primary); text-decoration: none; display: block; margin-bottom: 25px; }
-        h3 { margin-bottom: 20px; color: #eee; }
-        label { display: block; text-align: right; margin-bottom: 8px; font-size: 14px; color: #ccc; }
-        input { width: 100%; padding: 12px; margin-bottom: 20px; background: #1a1a1a; border: 1px solid #333; border-radius: 6px; color: #fff; font-size: 16px; text-align: center; }
-        input:focus { border-color: var(--primary); outline: none; }
-        button { width: 100%; padding: 12px; background: linear-gradient(135deg, var(--primary), var(--primary-hover)); border: none; border-radius: 6px; color: #000; font-weight: bold; font-size: 16px; cursor: pointer; transition: opacity 0.3s; }
-        button:hover { opacity: 0.9; }
-        .err-msg { background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #ef4444; padding: 10px; border-radius: 6px; margin-bottom: 15px; display: none; font-size: 14px; font-weight: bold; }
+        header {
+            background: rgba(10,10,10,0.98);
+            backdrop-filter: blur(20px);
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(212,175,55,0.1);
+        }
+        .logo {
+            font-size: 20px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #d4af37, #b8860b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .nav-links a {
+            color: #888;
+            font-size: 14px;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        .nav-links a:hover { color: #d4af37; }
+        .login-container {
+            max-width: 420px;
+            margin: 60px auto;
+            padding: 40px 30px;
+            background: #161616;
+            border-radius: 16px;
+            border: 1px solid rgba(212,175,55,0.15);
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            width: 90%;
+        }
+        .login-container h2 {
+            color: #d4af37;
+            margin-top: 0;
+            font-size: 24px;
+        }
+        .login-container p {
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 14px 18px;
+            background: #111;
+            border: 1px solid #222;
+            border-radius: 10px;
+            color: #fff;
+            font-family: inherit;
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+        .input-group input:focus {
+            outline: none;
+            border-color: #d4af37;
+            box-shadow: 0 0 15px rgba(212,175,55,0.15);
+        }
+        .input-group label {
+            display: block;
+            text-align: right;
+            margin-bottom: 6px;
+            color: #888;
+            font-size: 13px;
+        }
+        .login-btn {
+            background: linear-gradient(135deg, #d4af37, #b8860b);
+            color: #000;
+            border: none;
+            padding: 14px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+            font-family: inherit;
+        }
+        .login-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 6px 20px rgba(212,175,55,0.4);
+        }
+        .login-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .error-msg {
+            color: #ef4444;
+            font-size: 13px;
+            margin-top: 10px;
+            display: none;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #888;
+            font-size: 14px;
+            transition: color 0.3s;
+            text-decoration: none;
+        }
+        .back-link:hover { color: #d4af37; }
     </style>
 </head>
 <body>
+    <header>
+        <div class="logo">✨ سينا ستور</div>
+        <div class="nav-links"><a href="/">⬅️ العودة للمتجر</a></div>
+    </header>
 
     <div class="login-container">
-        <a href="/" class="logo">✨ سينا ستور 401</a>
-        <h3>🔒 تسجيل دخول لوحة الكنترول</h3>
-        
-        <div id="error-div" class="err-msg"></div>
+        <h2>🔐 لوحة الإدارة</h2>
+        <p>قم بإدخال بيانات الاعتماد للوصول للوحة التحكم</p>
 
-        <form id="admin-login-form">
-            <label>اسم المستخدم الإداري:</label>
-            <input type="text" id="adm-user" required placeholder="مثال: admin">
-
-            <label>كلمة المرور السرية:</label>
-            <input type="password" id="adm-pass" required placeholder="••••••••">
-
-            <button type="submit">دخول لوحة التحكم</button>
+        <form id="admin-login-form" class="login-form">
+            <div class="input-group">
+                <label>اسم المستخدم</label>
+                <input type="text" id="adm-user" placeholder="أدخل اسم المستخدم..." required>
+            </div>
+            <div class="input-group">
+                <label>كلمة المرور</label>
+                <input type="password" id="adm-pass" placeholder="أدخل كلمة المرور..." required>
+                            </div>
+            <button type="submit" class="login-btn" id="login-btn">تسجيل الدخول</button>
+            <div class="error-msg" id="error-msg"></div>
         </form>
+
+        <a href="/" class="back-link">⬅️ العودة للمتجر الرئيسي</a>
     </div>
 
     <script>
+        async function checkLoginStatus() {
+            try {
+                const res = await fetch('/api/auth/check');
+                const data = await res.json();
+                if (data.authenticated) {
+                    window.location.href = '/cashier.html';
+                }
+            } catch (e) {}
+        }
+        checkLoginStatus();
+
         document.getElementById('admin-login-form').addEventListener('submit', async function(e) {
             e.preventDefault();
-            const username = document.getElementById('adm-user').value.trim();
-            const password = document.getElementById('adm-pass').value;
-            const errDiv = document.getElementById('error-div');
-            
-            errDiv.style.display = 'none';
+
+            const user = document.getElementById('adm-user').value.trim();
+            const pass = document.getElementById('adm-pass').value.trim();
+            const btn = document.getElementById('login-btn');
+            const errorDiv = document.getElementById('error-msg');
+
+            errorDiv.style.display = 'none';
+            btn.disabled = true;
+            btn.innerText = 'جاري التحقق...';
 
             try {
-                const response = await fetch('/api/auth/login', {
+                const res = await fetch('/api/auth/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password })
+                    body: JSON.stringify({ username: user, password: pass })
                 });
-                const data = await response.json();
 
-                if (response.ok && data.success) {
+                const data = await res.json();
+
+                if (data.success) {
                     window.location.href = '/cashier.html';
                 } else {
-                    errDiv.innerText = data.message || 'بيانات الدخول الإدارية غير صحيحة.';
-                    errDiv.style.display = 'block';
+                    errorDiv.innerText = '❌ ' + (data.message || 'بيانات الدخول غير صحيحة');
+                    errorDiv.style.display = 'block';
+                    btn.disabled = false;
+                    btn.innerText = 'تسجيل الدخول';
                 }
-            } catch(err) {
-                errDiv.innerText = 'خطأ اتصال بالسيرفر.';
-                errDiv.style.display = 'block';
+            } catch (err) {
+                errorDiv.innerText = '❌ فشل الاتصال بالسيرفر';
+                errorDiv.style.display = 'block';
+                btn.disabled = false;
+                btn.innerText = 'تسجيل الدخول';
             }
         });
     </script>
