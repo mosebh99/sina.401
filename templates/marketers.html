@@ -460,24 +460,24 @@
         }
 
         // جلب قائمة المسوقين بالكامل من قاعدة البيانات السحابية سوبابيز
-        async function loadMarketersList() {
-            try {
-                const res = await fetch('/api/marketers');
-                if (!res.ok) throw new Error("Failed to fetch data");
-                const data = await res.json();
-                
-                allMarketersData = data.marketers || [];
-                renderMarketersGrid(allMarketersData);
-            } catch (e) {
-                console.error("Error loading marketers:", e);
-                document.getElementById('marketers-cards-grid').innerHTML = `
-                    <div style="grid-column:1/-1; text-align:center; color:var(--text-muted); padding:30px;">
-                        ⚠️ فشل جلب بيانات المسوقين من السيرفر. برجاء التحقق من الاتصال.
-                    </div>
-                `;
-            }
+       async function loadMarketersList() {
+    try {
+        const res = await fetch('/api/marketers');
+        
+        // إذا كان الرد 401، يعني أنت غير مسجل دخول كأدمن
+        if (res.status === 401) {
+            console.error("غير مصرح بالدخول، يرجى تسجيل الدخول كأدمن أولاً");
+            window.location.href = '/login.html';
+            return;
         }
 
+        const data = await res.json();
+        allMarketersData = data || []; // قمت بتعديلها لتناسب الـ API الخاص بك
+        renderMarketersGrid(allMarketersData);
+    } catch (e) {
+        console.error("خطأ في الاتصال:", e);
+    }
+}
         // رندرة وبناء كروت شبكة المسوقين
         function renderMarketersGrid(list) {
             const grid = document.getElementById('marketers-cards-grid');
