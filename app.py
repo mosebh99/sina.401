@@ -648,3 +648,142 @@ def delete_marketer(mid):
         return jsonify({"error": str(e)}), 500
 
 # API الإحصائيات الكاملة وعرض المبيعات للمسوق الفردي بالتفصيل
+@app.route('/api/marketer/dashboard-stats', methods=['GET'])
+@marketer_required
+def get_marketer_dashboard_data():
+    try:
+        code = session.get('marketer_code')
+        conn = get_db_connection()
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+
+        # 1. جلب الأرصدة الثلاثة والأرباح التفصيلية من جدول الأرباح الذكي
+        cur.execute("SELECT * FROM affiliate_earnings WHERE marketer_code = %s;", (code,))
+        earnings = cur.fetchone()
+        if not earnings:
+            earnings = {"confirmed_earnings": 0, "pending_earnings": 0, "cancelled_earnings": 0}
+
+        # 2. جلب إجمالي عدد الطلبات
+        cur.execute("SELECT COUNT(*) as total_orders FROM orders WHERE marketer_code = %s;", (code,))
+        total_orders = cur.fetchone()['total_orders']
+
+        # 3. جلب قائمة العمولات لكل منتج وعدد مرات البيع لكل منتج وإجمالي أرباحه منه
+        cur.execute("""
+            SELECT 
+                p.id, p.name, p.image_url, p.selling_price, p.commission_amount, p.commission_enabled,
+                COALESCE(SUM(ao.quantity), 0) as total_qty_sold,
+                COALESCE(SUM(ao.total_commission), 0) as total_earned_money
+            FROM products p
+            LEFT JOIN affiliate_orders ao ON p.id = ao.product_id AND ao.marketer_code = %s
+            GROUP BY p.id
+            ORDER BY p.id DESC;
+        """, (code,))
+        products_aff_list = cur.fetchall()
+
+        # 4. جلب سجل الأرباح والطلبات التفصيلية مع الأرباح لكل طلب
+        cur.execute("""
+            SELECT 
+                o.id as order_id, o.customer_name, o.status, o.created_at, o.total_price as order_total,
+                COALESCE(SUM(ao.total_commission), 0) as commission_earned_for_order
+            FROM orders o
+            LEFT JOIN affiliate_orders ao ON o.id = ao.order_id
+            WHERE o.marketer_code = %s
+            GROUP BY o.id
+            ORDER BY o.id DESC;
+        """, (code,))
+        orders_history = cur.fetchall()
+
+        # 5. جلب سجل الحركة الماليّة والإشعارات الأخيرة
+        cur.execute("SELECT * FROM commission_logs WHERE marketer_code = %s ORDER BY id DESC LIMIT 15;", (code,))
+        logs = cur.fetchall()
+
+        cur.close()
+        conn.close()
+
+        return jsonify({
+            "balances": earnings,
+            "total_orders": total_orders,
+            "products_catalog": products_aff_list,
+            "orders_history": orders_history,
+            "notifications": logs
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# ==========================================
+# بوابات تسجيل الدخول للمسوقين والـ Auth
+# ==========================================
+
+@app.route('/api/marketer/login', methods=['POST'])
+def marketer_login():
+    data = request.json
+    code = data.get('code', '').strip()
+    password = data.get('password', '').strip()
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        cur.execute("SELECT * FROM marketers WHERE code = %s;", (code,))
+        marketer = cur.fetchone()
+        cur.close()
+        conn.close()
+
+        if marketer and check_password_hash(marketer['password'], password):
+            session['marketer_id'] = marketer['id']
+            session['marketer_code'] = marketer['code']
+            session['marketer_name'] = marketer['name']
+            return jsonify({"success": True, "message": "تم تسجيل الدخول بنجاح", "code": marketer['code'], "name": marketer['name']})
+        return jsonify({"success": False, "message": "كود المسوق أو كلمة المرور غير صحيحة"}), 401
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/marketer/logout', methods=['POST'])
+def marketer_logout():
+    session.pop('marketer_id', None)
+    session.pop('marketer_code', None)
+    session.pop('marketer_name', None)
+    return jsonify({"success": True, "message": "تم تسجيل الخروج"})
+
+@app.route('/api/marketer/check', methods=['GET'])
+def check_marketer_auth():
+    return jsonify({"authenticated": 'marketer_id' in session, "code": session.get('marketer_code'), "name": session.get('marketer_name')})
+
+# ==========================================
+# لوحة التحكم الرئيسية للأدمن (إحصائيات المبيعات)
+# ==========================================
+
+@app.route('/api/stats/dashboard', methods=['GET'])
+@admin_required
+def dashboard_stats():
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+
+        cur.execute("SELECT COALESCE(SUM(total_price), 0) as total_sales FROM orders;")
+        total_sales = cur.fetchone()['total_sales']
+
+        cur.execute("SELECT COUNT(*) as total_orders FROM orders;")
+        total_orders = cur.fetchone()['total_orders']
+
+        cur.execute("SELECT COUNT(*) as total_products FROM products;")
+        total_products = cur.fetchone()['total_products']
+
+        cur.execute("SELECT COUNT(*) as total_marketers FROM marketers;")
+        total_marketers = cur.fetchone()['total_marketers']
+
+        cur.execute("SELECT status, COUNT(*) as count FROM orders GROUP BY status;")
+        orders_by_status = cur.fetchall()
+
+        cur.close()
+        conn.close()
+
+        return jsonify({
+            "total_sales": total_sales,
+            "total_orders": total_orders,
+            "total_products": total_products,
+            "total_marketers": total_marketers,
+            "orders_by_status": orders_by_status
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+if __name__ == '__main__':
+    app.run(debug=True)
