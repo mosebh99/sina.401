@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة التحكم | سينا ستور</title>
+    <title>لوحة التحكم الإدارية | سينا ستور</title>
     <link rel="icon" type="image/png" href="/static/css/logo.png.jpeg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Cairo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: #0a0a0a;
             color: #fff;
             min-height: 100vh;
@@ -61,10 +62,11 @@
             color: #888;
             font-size: 14px;
             transition: color 0.3s;
+            text-decoration: none;
         }
         .nav-links a:hover { color: #d4af37; }
 
-        .admin-container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
+        .admin-container { max-width: 1400px; margin: 30px auto; padding: 0 20px; }
         .tabs-nav {
             display: flex;
             gap: 10px;
@@ -263,7 +265,7 @@
             border: none;
             padding: 5px 12px;
             border-radius: 4px;
-                        cursor: pointer;
+            cursor: pointer;
             font-weight: bold;
             font-family: inherit;
             transition: all 0.3s;
@@ -315,7 +317,7 @@
 <body>
 
     <header>
-        <div class="logo">✨ سينا ستور - لوحة التحكم</div>
+        <div class="logo">✨ سينا ستور - لوحة التحكم الإدارية</div>
         <div class="header-actions">
             <div class="user-info">
                 مرحباً <span id="user-name">...</span> (<span id="user-role">...</span>)
@@ -360,21 +362,22 @@
             <button class="tab-btn active" onclick="switchTab('products-tab', this)">📦 المنتجات</button>
             <button class="tab-btn" onclick="switchTab('orders-tab', this)">📋 الطلبات</button>
             <button class="tab-btn manager-only" onclick="switchTab('marketers-tab', this)">👥 المسوقين</button>
+            <button class="tab-btn manager-only" onclick="switchTab('withdraw-tab', this)">🏦 طلبات السحب</button>
             <button class="tab-btn manager-only" onclick="switchTab('users-tab', this)">🔐 المستخدمين</button>
         </div>
 
         <!-- تبويب المنتجات -->
         <div id="products-tab" class="tab-content active">
-            <h3 style="color:#d4af37; margin-top:0;">✨ إضافة أو تعديل منتج</h3>
+            <h3 style="color:#d4af37; margin-top:0;">✨ إضافة أو تعديل منتج (العمولة بالجنيه)</h3>
 
             <form id="product-form" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:15px; margin-bottom:30px;">
                 <input type="hidden" id="edit-product-id">
                 <input type="text" id="p-name" class="search-input" placeholder="اسم المنتج..." required>
                 <input type="number" id="p-price" class="search-input" placeholder="سعر البيع (ج.م)..." required>
                 <input type="number" id="p-purchase-price" class="search-input" placeholder="سعر الشراء (ج.م)...">
-                <input type="number" id="p-commission" class="search-input" placeholder="نسبة العمولة (%)" step="0.1">
+                <input type="number" id="p-commission" class="search-input" placeholder="عمولة المسوق (ج.م)" step="1">
                 <input type="number" id="p-stock" class="search-input" placeholder="الكمية المتاحة..." required>
-                <input type="text" id="p-category" class="search-input" placeholder="الفئة (مثال: إلكترونيات)...">
+                <input type="text" id="p-category" class="search-input" placeholder="الفئة (مثال: كفرات - شواحن - سماعات)...">
 
                 <div style="grid-column: 1/-1;">
                     <label style="display:block; margin-bottom:8px; color:#d4af37;">🖼️ الصورة الرئيسية (Base64):</label>
@@ -410,7 +413,7 @@
                             <th>الفئة</th>
                             <th>سعر البيع</th>
                             <th>سعر الشراء</th>
-                            <th>العمولة</th>
+                            <th>عمولة المسوق</th>
                             <th>المخزون</th>
                             <th>التحكم</th>
                         </tr>
@@ -434,18 +437,19 @@
                             <th>المنتجات</th>
                             <th>الإجمالي</th>
                             <th>كود المسوق</th>
+                            <th>عمولة المسوق</th>
                             <th>الحالة</th>
                             <th>التاريخ</th>
                         </tr>
                     </thead>
                     <tbody id="admin-orders-rows">
-                        <tr><td colspan="7" style="text-align:center; color:#aaa;">جاري التحميل...</td></tr>
+                        <tr><td colspan="8" style="text-align:center; color:#aaa;">جاري التحميل...</td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
 
-        <!-- تبويب المسوقين (مدير فقط) -->
+        <!-- تبويب المسوقين -->
         <div id="marketers-tab" class="tab-content">
             <h3 style="color:#d4af37; margin-top:0;">➕ إضافة مسوق جديد</h3>
             <form id="marketer-form" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:15px; margin-bottom:30px;">
@@ -465,8 +469,8 @@
                             <th>الاسم</th>
                             <th>الهاتف</th>
                             <th>الكود</th>
-                            <th>العمولة</th>
-                            <th>المبيعات</th>
+                            <th>الرصيد المتاح</th>
+                            <th>إجمالي الأرباح</th>
                             <th>التحكم</th>
                         </tr>
                     </thead>
@@ -477,7 +481,30 @@
             </div>
         </div>
 
-        <!-- تبويب المستخدمين (مدير فقط) -->
+        <!-- تبويب طلبات السحب -->
+        <div id="withdraw-tab" class="tab-content">
+            <h3 style="color:#d4af37; margin-top:0;">🏦 طلبات سحب أرباح المسوقين</h3>
+            <div style="overflow-x:auto;">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>رقم الطلب</th>
+                            <th>كود المسوق</th>
+                            <th>المبلغ</th>
+                            <th>رقم فودافون كاش</th>
+                            <th>الحالة</th>
+                            <th>التاريخ</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="withdraw-requests-body">
+                        <tr><td colspan="7" style="text-align:center; color:#aaa;">جاري التحميل...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- تبويب المستخدمين -->
         <div id="users-tab" class="tab-content">
             <h3 style="color:#d4af37; margin-top:0;">➕ إضافة مستخدم جديد</h3>
             <form id="user-form" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:15px; margin-bottom:30px;">
@@ -557,9 +584,11 @@
             if(tabId === 'products-tab') { loadAdminProducts(); }
             if(tabId === 'orders-tab') { loadAdminOrders(); }
             if(tabId === 'marketers-tab') { loadAdminMarketers(); }
+            if(tabId === 'withdraw-tab') { loadWithdrawRequests(); }
             if(tabId === 'users-tab') { loadAdminUsers(); }
         }
 
+        // ضغط الصور
         function compressAndProcessImage(file, type) {
             const reader = new FileReader();
             reader.readAsDataURL(file);
@@ -644,6 +673,9 @@
             }
         }
 
+        // ==========================================
+        // إدارة المنتجات (مع عمولة بالجنيه)
+        // ==========================================
         async function loadAdminProducts() {
             try {
                 const res = await fetch('/api/products');
@@ -657,7 +689,7 @@
                 }
 
                 products.forEach(p => {
-                    const commissionText = p.commission ? p.commission + '%' : '0%';
+                    const commissionText = p.commission_egp ? p.commission_egp + ' ج.م' : '0 ج.م';
                     tbody.innerHTML += `
                         <tr>
                             <td><img src="${p.image_url || '/static/css/logo.png.jpeg'}" style="width:45px; height:45px; object-fit:cover; border-radius:6px;"></td>
@@ -665,7 +697,7 @@
                             <td>${p.category || '-'}</td>
                             <td style="color:#d4af37; font-weight:bold;">${p.selling_price} ج.م</td>
                             <td>${p.purchasing_price || 0} ج.م</td>
-                            <td>${commissionText}</td>
+                            <td style="color:#22c55e;">${commissionText}</td>
                             <td><span style="background:#222; padding:3px 10px; border-radius:12px;">${p.stock_quantity || 0}</span></td>
                             <td>
                                 <button onclick='prepareEditProduct(${JSON.stringify(p)})' class="btn-success" style="margin-left:5px;">تعديل</button>
@@ -682,7 +714,7 @@
             document.getElementById('p-name').value = p.name;
             document.getElementById('p-price').value = p.selling_price;
             document.getElementById('p-purchase-price').value = p.purchasing_price || 0;
-            document.getElementById('p-commission').value = p.commission || 0;
+            document.getElementById('p-commission').value = p.commission_egp || 0;
             document.getElementById('p-stock').value = p.stock_quantity || 0;
             document.getElementById('p-category').value = p.category || '';
             document.getElementById('p-desc').value = p.description || '';
@@ -730,7 +762,7 @@
                 name: document.getElementById('p-name').value.trim(),
                 selling_price: parseFloat(document.getElementById('p-price').value),
                 purchasing_price: parseFloat(document.getElementById('p-purchase-price').value) || 0,
-                commission: parseFloat(document.getElementById('p-commission').value) || 0,
+                commission_egp: parseFloat(document.getElementById('p-commission').value) || 0,
                 stock_quantity: parseInt(document.getElementById('p-stock').value),
                 category: document.getElementById('p-category').value.trim(),
                 image_url: finalMainImage,
@@ -762,7 +794,7 @@
         });
 
         async function deleteProduct(id) {
-            if(!confirm("⚠️ هل أنت متأكد من الحذف?")) return;
+            if(!confirm("⚠️ هل أنت متأكد من الحذف؟")) return;
             try {
                 const res = await fetch(`/api/products/${id}`, { method: 'DELETE' });
                 if(res.ok) {
@@ -773,6 +805,9 @@
             } catch(e) { showToast("❌ فشل الاتصال.", "error"); }
         }
 
+        // ==========================================
+        // إدارة الطلبات
+        // ==========================================
         async function loadAdminOrders() {
             try {
                 const res = await fetch('/api/orders');
@@ -781,7 +816,7 @@
                 tbody.innerHTML = '';
 
                 if(orders.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#aaa;">لا توجد طلبات</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:#aaa;">لا توجد طلبات</td></tr>';
                     return;
                 }
 
@@ -802,11 +837,13 @@
                             <td>
                                 <strong>${o.customer_name || '-'}</strong><br>
                                 <a href="https://wa.me/20${o.customer_phone}" target="_blank" style="color:#25d366; font-size:12px;">${o.customer_phone || '-'}</a><br>
-                                <span style="font-size:12px; color:#aaa;">${o.customer_address || '-'}</span>
+                                <span style="font-size:12px; color
+                                                                <span style="font-size:12px; color:#aaa;">${o.customer_address || '-'}</span>
                             </td>
                             <td style="font-size:13px; color:#ccc;">${itemsHtml}</td>
                             <td style="color:#d4af37; font-weight:bold;">${o.total_price || 0} ج.م</td>
                             <td><span style="background:#222; color:#d4af37; padding:3px 8px; border-radius:50px; font-size:12px;">${o.marketer_code || 'مباشر'}</span></td>
+                            <td style="color:#22c55e; font-weight:bold;">${o.marketer_commission || 0} ج.م</td>
                             <td>
                                 <select class="status-select" onchange="updateOrderStatus(${o.id}, this.value)">
                                     <option value="قيد المراجعة" ${o.status === 'قيد المراجعة' ? 'selected' : ''}>⏳ قيد المراجعة</option>
@@ -824,18 +861,26 @@
 
         async function updateOrderStatus(orderId, newStatus) {
             try {
-                const res = await fetch(`/api/orders/${orderId}`, {
+                const res = await fetch(`/api/orders/${orderId}/status`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ status: newStatus })
                 });
                 if(res.ok) {
                     showToast(`🚦 تم تحديث حالة الطلب #${orderId}!`);
+                    loadAdminOrders();
                     loadDashboardStats();
+                    loadAdminMarketers();
+                } else {
+                    const err = await res.json();
+                    showToast("❌ " + (err.error || "فشل التحديث"), "error");
                 }
             } catch(e) { showToast("❌ فشل التحديث.", "error"); }
         }
 
+        // ==========================================
+        // إدارة المسوقين
+        // ==========================================
         async function loadAdminMarketers() {
             try {
                 const res = await fetch('/api/marketers');
@@ -854,8 +899,8 @@
                             <td><strong>${m.name}</strong></td>
                             <td>${m.phone || '-'}</td>
                             <td><span style="background:linear-gradient(135deg,#d4af37,#b8860b); color:#000; padding:3px 10px; border-radius:12px; font-weight:bold;">${m.code}</span></td>
-                            <td>${m.commission_rate || 0}%</td>
-                            <td>${m.total_sales || 0} ج.م</td>
+                            <td style="color:#22c55e; font-weight:bold;">${m.balance || 0} ج.م</td>
+                            <td style="color:#d4af37;">${m.total_earned || 0} ج.م</td>
                             <td>
                                 <button onclick="deleteMarketer(${m.id})" class="btn-danger">حذف</button>
                             </td>
@@ -905,6 +950,75 @@
             } catch(e) { showToast("❌ فشل الاتصال.", "error"); }
         }
 
+        // ==========================================
+        // إدارة طلبات السحب
+        // ==========================================
+        async function loadWithdrawRequests() {
+            try {
+                const res = await fetch('/api/withdraw/requests');
+                const requests = await res.json();
+                const tbody = document.getElementById('withdraw-requests-body');
+                tbody.innerHTML = '';
+
+                if(requests.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#aaa;">لا توجد طلبات سحب</td></tr>';
+                    return;
+                }
+
+                requests.forEach(r => {
+                    let statusClass = '';
+                    let statusText = r.status;
+                    if(r.status === 'قيد المراجعة') { statusClass = 'color:#f59e0b;'; }
+                    else if(r.status === 'مقبول') { statusClass = 'color:#22c55e;'; }
+                    else if(r.status === 'مرفوض') { statusClass = 'color:#ef4444;'; }
+
+                    tbody.innerHTML += `
+                        <tr>
+                            <td><strong>#${r.id}</strong></td>
+                            <td>${r.marketer_code}</td>
+                            <td style="color:#d4af37; font-weight:bold;">${r.amount} ج.م</td>
+                            <td>${r.vodafone_number || '-'}</td>
+                            <td style="${statusClass}">${statusText}</td>
+                            <td>${new Date(r.created_at).toLocaleDateString('ar-EG')}</td>
+                            <td>
+                                <select class="status-select" onchange="updateWithdrawStatus(${r.id}, this.value)">
+                                    <option value="قيد المراجعة" ${r.status === 'قيد المراجعة' ? 'selected' : ''}>⏳ قيد المراجعة</option>
+                                    <option value="مقبول" ${r.status === 'مقبول' ? 'selected' : ''}>✅ مقبول - تم الدفع</option>
+                                    <option value="مرفوض" ${r.status === 'مرفوض' ? 'selected' : ''}>❌ مرفوض</option>
+                                </select>
+                            </td>
+                        </tr>
+                    `;
+                });
+            } catch(e) {
+                console.error(e);
+                document.getElementById('withdraw-requests-body').innerHTML = '<tr><td colspan="7" style="text-align:center; color:#ef4444;">❌ فشل تحميل طلبات السحب</td></tr>';
+            }
+        }
+
+        async function updateWithdrawStatus(id, status) {
+            try {
+                const res = await fetch(`/api/withdraw/requests/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: status })
+                });
+                if(res.ok) {
+                    showToast('✅ تم تحديث حالة طلب السحب');
+                    loadWithdrawRequests();
+                    loadAdminMarketers();
+                } else {
+                    const err = await res.json();
+                    showToast("❌ " + (err.error || "فشل التحديث"), "error");
+                }
+            } catch(e) {
+                showToast("❌ فشل الاتصال.", "error");
+            }
+        }
+
+        // ==========================================
+        // إدارة المستخدمين
+        // ==========================================
         async function loadAdminUsers() {
             try {
                 const res = await fetch('/api/users');
@@ -974,6 +1088,9 @@
             } catch(e) { showToast("❌ فشل الاتصال.", "error"); }
         }
 
+        // ==========================================
+        // تسجيل الخروج
+        // ==========================================
         async function logout() {
             if(!confirm("تسجيل الخروج؟")) return;
             try {
@@ -982,6 +1099,7 @@
             } catch(e) { window.location.href = '/login.html'; }
         }
 
+        // التحميل الأولي
         window.addEventListener('DOMContentLoaded', () => {
             loadDashboardStats();
             loadAdminProducts();
@@ -989,4 +1107,3 @@
     </script>
 </body>
 </html>
-           
