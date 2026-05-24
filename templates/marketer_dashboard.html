@@ -3,949 +3,149 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة تحكم المسوق الفاخرة | سينا ستور</title>
-    <link rel="icon" type="image/png" href="/static/css/logo.png.jpeg">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
+    <title>لوحة أرباح المسوقين | سينا ستور 401</title>
     <style>
         :root {
-            --bg-main: #0a0a0a;
+            --primary: #d4af37;
+            --bg-dark: #0a0a0a;
             --bg-card: #141414;
-            --bg-input: #1a1a1a;
-            --gold: #d4af37;
-            --gold-hover: #b8860b;
-            --gold-light: rgba(212, 175, 55, 0.1);
-            --text-white: #ffffff;
-            --text-muted: #999999;
+            --border-gold: rgba(212, 175, 55, 0.2);
             --success: #22c55e;
-            --pending: #f59e0b;
-            --danger: #ef4444;
-            --radius-lg: 16px;
-            --radius-md: 12px;
-            --shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        body {
-            background-color: var(--bg-main);
-            color: var(--text-white);
-            min-height: 100vh;
-            overflow-x: hidden;
-            padding-bottom: 40px;
-        }
-
-        /*Header الفخم */
-        header {
-            background: rgba(20, 20, 20, 0.85);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            padding: 16px 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid rgba(212, 175, 55, 0.15);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            box-shadow: var(--shadow);
-        }
-
-        .logo-section {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .logo-text {
-            font-size: 22px;
-            font-weight: 800;
-            background: linear-gradient(135deg, #ffffff, var(--gold));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: 0.5px;
-        }
-
-        .user-welcome {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .welcome-msg {
-            font-size: 14px;
-            color: var(--text-muted);
-        }
-
-        .welcome-msg strong {
-            color: var(--text-white);
-        }
-
-        .logout-btn {
-            background: transparent;
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            color: var(--danger);
-            padding: 8px 16px;
-            border-radius: var(--radius-md);
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 13px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: var(--transition);
-        }
-
-        .logout-btn:hover {
-            background: var(--danger);
-            color: white;
-            box-shadow: 0 0 15px rgba(239, 68, 68, 0.3);
-            transform: translateY(-2px);
-        }
-
-        /* حاوية المحتوى الرئيسية */
-        .dashboard-container {
-            max-width: 1400px;
-            margin: 30px auto;
-            padding: 0 20px;
-            display: grid;
-            grid-template-columns: 1400px;
-            gap: 30px;
-        }
-
-        /* كود الأفلييت السريع */
-        .affiliate-link-card {
-            background: linear-gradient(135deg, var(--bg-card), #1e1a0e);
-            border: 1px solid rgba(212, 175, 55, 0.2);
-            border-radius: var(--radius-lg);
-            padding: 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 20px;
-            box-shadow: var(--shadow);
-        }
-
-        .link-info h2 {
-            font-size: 18px;
-            margin-bottom: 6px;
-            color: var(--gold);
-        }
-
-        .link-info p {
-            font-size: 14px;
-            color: var(--text-muted);
-        }
-
-        .link-box {
-            background: var(--bg-input);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 12px 20px;
-            border-radius: var(--radius-md);
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            min-width: 320px;
-            justify-content: space-between;
-        }
-
-        .link-url {
-            color: #3b82f6;
-            font-family: monospace;
-            font-size: 14px;
-            user-select: all;
-        }
-
-        .copy-btn {
-            background: var(--gold);
-            color: var(--bg-main);
-            border: none;
-            padding: 8px 14px;
-            border-radius: var(--radius-md);
-            cursor: pointer;
-            font-weight: 700;
-            font-size: 13px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: var(--transition);
-        }
-
-        .copy-btn:hover {
-            background: var(--gold-hover);
-            transform: scale(1.05);
-        }
-
-        /* شبكة الكروت الإحصائية */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 20px;
-        }
-
-        .stat-card {
-            background: var(--bg-card);
-            border: 1px solid rgba(255, 255, 255, 0.03);
-            border-radius: var(--radius-lg);
-            padding: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: var(--shadow);
-            position: relative;
-            overflow: hidden;
-            transition: var(--transition);
-            animation: fadeIn 0.6s ease-out;
-        }
-
-        .stat-card::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-        }
-
-        .stat-card.confirmed::after { background: var(--success); }
-        .stat-card.pending::after { background: var(--pending); }
-        .stat-card.cancelled::after { background: var(--danger); }
-        .stat-card.sales::after { background: #3b82f6; }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-            border-color: rgba(212, 175, 55, 0.2);
-        }
-
-        .stat-meta p {
-            font-size: 13px;
-            color: var(--text-muted);
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .stat-meta h3 {
-            font-size: 28px;
-            font-weight: 700;
-        }
-
-        .stat-icon {
-            font-size: 36px;
-            opacity: 0.15;
-            transition: var(--transition);
-        }
-
-        .stat-card:hover .stat-icon {
-            opacity: 0.4;
-            transform: scale(1.1);
-        }
-
-        .stat-card.confirmed .stat-icon { color: var(--success); }
-        .stat-card.pending .stat-icon { color: var(--pending); }
-        .stat-card.cancelled .stat-icon { color: var(--danger); }
-        .stat-card.sales .stat-icon { color: #3b82f6; }
-
-        /* الرسوم البيانية وقسم الإشعارات الماليّة */
-        .analytics-section {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 25px;
-        }
-
-        .chart-card, .logs-card {
-            background: var(--bg-card);
-            border: 1px solid rgba(255, 255, 255, 0.03);
-            border-radius: var(--radius-lg);
-            padding: 24px;
-            box-shadow: var(--shadow);
-        }
-
-        .section-title {
-            font-size: 16px;
-            font-weight: 700;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            padding-bottom: 12px;
-        }
-
-        .section-title i { color: var(--gold); }
-
-        /* سجل الإشعارات والعمليات */
-        .logs-container {
-            max-height: 320px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            padding-left: 5px;
-        }
-
-        .log-item {
-            background: var(--bg-main);
-            border-right: 3px solid var(--gold);
-            padding: 12px;
-            border-radius: var(--radius-md);
-            font-size: 13px;
-            transition: var(--transition);
-        }
-
-        .log-item:hover {
-            background: var(--bg-input);
-        }
-
-        .log-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 4px;
-        }
-
-        .log-action {
-            font-weight: 700;
-            color: var(--text-white);
-        }
-
-        .log-amount {
-            color: var(--gold);
-            font-weight: 700;
-        }
-
-        .log-notes {
-            color: var(--text-muted);
-            font-size: 12px;
-            margin-top: 2px;
-        }
-
-        .log-time {
-            font-size: 11px;
-            color: var(--text-muted);
-            text-align: left;
-            margin-top: 4px;
-        }
-
-        /* الجداول الاحترافية وعلامات التبويب Tab System */
-        .tabs-wrapper {
-            margin-top: 10px;
-        }
-
-        .tabs-header {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            padding-bottom: 10px;
-        }
-
-        .tab-btn {
-            background: transparent;
-            border: none;
-            color: var(--text-muted);
-            padding: 10px 20px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            border-radius: var(--radius-md);
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .tab-btn.active {
-            background: var(--gold-light);
-            color: var(--gold);
-            border: 1px solid rgba(212, 175, 55, 0.3);
-        }
-
-        .tab-content {
-            display: none;
-            animation: fadeIn 0.4s ease-in-out;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        /* تصميم الجداول والمصفوفات */
-        .table-responsive {
-            background: var(--bg-card);
-            border-radius: var(--radius-lg);
-            border: 1px solid rgba(255, 255, 255, 0.03);
-            overflow: hidden;
-            box-shadow: var(--shadow);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: right;
-            font-size: 14px;
-        }
-
-        th {
-            background: rgba(255, 255, 255, 0.02);
-            padding: 16px 20px;
-            color: var(--text-muted);
-            font-weight: 600;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        td {
-            padding: 16px 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.02);
-            color: var(--text-white);
-        }
-
-        tr:last-child td {
-            border-bottom: none;
-        }
-
-        tr:hover td {
-            background: rgba(255, 255, 255, 0.01);
-        }
-
-        /* أوسمة حالات الطلبات المتجاوبة */
-        .status-badge {
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 700;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .status-badge.complete { background: rgba(34, 197, 94, 0.1); color: var(--success); }
-        .status-badge.pending { background: rgba(245, 158, 11, 0.1); color: var(--pending); }
-        .status-badge.cancelled { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
-
-        /* المنتجات داخل شبكة الأفلييت المطور */
-        .catalog-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-        }
-
-        .product-aff-card {
-            background: var(--bg-card);
-            border: 1px solid rgba(255, 255, 255, 0.03);
-            border-radius: var(--radius-lg);
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            transition: var(--transition);
-        }
-
-        .product-aff-card:hover {
-            transform: translateY(-4px);
-            border-color: rgba(212, 175, 55, 0.2);
-        }
-
-        .prod-img-box {
-            height: 180px;
-            background: #1a1a1a;
-            position: relative;
-        }
-
-        .prod-img-box img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .comm-badge {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            background: rgba(10, 10, 10, 0.85);
-            border: 1px solid var(--gold);
-            color: var(--gold);
-            padding: 6px 12px;
-            border-radius: var(--radius-md);
-            font-size: 13px;
-            font-weight: 700;
-            backdrop-filter: blur(5px);
-        }
-
-        .prod-details {
-            padding: 20px;
-        }
-
-        .prod-details h4 {
-            font-size: 15px;
-            margin-bottom: 8px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .prod-pricing {
-            display: flex;
-            justify-content: space-between;
-            color: var(--text-muted);
-            font-size: 13px;
-            margin-bottom: 15px;
-        }
-
-        .prod-pricing span strong {
-            color: var(--text-white);
-        }
-
-        .prod-stats-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            background: var(--bg-main);
-            padding: 10px;
-            border-radius: var(--radius-md);
-            gap: 10px;
-            text-align: center;
-            font-size: 12px;
-            margin-bottom: 15px;
-        }
-
-        .prod-stats-row div p { color: var(--text-muted); margin-bottom: 2px; }
-        .prod-stats-row div span { font-weight: 700; color: var(--text-white); }
-
-        .action-link-btn {
-            width: 100%;
-            background: transparent;
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            color: var(--gold);
-            padding: 10px;
-            border-radius: var(--radius-md);
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 13px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: var(--transition);
-        }
-
-        .action-link-btn:hover {
-            background: var(--gold);
-            color: var(--bg-main);
-            font-weight: 700;
-        }
-
-        /* التنبيهات والتوست الصغير المدمج */
-        .toast-notification {
-            position: fixed;
-            bottom: 30px;
-            left: 30px;
-            background: #161616;
-            border-right: 4px solid var(--gold);
-            color: #fff;
-            padding: 16px 24px;
-            border-radius: var(--radius-md);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
-            z-index: 99999;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-weight: 600;
-            font-size: 14px;
-            animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        /* شاشات الـ شحن والموبايل المتجاوبة */
-        @media (max-width: 1024px) {
-            .analytics-section { grid-template-columns: 1fr; }
-        }
-
-        @media (max-width: 768px) {
-            header { padding: 12px 16px; }
-            .logo-text { font-size: 18px; }
-            .welcome-msg { display: none; }
-            .dashboard-container { margin: 15px auto; padding: 0 12px; gap: 20px; }
-            .affiliate-link-card { padding: 16px; flex-direction: column; align-items: stretch; }
-            .link-box { min-width: auto; }
-            .stat-meta h3 { font-size: 24px; }
-            th, td { padding: 12px; font-size: 13px; }
-            .tab-btn { padding: 8px 14px; font-size: 12px; }
-        }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', sans-serif; }
+        body { background: var(--bg-dark); color: #fff; padding-bottom: 40px; }
+        header { background: var(--bg-card); padding:15px 5%; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--primary); }
+        .logo { font-size:22px; font-weight:bold; color:var(--primary); text-decoration:none; }
+        
+        .main-container { max-width:1150px; margin:40px auto; padding:0 20px; }
+        .welcome-msg { margin-bottom: 30px; font-size: 22px; border-right: 4px solid var(--primary); padding-right: 12px; }
+        
+        /* كروت الإحصائيات والأرباح */
+        .stats-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:20px; margin-bottom:40px; }
+        .stat-card { background:var(--bg-card); border:1px solid var(--border-gold); padding:25px; border-radius:10px; text-align:center; }
+        .stat-card h4 { color:#aaa; font-size:14px; margin-bottom:10px; }
+        .stat-card .val { font-size:26px; font-weight:bold; color:var(--primary); }
+        
+        /* كود التسويق والروابط */
+        .link-box { background:var(--bg-card); border:1px solid var(--border-gold); padding:20px; border-radius:10px; margin-bottom:40px; }
+        .link-box h3 { color:var(--primary); margin-bottom:15px; }
+        .link-input-group { display:flex; gap:10px; margin-top:10px; }
+        .link-input-group input { flex:1; padding:12px; background:#1a1a1a; border:1px solid #333; color:#fff; border-radius:6px; font-size:14px; text-align:left; }
+        .copy-btn { background:var(--primary); color:#000; border:none; padding:0 20px; font-weight:bold; border-radius:6px; cursor:pointer; }
+        
+        /* جدول المبيعات */
+        .table-title { font-size:18px; color:var(--primary); margin-bottom:15px; font-weight:bold; }
+        table { width:100%; border-collapse:collapse; background:var(--bg-card); border-radius:8px; overflow:hidden; border:1px solid #222; }
+        th, td { padding:15px; text-align:right; border-bottom:1px solid #222; }
+        th { background:#1c1c1c; color:var(--primary); }
     </style>
 </head>
 <body>
 
     <header>
-        <div class="logo-section">
-            <span class="logo-text"><i class="fa-solid from-neutral-300 fa-crown" style="color: var(--gold); margin-left: 5px;"></i> سينا ستور الأفلييت</span>
-        </div>
-        <div class="user-welcome">
-            <div class="welcome-msg">مرحباً بك، <strong id="m-name-display">...</strong></div>
-            <button class="logout-btn" onclick="logout()"><i class="fa-solid fa-sign-out-alt"></i> خروج</button>
-        </div>
+        <a href="/" class="logo">✨ لوحة المسوقين | سينا ستور 401</a>
+        <button onclick="logoutMarketer()" style="background:#ef4444; color:#fff; border:none; padding:8px 15px; border-radius:5px; cursor:pointer; font-weight:bold;">تسجيل الخروج</button>
     </header>
 
-    <main class="dashboard-container">
-        
-        <section class="affiliate-link-card">
-            <div class="link-info">
-                <h2>رابط التسويق العام الخاص بك</h2>
-                <p>انسخ هذا الرابط وانشره، وأي عملية شراء ستتم من خلاله ستحتسب أرباحها لك مباشرة.</p>
-            </div>
-            <div class="link-box">
-                <span class="link-url" id="global-link-text">جاري التحميل...</span>
-                <button class="copy-btn" onclick="copyText('global-link-text', 'تم نسخ رابط التسويق العام بنجاح!')">
-                    <i class="fa-regular fa-copy"></i> نسخ الرابط
-                </button>
-            </div>
-        </section>
+    <div class="main-container">
+        <div class="welcome-msg" id="m-welcome">مرحباً بك أيها المسوق..</div>
 
-        <section class="stats-grid">
-            <div class="stat-card confirmed">
-                <div class="stat-meta">
-                    <p>أرباح مكتملة (مقبولة)</p>
-                    <h3 id="stat-confirmed">0 ج.م</h3>
-                </div>
-                <i class="fa-solid fa-wallet stat-icon"></i>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h4>💵 الرصيد المتاح للسحب حالياً</h4>
+                <div class="val" id="bal-available">0 ج.م</div>
             </div>
-            <div class="stat-card pending">
-                <div class="stat-meta">
-                    <p>أرباح معلقة (قيد المراجعة)</p>
-                    <h3 id="stat-pending">0 ج.م</h3>
-                </div>
-                <i class="fa-solid fa-hourglass-half stat-icon"></i>
+            <div class="stat-card">
+                <h4>⏳ أرباح معلقة (قيد المراجعة)</h4>
+                <div class="val" id="bal-pending" style="color:#aaa;">0 ج.م</div>
             </div>
-            <div class="stat-card cancelled">
-                <div class="stat-meta">
-                    <p>أرباح ملغاة (مرتجعة)</p>
-                    <h3 id="stat-cancelled">0 ج.م</h3>
-                </div>
-                <i class="fa-solid fa-rectangle-xmark stat-icon"></i>
+            <div class="stat-card">
+                <h4>✅ إجمالي الأرباح المستلمة سابقاً</h4>
+                <div class="val" id="bal-paid" style="color:var(--success);">0 ج.م</div>
             </div>
-            <div class="stat-card sales">
-                <div class="stat-meta">
-                    <p>إجمالي الطلبات المباعة</p>
-                    <h3 id="stat-orders-count">0 طلب</h3>
-                </div>
-                <i class="fa-solid fa-boxes-stacked stat-icon"></i>
-            </div>
-        </section>
+        </div>
 
-        <section class="analytics-section">
-            <div class="chart-card">
-                <h3 class="section-title"><i class="fa-solid fa-chart-line"></i> تحليل وهيكل أرباحك الحالية</h3>
-                <div style="position: relative; height: 280px; width: 100%;">
-                    <canvas id="earningsChart"></canvas>
-                </div>
+        <div class="link-box">
+            <h3>🔗 رابط البيع والتسويق الخاص بك</h3>
+            <p style="color:#aaa; font-size:14px;">انسخ الرابط بالأسفل وانشره على صفحاتك (تيك توك، فيسبوك). أي عميل يدخل من الرابط ويشتري أي هاتف، ستحتسب عمولتك فوراً بالسيستم باسمك!</p>
+            <div class="link-input-group">
+                <input type="text" id="m-share-link" readonly value="جاري إنشاء رابطك...">
+                <button class="copy-btn" onclick="copyMarketerLink()">نسخ الرابط</button>
             </div>
-            <div class="logs-card">
-                <h3 class="section-title"><i class="fa-solid fa-bell"></i> أحدث التنبيهات والإشعارات المالية</h3>
-                <div class="logs-container" id="logs-container">
-                    <div style="text-align: center; color: var(--text-muted); padding: 20px;">لا توجد إشعارات مالية حتى الآن</div>
-                </div>
-            </div>
-        </section>
+        </div>
 
-        <section class="tabs-wrapper">
-            <div class="tabs-header">
-                <button class="tab-btn active" onclick="switchTab(event, 'products-tab')">
-                    <i class="fa-solid fa-tags"></i> كتالوج المنتجات والعمولات الثابتة
-                </button>
-                <button class="tab-btn" onclick="switchTab(event, 'orders-tab')">
-                    <i class="fa-solid fa-file-invoice-dollar"></i> سجل الطلبات والأرباح لكل طلب
-                </button>
-            </div>
-
-            <div id="products-tab" class="tab-content active">
-                <div class="catalog-grid" id="products-catalog-grid">
-                    </div>
-            </div>
-
-            <div id="orders-tab" class="tab-content">
-                <div class="table-responsive">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>رقم الطلب</th>
-                                <th>اسم العميل</th>
-                                <th>تاريخ الطلب</th>
-                                <th>قيمة المشتريات</th>
-                                <th>الربح المحسوب للطلب</th>
-                                <th>حالة العمليّة والعمولة</th>
-                            </tr>
-                        </thead>
-                        <tbody id="orders-table-body">
-                            <tr>
-                                <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 30px;">لا توجد طلبات مسجلة بكودك حتى الآن</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-
-    </main>
+        <div class="table-title">📦 تتبع أداء ومبيعات طلباتك</div>
+        <table>
+            <thead>
+                <tr>
+                    <th>رقم الطلب</th>
+                    <th>اسم العميل</th>
+                    <th>حالة الطلب الحالية</th>
+                    <th>تاريخ الطلب</th>
+                </tr>
+            </thead>
+            <tbody id="m-orders-body">
+                <tr><td colspan="4" style="text-align:center; color:#888;">جاري تحميل سجل طلباتك...</td></tr>
+            </tbody>
+        </table>
+    </div>
 
     <script>
-        let myChart = null;
-
-        // الدالة المساعدة لإظهار التنبيهات الفاخرة للعميل
-        function showToast(message) {
-            const existing = document.querySelector('.toast-notification');
-            if (existing) existing.remove();
-
-            const toast = document.createElement('div');
-            toast.className = 'toast-notification';
-            toast.innerHTML = `<i class="fa-solid fa-circle-check" style="color: var(--gold)"></i> <span>${message}</span>`;
-            document.body.appendChild(toast);
-
-            setTimeout(() => { toast.remove(); }, 3500);
-        }
-
-        // نسخ النصوص والروابط تلقائياً بضغطة زر
-        function copyText(elementId, successMsg) {
-            const text = document.getElementById(elementId).innerText;
-            navigator.clipboard.writeText(text).then(() => {
-                showToast(successMsg);
-            });
-        }
-
-        // نسخ رابط مخصص لمنتج معين مدمج معه كود المسوق للعملاء مباشرة
-        function copyProductLink(prodId, prodName, marketerCode) {
-            const domain = window.location.origin;
-            const fullLink = `${domain}/product_detail.html?id=${prodId}&aff=${marketerCode}`;
-            navigator.clipboard.writeText(fullLink).then(() => {
-                showToast(`✅ تم نسخ رابط تسويق [${prodName}] مدمج بكودك!`);
-            });
-        }
-
-        // آلية التنقل الفاخرة بين صفحات التبويب Tabs
-        function switchTab(event, tabId) {
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            
-            event.currentTarget.classList.add('active');
-            document.getElementById(tabId).classList.add('active');
-        }
-
-        // التحميل وجلب كل الإحصائيات الحية من السيرفر وعرضها للمسوق مباشرة
-        async function fetchDashboardStats() {
+        async function loadDashboardData() {
             try {
-                const response = await fetch('/api/marketer/dashboard-stats');
+                const response = await fetch('/api/marketer/stats');
                 if (!response.ok) {
+                    // إذا لم يكن مسجل دخول أو انتهت الجلسة يوجهه لصفحة الدخول فوراً وبدون تكرار ريفريش
                     window.location.href = '/marketer_login.html';
                     return;
                 }
                 const data = await response.json();
-
-                // عرض الاسم وكود المسوق الأساسي في اللوحة
-                const mCode = data.balances.marketer_code;
-                document.getElementById('m-name-display').innerText = `${sessionStorage.getItem('marketer_name') || 'المسوق'} (#${mCode})`;
                 
-                // ربط وإنشاء روابط التسويق العامة
-                document.getElementById('global-link-text').innerText = `${window.location.origin}/index.html?aff=${mCode}`;
+                // تعبئة البيانات
+                document.getElementById('m-welcome').innerText = `👋 أهلاً بك يا بطل: ${data.marketer_name} (كودك: ${data.marketer_code})`;
+                document.getElementById('bal-available').innerText = `${data.available_balance} ج.م`;
+                document.getElementById('bal-pending').innerText = `${data.pending_balance} ج.م`;
+                document.getElementById('bal-paid').innerText = `${data.paid_amount} ج.m`;
+                
+                // إنشاء الرابط التسويقي الفعلي بناءً على دومين الموقع
+                const currentDomain = window.location.origin;
+                document.getElementById('m-share-link').value = `${currentDomain}/index.html?ref=${data.marketer_code}`;
 
-                // تحديث كروت الأرصدة
-                document.getElementById('stat-confirmed').innerText = `${data.balances.confirmed_earnings} ج.م`;
-                document.getElementById('stat-pending').innerText = `${data.balances.pending_earnings} ج.m`;
-                document.getElementById('stat-cancelled').innerText = `${data.balances.cancelled_earnings} ج.م`;
-                document.getElementById('stat-orders-count').innerText = `${data.total_orders} طلب`;
-
-                // رندرة وتحديث الرسم البياني الدائري الفاخر لتشريح توزيع الحسابات والأرباح
-                renderEarningsChart(data.balances.confirmed_earnings, data.balances.pending_earnings, data.balances.cancelled_earnings);
-
-                // بناء وعرض سجل الإشعارات المالية والعمليات السابقة والتلقائية
-                renderCommissionLogs(data.notifications);
-
-                // بناء كروت المنتجات وتوضيح العمولات الثابتة بالجنيه التي حددها الأدمن
-                renderProductsCatalog(data.products_catalog, mCode);
-
-                // بناء جدول الطلبات المالي التفصيلي
-                renderOrdersTable(data.orders_history);
-
-            } catch (error) {
-                console.error("Error fetching stats:", error);
-            }
-        }
-
-        // رندرة وبناء الـ Chart
-        function renderEarningsChart(confirmed, pending, cancelled) {
-            const ctx = document.getElementById('earningsChart').getContext('2d');
-            if (myChart) { myChart.destroy(); }
-
-            if(confirmed === 0 && pending === 0 && cancelled === 0) {
-                // وضع افتراضي إذا لم تكن هناك بيانات لضمان مظهر فخم
-                confirmed = 10; pending = 5; cancelled = 2;
-            }
-
-            myChart = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['أرباح مقبولة ومكتملة', 'أرباح معلقة للمراجعة', 'أرباح ملغاة ومرتجعة'],
-                    datasets: [{
-                        data: [confirmed, pending, cancelled],
-                        backgroundColor: ['#22c55e', '#f59e0b', '#ef4444'],
-                        borderWidth: 0,
-                        hoverOffset: 6
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: { color: '#fff', font: { size: 12 }, padding: 15 }
-                        }
-                    },
-                    cutout: '70%'
+                // عرض طلبات المسوق
+                const tbody = document.getElementById('m-orders-body');
+                if(data.orders.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#888;">لم تقم ببيع أي طلبات حتى الآن، ابدأ بنشر رابطك!</td></tr>';
+                    return;
                 }
-            });
-        }
 
-        // رندرة سجل الإشعارات والـ Logs الحية لكل حركة عمولة
-        function renderCommissionLogs(logs) {
-            const container = document.getElementById('logs-container');
-            if (!logs || logs.length === 0) {
-                container.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 20px;">لا توجد تنبيهات أو عمليات مالية مسجلة حالياً</div>`;
-                return;
-            }
-
-            container.innerHTML = logs.map(log => {
-                let badgeColor = 'var(--gold)';
-                if (log.action_type === 'تأكيد أرباح') badgeColor = 'var(--success)';
-                if (log.action_type === 'إلغاء عمولة') badgeColor = 'var(--danger)';
-
-                const formattedDate = new Date(log.created_at).toLocaleTimeString('ar-EG', {hour: '2-digit', minute:'2-digit'}) + ' - ' + new Date(log.created_at).toLocaleDateString('ar-EG');
-
-                return `
-                    <div class="log-item" style="border-right-color: ${badgeColor}">
-                        <div class="log-header">
-                            <span class="log-action">${log.action_type}</span>
-                            <span class="log-amount">+ ${log.amount} ج.م</span>
-                        </div>
-                        <div class="log-notes">${log.notes || ''}</div>
-                        <div class="log-time"><i class="fa-regular fa-clock"></i> ${formattedDate}</div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        // بناء وعرض شبكة المنتجات مع العمولات الثابتة وعدد مرات البيع لكل منتج
-        function renderProductsCatalog(products, marketerCode) {
-            const grid = document.getElementById('products-catalog-grid');
-            if (!products || products.length === 0) {
-                grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:var(--text-muted); padding:40px;">لا توجد منتجات معروضة في المتجر حالياً</div>`;
-                return;
-            }
-
-            grid.innerHTML = products.map(p => {
-                const fallbackImg = '/static/css/logo.png.jpeg';
-                const img = p.image_url ? p.image_url : fallbackImg;
-                const isEnabled = p.commission_enabled;
-                const commText = isEnabled ? `${p.commission_amount} ج.م` : 'موقوفة مؤقتاً';
-
-                return `
-                    <div class="product-aff-card">
-                        <div class="prod-img-box">
-                            <img src="${img}" alt="${p.name}" onerror="this.src='${fallbackImg}'">
-                            <span class="comm-badge"><i class="fa-solid fa-coins"></i> عمولتك: ${commText}</span>
-                        </div>
-                        <div class="prod-details">
-                            <h4>${p.name}</h4>
-                            <div class="prod-pricing">
-                                <span>سعر البيع: <strong>${p.selling_price} ج.م</strong></span>
-                                <span>القسم: <strong>${p.category || 'عام'}</strong></span>
-                            </div>
-                            <div class="prod-stats-row">
-                                <div>
-                                    <p>مبيعاتك منه</p>
-                                    <span>${p.total_qty_sold} قطعة</span>
-                                </div>
-                                <div>
-                                    <p>إجمالي أرباحك منه</p>
-                                    <span style="color:var(--success);">${p.total_earned_money} ج.م</span>
-                                </div>
-                            </div>
-                            <button class="action-link-btn" onclick="copyProductLink(${p.id}, '${p.name.replace(/'/g, "\\'")}', '${marketerCode}')">
-                                <i class="fa-solid fa-link"></i> نسخ رابط البيع للمنتج
-                            </button>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        // بناء جدول فحص ومتابعة الطلبات والأرباح التفصيلية لكل طلب على حدة لتوثيق المكاسب
-        function renderOrdersTable(orders) {
-            const tbody = document.getElementById('orders-table-body');
-            if (!orders || orders.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 30px;">لا توجد طلبات مسجلة بكودك حتى الآن</td></tr>`;
-                return;
-            }
-
-            tbody.innerHTML = orders.map(o => {
-                let badgeClass = 'pending';
-                let badgeText = '⏳ قيد المراجعة';
-                
-                if (o.status === 'تم التسليم') { badgeClass = 'complete'; badgeText = '✅ عمولة مكتملة'; }
-                else if (o.status === 'مرتجع') { badgeClass = 'cancelled'; badgeText = '❌ عمولة ملغاة'; }
-                else if (o.status === 'جاري الشحن') { badgeClass = 'pending'; badgeText = '🚚 جاري الشحن'; }
-
-                const dateStr = new Date(o.created_at).toLocaleDateString('ar-EG');
-
-                return `
+                tbody.innerHTML = data.orders.map(o => `
                     <tr>
-                        <td><strong>#${o.order_id}</strong></td>
-                        <td>${o.customer_name || 'عميل المتجر'}</td>
-                        <td>${dateStr}</td>
-                        <td>${o.order_total} ج.م</td>
-                        <td style="color: var(--gold); font-weight: 700;">+ ${o.commission_earned_for_order} ج.م</td>
-                        <td><span class="status-badge ${badgeClass}">${badgeText}</span></td>
+                        <td><strong>#${o.id}</strong></td>
+                        <td>${o.customer_name}</td>
+                        <td><span style="font-weight:bold; color:var(--primary);">${o.status}</span></td>
+                        <td>${new Date(o.created_at).toLocaleDateString('ar-EG')}</td>
                     </tr>
-                `;
-            }).join('');
-        }
+                `).join('');
 
-        // دالة فحص وتأمين الـ Auth للمسوق
-        async function checkAuthAndInit() {
-            try {
-                const res = await fetch('/api/marketer/check');
-                const auth = await res.json();
-                if (!auth.authenticated) {
-                    window.location.href = '/marketer_login.html';
-                } else {
-                    sessionStorage.setItem('marketer_code', auth.code);
-                    sessionStorage.setItem('marketer_name', auth.name);
-                    fetchDashboardStats();
-                }
-            } catch (e) {
-                window.location.href = '/marketer_login.html';
+            } catch(err) {
+                console.error("خطأ أثناء تحميل الداشبورد:", err);
             }
         }
 
-        // تسجيل الخروج الفوري الآمن للمسوق
-        async function logout() {
-            if (!confirm("هل أنت متأكد من رغبتك في تسجيل الخروج من لوحة التحكم الفاخرة؟")) return;
-            try {
-                await fetch('/api/marketer/logout', { method: 'POST' });
-                sessionStorage.clear();
-                window.location.href = '/marketer_login.html';
-            } catch(e) {
-                window.location.href = '/marketer_login.html';
-            }
+        function copyMarketerLink() {
+            const linkInput = document.getElementById('m-share-link');
+            linkInput.select();
+            linkInput.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(linkInput.value);
+            alert("📋 تم نسخ رابط التسويق الخاص بك بنجاح! انشره الآن وابدأ بجمع الأرباح.");
         }
 
-        // التشغيل التلقائي عند اكتمال بناء هيكل المستند في المتصفح
-        window.addEventListener('DOMContentLoaded', checkAuthAndInit);
+        async function logoutMarketer() {
+            await fetch('/api/marketer/logout', { method: 'POST' });
+            window.location.href = '/marketer_login.html';
+        }
+
+        window.addEventListener('DOMContentLoaded', loadDashboardData);
     </script>
 </body>
 </html>
