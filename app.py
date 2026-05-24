@@ -2,11 +2,12 @@ import os
 import json
 import psycopg2
 from psycopg2.extras import RealDictCursor
-from flask import Flask, jsonify, request, render_template, redirect, session
+from flask import Flask, jsonify, request, render_template, redirect, session, send_from_directory
 from whitenoise import WhiteNoise
 from functools import wraps
 from werkzeug.security import generate_password_hash, check_password_hash
 
+# تحديد المسارات بدقة شديدة لإجبار السيرفر على رؤية المجلدات
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
 STATIC_DIR = os.path.join(BASE_DIR, 'static')
@@ -24,8 +25,7 @@ def init_database():
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
-
-        # 1. جدول المنتجات (الهواتف والأجهزة الذكية)
+        # 1. جدول المنتجات
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS products (
                 id SERIAL PRIMARY KEY,
@@ -37,8 +37,7 @@ def init_database():
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
         """)
-
-        # 2. جدول المسوقين (مع ميزة القبول المبدئي FALSE)
+        # 2. جدول المسوقين
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS marketers (
                 id SERIAL PRIMARY KEY,
@@ -50,8 +49,7 @@ def init_database():
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
         """)
-
-        # 3. جدول الطلبات الكامل
+        # 3. جدول الطلبات
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS orders (
                 id SERIAL PRIMARY KEY,
@@ -65,8 +63,7 @@ def init_database():
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
         """)
-
-        # 4. جدول سحب الأرباح للمسوقين
+        # 4. جدول سحب الأرباح
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS withdrawals (
                 id SERIAL PRIMARY KEY,
@@ -78,8 +75,7 @@ def init_database():
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
         """)
-
-        # 5. جدول إدارة المستخدمين (الأدمن / الكاشير)
+        # 5. جدول إدارة المستخدمين
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS users (
                 id SERIAL PRIMARY KEY,
@@ -88,23 +84,19 @@ def init_database():
                 role TEXT DEFAULT 'cashier'
             );
         """)
-        
-        # إنشاء حساب الأدمن الافتراضي لو مش موجود
         cursor.execute("SELECT COUNT(*) FROM users WHERE username = 'admin';")
         if cursor.fetchone()[0] == 0:
             hashed_pass = generate_password_hash('sina401admin')
             cursor.execute("INSERT INTO users (username, password, role) VALUES ('admin', %s, 'admin');", (hashed_pass,))
-
         conn.commit()
         cursor.close()
         conn.close()
-        print("✅ تم تهيئة قاعدة بيانات سينا ستور 401 بنجاح كامل.")
+        print("✅ تم تهيئة قاعدة البيانات بنجاح.")
     except Exception as e:
-        print("❌ خطأ أثناء تهيئة قاعدة البيانات:", str(e))
+        print("❌ خطأ قاعدة البيانات:", str(e))
 
 init_database()
 
-# دالة حماية مسارات الإدارة (Middleware)
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -114,35 +106,39 @@ def login_required(f):
     return decorated_function
 
 # ==========================================
-# مسارات عرض واجهات صفحات الـ HTML
+# 🛠️ دالة الفولدر الإجبارية لمنع الصفحة السوداء
 # ==========================================
+def force_serve_page(filename):
+    """تقرأ الملف مباشرة من مجلد templates الرئيسي برة الـ static"""
+    return send_from_directory(TEMPLATE_DIR, filename)
+
 @app.route('/')
-def home(): return render_template('index.html')
+def home(): return force_serve_page('index.html')
 
 @app.route('/index.html')
-def index(): return render_template('index.html')
+def index(): return force_serve_page('index.html')
 
 @app.route('/product_detail.html')
-def detail(): return render_template('product_detail.html')
+def detail(): return force_serve_page('product_detail.html')
 
 @app.route('/marketer_login.html')
-def m_login(): return render_template('marketer_login.html')
+def m_login(): return force_serve_page('marketer_login.html')
 
 @app.route('/login.html')
-def login_admin_page(): return render_template('login.html')
+def login_admin_page(): return force_serve_page('login.html')
 
 @app.route('/marketer_dashboard.html')
 def m_dash():
     if 'marketer_code' not in session:
         return redirect('/marketer_login.html')
-    return render_template('marketer_dashboard.html')
+    return force_serve_page('marketer_dashboard.html')
 
 @app.route('/cashier.html')
 @login_required
-def cashier(): return render_template('cashier.html')
+def cashier(): return force_serve_page('cashier.html')
 
 # ==========================================
-# APIs التحكم بالمنتجات
+# APIs السيستم الكاملة
 # ==========================================
 @app.route('/api/products', methods=['GET'])
 def get_products():
@@ -189,9 +185,6 @@ def add_product():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# ==========================================
-# APIs التحكم بالطلبات والمبيعات
-# ==========================================
 @app.route('/api/orders', methods=['POST'])
 def create_order():
     try:
@@ -254,9 +247,6 @@ def track_order():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# ==========================================
-# APIs إدارة وقبول المسوقين الجدد
-# ==========================================
 @app.route('/api/marketers', methods=['GET'])
 @login_required
 def get_all_marketers():
@@ -290,19 +280,18 @@ def register_marketer():
     try:
         data = request.json
         conn = get_db_connection()
-        cur = conn.cursor()
-        cur.execute("SELECT COUNT(*) FROM marketers WHERE code = %s;", (data['code'],))
-        if cur.fetchone()[0] > 0:
-            return jsonify({"success": False, "message": "كود المسوق مستخدم بالفعل، يرجى اختيار كود آخر"}), 400
-        
-        cur.execute("""
+        cursor = conn.cursor()
+        cursor.execute("SELECT COUNT(*) FROM marketers WHERE code = %s;", (data['code'],))
+        if cursor.fetchone()[0] > 0:
+            return jsonify({"success": False, "message": "كود المسوق مستخدم بالفعل"}), 400
+        cursor.execute("""
             INSERT INTO marketers (name, code, password, phone, is_approved)
             VALUES (%s, %s, %s, %s, FALSE);
         """, (data['name'], data['code'], data['password'], data['phone']))
         conn.commit()
-        cur.close()
+        cursor.close()
         conn.close()
-        return jsonify({"success": True, "message": "تم تقديم طلبك بنجاح، في انتظار تفعيل الإدارة لحسابك."})
+        return jsonify({"success": True, "message": "تم تقديم طلبك بنجاح"})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -316,15 +305,14 @@ def affiliate_login():
         m = cur.fetchone()
         cur.close()
         conn.close()
-        
         if m and m['password'] == data['password']:
             if not m['is_approved']:
-                return jsonify({"success": False, "message": "❌ حسابك لم يتم تفعيله من الإدارة بعد. يرجى التواصل مع الدعم."}), 403
+                return jsonify({"success": False, "message": "❌ حسابك لم يتم تفعيله"}), 403
             session['marketer_id'] = m['id']
             session['marketer_code'] = m['code']
             session['marketer_name'] = m['name']
-            return jsonify({"success": True, "message": "أهلاً بك في لوحة التحكم"})
-        return jsonify({"success": False, "message": "كود المسوق أو كلمة المرور خاطئة"}), 401
+            return jsonify({"success": True})
+        return jsonify({"success": False}), 401
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -342,43 +330,24 @@ def get_marketer_stats():
         cur = conn.cursor(cursor_factory=RealDictCursor)
         cur.execute("SELECT id, customer_name, total_price, status, created_at, products FROM orders WHERE marketer_code = %s ORDER BY id DESC;", (m_code,))
         orders = cur.fetchall()
-        
         total_balance = 0
         pending_balance = 0
         for o in orders:
-            try:
-                prods = json.loads(o['products']) if isinstance(o['products'], str) else o['products']
-            except:
-                prods = []
+            try: prods = json.loads(o['products']) if isinstance(o['products'], str) else o['products']
+            except: prods = []
             for p in prods:
                 cur.execute("SELECT commission FROM products WHERE id = %s;", (p.get('id'),))
                 p_info = cur.fetchone()
                 comm = p_info['commission'] if p_info else 0
-                if o['status'] == 'تم التسليم': 
-                    total_balance += comm
-                elif o['status'] in ['قيد المراجعة', 'جاري الشحن']: 
-                    pending_balance += comm
-
+                if o['status'] == 'تم التسليم': total_balance += comm
+                elif o['status'] in ['قيد المراجعة', 'جاري الشحن']: pending_balance += comm
         cur.execute("SELECT COALESCE(SUM(amount), 0) as paid FROM withdrawals WHERE marketer_code = %s AND status = 'مقبول';", (m_code,))
         paid = cur.fetchone()['paid']
         cur.close()
         conn.close()
-        
-        return jsonify({
-            "marketer_name": session['marketer_name'], 
-            "marketer_code": m_code,
-            "total_balance": total_balance, 
-            "pending_balance": pending_balance,
-            "available_balance": max(0, total_balance - paid), 
-            "paid_amount": paid, 
-            "orders": orders
-        })
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"marketer_name": session['marketer_name'], "marketer_code": m_code, "total_balance": total_balance, "pending_balance": pending_balance, "available_balance": max(0, total_balance - paid), "paid_amount": paid, "orders": orders})
+    except Exception as e: return jsonify({"error": str(e)}), 500
 
-# ==========================================
-# التحكم الإداري وتسجيل دخول الموظفين
-# ==========================================
 @app.route('/api/auth/login', methods=['POST'])
 def admin_login():
     try:
@@ -393,10 +362,9 @@ def admin_login():
             session['user_id'] = u['id']
             session['username'] = u['username']
             session['role'] = u['role']
-            return jsonify({"success": True, "message": "تم تسجيل الدخول بنجاح"})
-        return jsonify({"success": False, "message": "بيانات الدخول الإدارية خاطئة"}), 401
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+            return jsonify({"success": True})
+        return jsonify({"success": False}), 401
+    except Exception as e: return jsonify({"error": str(e)}), 500
 
 @app.route('/api/auth/logout', methods=['POST'])
 def admin_logout():
@@ -419,8 +387,7 @@ def dashboard_stats():
         cur.close()
         conn.close()
         return jsonify({"total_sales": sales, "total_orders": o_cnt, "total_products": p_cnt, "total_marketers": m_cnt, "orders_by_status": statuses})
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+    except Exception as e: return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True, port=int(os.environ.get('PORT', 5000)))
