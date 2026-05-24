@@ -3,19 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>سينا ستور 401 | منصة الهواتف الذكية</title>
+    <title>سينا ستور 401 | عالم الهواتف الذكية</title>
     <style>
         :root {
             --primary: #d4af37;
             --primary-hover: #b8860b;
             --bg-dark: #0a0a0a;
             --bg-card: #141414;
-            --text-light: #ffffff;
-            --text-gray: #aaaaaa;
-            --border-gold: rgba(212, 175, 55, 0.3);
-            --success: #22c55e;
+            --border-gold: rgba(212, 175, 55, 0.2);
+            --text-gray: #aaa;
         }
-
+        
         * {
             margin: 0;
             padding: 0;
@@ -25,174 +23,112 @@
 
         body {
             background-color: var(--bg-dark);
-            color: var(--text-light);
-            min-height: 100vh;
-            overflow-x: hidden;
+            color: #ffffff;
+            line-height: 1.6;
         }
 
-        /* الهيدر العلوي للموقع */
+        /* الهيدر */
         header {
-            background-color: #0d0d0d;
+            background-color: var(--bg-card);
+            border-bottom: 1px solid var(--border-gold);
             padding: 15px 5%;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 2px solid var(--primary);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
             position: sticky;
             top: 0;
             z-index: 1000;
         }
 
-        .header-logo {
-            font-size: 26px;
+        .logo {
+            font-size: 24px;
             font-weight: bold;
             color: var(--primary);
             text-decoration: none;
             display: flex;
             align-items: center;
-            gap: 8px;
-            text-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
+            gap: 10px;
         }
 
         .nav-links {
             display: flex;
-            gap: 15px;
+            gap: 20px;
             align-items: center;
         }
 
-        .nav-btn {
-            background: transparent;
-            border: 1px solid var(--primary);
-            color: var(--text-light);
-            padding: 8px 18px;
-            border-radius: 6px;
+        .nav-links a {
+            color: #fff;
             text-decoration: none;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
+            font-size: 15px;
+            transition: color 0.3s;
         }
 
-        .nav-btn:hover {
-            background-color: var(--primary);
-            color: #000000;
-            box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
-        }
-
-        .admin-link {
-            color: var(--text-gray);
-            border-color: #333333;
-        }
-
-        /* قسم الهيرو العلوي والبحث للتتبع والمنتجات */
-        .hero-section {
-            text-align: center;
-            padding: 50px 20px;
-            background: linear-gradient(180deg, #111111 0%, #0a0a0a 100%);
-            border-bottom: 1px solid rgba(212, 175, 55, 0.1);
-        }
-
-        .hero-title {
-            font-size: 32px;
-            font-weight: 700;
+        .nav-links a:hover {
             color: var(--primary);
-            margin-bottom: 25px;
+        }
+
+        .btn-panel {
+            background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+            color: #000;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+
+        /* سيكشن الهيرو والبحث */
+        .hero {
+            text-align: center;
+            padding: 60px 20px;
+            background: linear-gradient(to bottom, #111, var(--bg-dark));
+        }
+
+        .hero h1 {
+            font-size: 36px;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+
+        .hero p {
+            color: var(--text-gray);
+            margin-bottom: 30px;
+            font-size: 18px;
+        }
+
+        .search-container {
+            max-width: 600px;
+            margin: 0 auto;
             display: flex;
-            justify-content: center;
-            align-items: center;
             gap: 10px;
         }
 
-        .search-wrapper {
-            max-width: 650px;
-            margin: 0 auto 20px auto;
-            position: relative;
-        }
-
-        .search-input {
-            width: 100%;
-            padding: 15px 45px 15px 15px;
-            background-color: #161616;
-            border: 2px solid var(--border-gold);
-            border-radius: 8px;
-            color: var(--text-light);
-            font-size: 16px;
-            text-align: right;
-            transition: all 0.3s ease;
-        }
-
-        .search-input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
-        }
-
-        .search-icon {
-            position: absolute;
-            top: 50%;
-            right: 15px;
-            transform: translateY(-50%);
-            color: var(--primary);
-            pointer-events: none;
-        }
-
-        /* صندوق التتبع الخاص بالزبائن */
-        .track-box {
-            max-width: 650px;
-            margin: 15px auto 0 auto;
-            display: flex;
-            background-color: #161616;
-            border: 1px solid var(--border-gold);
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        .track-input {
+        .search-container input {
             flex: 1;
-            padding: 12px;
-            background: transparent;
-            border: none;
-            color: var(--text-light);
-            font-size: 15px;
-            text-align: center;
+            padding: 12px 20px;
+            border-radius: 8px;
+            border: 1px solid #333;
+            background-color: #1a1a1a;
+            color: #fff;
+            font-size: 16px;
         }
 
-        .track-input:focus {
+        .search-container input:focus {
+            border-color: var(--primary);
             outline: none;
         }
 
-        .track-btn {
-            background: linear-gradient(135deg, var(--primary), var(--primary-hover));
-            color: #000000;
-            border: none;
-            padding: 0 25px;
-            font-weight: bold;
-            font-size: 15px;
-            cursor: pointer;
-            transition: opacity 0.3s;
-        }
-
-        .track-btn:hover {
-            opacity: 0.9;
-        }
-
-        /* شبكة المنتجات (الهواتف الذكية والأجهزة) */
-        .container {
-            max-width: 1250px;
+        /* شبكة المنتجات */
+        .products-section {
+            max-width: 1200px;
             margin: 40px auto;
             padding: 0 20px;
         }
 
-        .section-header {
+        .section-title {
             font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 30px;
+            color: var(--primary);
+            margin-bottom: 25px;
             border-right: 4px solid var(--primary);
-            padding-right: 12px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            padding-right: 10px;
         }
 
         .products-grid {
@@ -206,135 +142,231 @@
             border: 1px solid var(--border-gold);
             border-radius: 12px;
             overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
             position: relative;
             display: flex;
             flex-direction: column;
-            transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
         }
 
         .product-card:hover {
             transform: translateY(-5px);
-            border-color: var(--primary);
-            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.2);
-        }
-
-        /* شارة عمولة نشطة المطابقة للصورة المرفوعة */
-        .commission-badge {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background-color: rgba(0, 0, 0, 0.75);
-            border: 1px solid var(--primary);
-            color: #ffffff;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            z-index: 10;
-        }
-
-        .badge-dot {
-            width: 8px;
-            height: 8px;
-            background-color: var(--success);
-            border-radius: 50%;
-            box-shadow: 0 0 8px var(--success);
-        }
-
-        .product-image-container {
-            width: 100%;
-            height: 270px;
-            background-color: #1b1b1b;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(212, 175, 55, 0.1);
         }
 
         .product-img {
             width: 100%;
-            height: 100%;
+            height: 250px;
             object-fit: cover;
+            background-color: #1a1a1a;
         }
 
-        .product-details {
+        .product-info {
             padding: 20px;
             display: flex;
             flex-direction: column;
-            flex: 1;
-        }
-
-        .product-category {
-            font-size: 13px;
-            color: var(--text-gray);
-            margin-bottom: 6px;
+            flex-grow: 1;
         }
 
         .product-name {
             font-size: 18px;
             font-weight: bold;
-            margin-bottom: 12px;
-            color: var(--text-light);
-            line-height: 1.4;
+            margin-bottom: 10px;
+            color: #fff;
         }
 
-        .product-price-row {
-            margin-top: auto;
-            margin-bottom: 18px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .price-label {
-            font-size: 14px;
-            color: var(--text-gray);
-        }
-
-        .price-value {
-            font-size: 22px;
-            font-weight: 800;
+        .product-price {
+            font-size: 20px;
             color: var(--primary);
-        }
-
-        .action-btn {
-            width: 100%;
-            background: linear-gradient(135deg, var(--primary), var(--primary-hover));
-            color: #000000;
-            border: none;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 15px;
             font-weight: bold;
-            cursor: pointer;
-            text-decoration: none;
-            text-align: center;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
-            transition: background 0.3s;
+            margin-bottom: 15px;
         }
 
-        .action-btn:hover {
-            opacity: 0.95;
-        }
-
-        /* نافذة تتبع النتيجة سريعة */
-        #track-output-modal {
-            margin-top: 15px;
-            padding: 12px;
+        /* شارة عمولة المسوق */
+        .commission-badge {
+            background-color: rgba(34, 197, 94, 0.15);
+            color: #22c55e;
+            padding: 6px 12px;
             border-radius: 6px;
+            font-size: 13px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 15px;
+            text-align: center;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .view-btn {
+            margin-top: auto;
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            text-align: center;
+            text-decoration: none;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .view-btn:hover {
+            background: var(--primary);
+            color: #000;
+        }
+
+        /* تتبع الطلب */
+        .track-section {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-gold);
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .track-section h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+
+        .track-result {
+            margin-top: 20px;
+            padding: 15px;
             background-color: #1a1a1a;
-            border: 1px solid #333;
+            border-radius: 8px;
             display: none;
-            font-size: 15px;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
 
     <header>
+        <a href="/" class="logo">✨ سينا ستور 401</a>
+        <div class="nav-links">
+            <a href="#track-box">🔍 تتبع طلبك</a>
+            <a href="/marketer_login.html">🤝 انضم كمسوق</a>
+            <a href="/login.html" class="btn-panel">🔐 لوحة الإدارة</a>
+        </div>
+    </header>
+
+    <div class="hero">
+        <h1>تميز معنا بأقوى الهواتف الذكية</h1>
+        <p>موزع معتمد لأحدث الموبايلات بضمان حقيقي وأفضل سعر في مصر</p>
+        <div class="search-container">
+            <input type="text" id="search-input" oninput="filterProducts()" placeholder="ابحث عن هاتف أحلامك هنا...">
+        </div>
+    </div>
+
+    <div class="products-section">
+        <div class="section-title">📱 الموبايلات المتاحة حالياً</div>
+        <div class="products-grid" id="products-list">
+            </div>
+    </div>
+
+    <div class="track-section" id="track-box">
+        <h3>🔍 تتبع حالة شحن طلبك</h3>
+        <p style="color: var(--text-gray); margin-bottom: 20px; font-size: 14px;">أدخل رقم الطلب الذي استلمته عند الشراء لمتابعة حالته فوراً</p>
+        <div class="search-container">
+            <input type="number" id="track-id" placeholder="مثال: 1024">
+            <button onclick="trackOrder()" style="background: var(--primary); color: #000; border: none; padding: 0 20px; border-radius: 8px; font-weight: bold; cursor: pointer;">تتبع</button>
+        </div>
+        <div class="track-result" id="track-res"></div>
+    </div>
+
+    <script>
+        let allProducts = [];
+
+        // التقاط كود المسوق المرجعي من الرابط وحفظه في الكاش
+        const urlParams = new URLSearchParams(window.location.search);
+        const refCode = urlParams.get('ref');
+        if (refCode) {
+            localStorage.setItem('marketer_ref_code', refCode);
+            console.log("تم رصد كود المسوق وحفظه بنجاح:", refCode);
+        }
+
+        // جلب المنتجات من السيرفر
+        async function fetchProducts() {
+            const grid = document.getElementById('products-list');
+            try {
+                const response = await fetch('/api/products');
+                allProducts = await response.json();
+                displayProducts(allProducts);
+            } catch (err) {
+                console.error("خطأ في جلب المنتجات:", err);
+                grid.innerHTML = '<p style="text-align:center; color:red; width:100%;">فشل اتصال السيرفر بالمنتجات.</p>';
+            }
+        }
+
+        // عرض المنتجات في الشبكة بشكل منظم
+        function displayProducts(products) {
+            const grid = document.getElementById('products-list');
+            if (products.length === 0) {
+                grid.innerHTML = '<p style="text-align:center; color:#888; width:100%;">لا توجد هواتف متوفرة تطابق بحثك حالياً.</p>';
+                return;
+            }
+
+            const activeRef = localStorage.getItem('marketer_ref_code');
+
+            grid.innerHTML = products.map(p => {
+                // شارة المسوق تظهر فقط إذا كان الزائر داخل من رابط تسويقي فعلي
+                const commBadge = activeRef ? `<div class="commission-badge">💸 عمولتك في هذا الهاتف: ${p.commission} ج.م</div>` : '';
+                
+                return `
+                    <div class="product-card">
+                        <img class="product-img" src="${p.image_url || 'https://via.placeholder.com/300x250?text=No+Image'}" alt="${p.name}">
+                        <div class="product-info">
+                            <div class="product-name">${p.name}</div>
+                            <div class="product-price">${p.selling_price.toLocaleString('ar-EG')} ج.م</div>
+                            ${commBadge}
+                            <a href="/product_detail.html?id=${p.id}" class="view-btn">عرض التفاصيل والشراء</a>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // تصفية الفلتر والبحث السريع
+        function filterProducts() {
+            const term = document.getElementById('search-input').value.toLowerCase().trim();
+            const filtered = allProducts.filter(p => p.name.toLowerCase().includes(term));
+            displayProducts(filtered);
+        }
+
+        // دالة تتبع الطلبات
+        async function trackOrder() {
+            const id = document.getElementById('track-id').value;
+            const resDiv = document.getElementById('track-res');
+            if (!id) return;
+
+            resDiv.style.display = 'block';
+            resDiv.style.color = '#fff';
+            resDiv.innerText = 'جاري البحث...';
+
+            try {
+                const response = await fetch(`/api/orders/track?id=${id}`);
+                const data = await response.json();
+
+                if (response.ok && data.id) {
+                    let statusColor = 'var(--primary)';
+                    if (data.status === 'تم التسليم') statusColor = '#22c55e';
+                    if (data.status === 'ملغي') statusColor = '#ef4444';
+
+                    resDiv.innerHTML = `📦 طلبك رقم <span style="color:var(--primary)">#${data.id}</span> حالته الآن: 
+                    <span style="color:${statusColor}; font-size:18px;">[ ${data.status} ]</span>`;
+                } else {
+                    resDiv.style.color = '#ef4444';
+                    resDiv.innerText = '❌ عذراً، هذا الرقم غير مسجل بالسيستم.';
+                }
+            } catch (err) {
+                resDiv.style.color = '#ef4444';
+                resDiv.innerText = 'خطأ اتصال بالسيرفر.';
+            }
+        }
+
+        // التشغيل التلقائي فور تحميل الصفحة الآمن
+        document.addEventListener('DOMContentLoaded', fetchProducts);
+    </script>
+</body>
+</html>
