@@ -63,38 +63,22 @@
             object-fit: cover;
             border-radius: 12px;
         }
-        .thumbnails {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-            flex-wrap: wrap;
-        }
-        .thumbnails img {
-            width: 70px;
-            height: 70px;
-            object-fit: cover;
-            border-radius: 8px;
-            cursor: pointer;
-            border: 2px solid transparent;
-        }
-        .thumbnails img.active {
-            border-color: #e67e22;
-        }
         .product-info {
             flex: 1;
             min-width: 300px;
             padding: 30px;
         }
         .product-name {
-            font-size: 24px;
+            font-size: 28px;
             margin-bottom: 10px;
+            color: #2c2c2c;
         }
         .product-category {
             color: #888;
             margin-bottom: 15px;
         }
         .product-price {
-            font-size: 28px;
+            font-size: 32px;
             color: #e67e22;
             font-weight: bold;
             margin-bottom: 20px;
@@ -107,8 +91,6 @@
             margin-bottom: 20px;
         }
         .in-stock { background: #22c55e20; color: #22c55e; }
-        .low-stock { background: #f59e0b20; color: #f59e0b; }
-        .out-stock { background: #ef444420; color: #ef4444; }
         .product-desc {
             color: #666;
             line-height: 1.6;
@@ -133,7 +115,7 @@
             color: white;
         }
         .btn-cart {
-            background: #2c2c2c;
+            background: #e67e22;
             color: white;
         }
         .order-form {
@@ -143,8 +125,9 @@
         }
         .order-form h3 {
             margin-bottom: 15px;
+            color: #2c2c2c;
         }
-        .order-form input, .order-form select {
+        .order-form input {
             width: 100%;
             padding: 12px;
             margin-bottom: 12px;
@@ -154,9 +137,8 @@
         }
         .order-form button {
             width: 100%;
-            padding: 
-                        padding: 12px;
-            background: #e67e22;
+            padding: 12px;
+            background: #2c2c2c;
             color: white;
             border: none;
             border-radius: 8px;
@@ -178,6 +160,8 @@
         @media (max-width: 768px) {
             .product-detail { flex-direction: column; }
             .main-img { height: 250px; }
+            .product-name { font-size: 22px; }
+            .product-price { font-size: 24px; }
         }
     </style>
 </head>
@@ -199,15 +183,76 @@
     <script>
         const productId = new URLSearchParams(window.location.search).get('id');
         let currentProduct = null;
-        let affiliateCode = new URLSearchParams(window.location.search).get('ref') || localStorage.getItem('affiliate_code') || '';
-
-        if (affiliateCode) localStorage.setItem('affiliate_code', affiliateCode);
 
         function showToast(message) {
             const toast = document.getElementById('toast');
             toast.innerText = message;
             toast.style.display = 'block';
             setTimeout(() => toast.style.display = 'none', 3000);
+        }
+
+        function addToCart() {
+            let cart = JSON.parse(localStorage.getItem('sina_cart') || '[]');
+            const existing = cart.find(item => item.id === currentProduct.id);
+            if (existing) {
+                existing.qty++;
+            } else {
+                cart.push({
+                    id: currentProduct.id,
+                    name: currentProduct.name,
+                    price: currentProduct.selling_price,
+                    qty: 1,
+                    image: currentProduct.image_url
+                });
+            }
+            localStorage.setItem('sina_cart', JSON.stringify(cart));
+            showToast('✅ تم إضافة المنتج إلى السلة');
+        }
+
+        async function submitDirectOrder() {
+            const name = document.getElementById('customerName').value.trim();
+            const phone = document.getElementById('customerPhone').value.trim();
+            const address = document.getElementById('customerAddress').value.trim();
+
+            if (!name || !phone || !address) {
+                showToast('❌ يرجى ملء جميع الحقول');
+                return;
+            }
+
+            const btn = document.querySelector('.order-form button');
+            btn.disabled = true;
+            btn.innerText = 'جاري الإرسال...';
+
+            try {
+                const res = await fetch('/api/orders', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        customer_name: name,
+                        customer_phone: phone,
+                        customer_address: address,
+                        total_price: currentProduct.selling_price,
+                        products: [{ id: currentProduct.id, name: currentProduct.name, price: currentProduct.selling_price, qty: 1 }],
+                        marketer_code: '',
+                        payment_method: 'كاش'
+                    })
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    showToast('🎉 تم الطلب بنجاح! سيتم التواصل معك قريباً');
+                    document.getElementById('customerName').value = '';
+                    document.getElementById('customerPhone').value = '';
+                    document.getElementById('customerAddress').value = '';
+                } else {
+                    showToast('❌ فشل إرسال الطلب: ' + (data.error || 'خطأ غير معروف'));
+                }
+            } catch (err) {
+                showToast('❌ فشل الاتصال بالسيرفر');
+            } finally {
+                btn.disabled = false;
+                btn.innerText = '✅ تأكيد الطلب';
+            }
         }
 
         async function loadProduct() {
@@ -233,33 +278,10 @@
 
                 let stockClass = 'in-stock';
                 let stockText = `✅ متوفر: ${currentProduct.stock_quantity || 0} قطعة`;
-                if ((currentProduct.stock_quantity || 0) <= 5 && (currentProduct.stock_quantity || 0) > 0) {
-                    stockClass = 'low-stock';
-                    stockText = `⚠️ باقي كمية محدودة: ${currentProduct.stock_quantity} قطعة`;
-                } else if ((currentProduct.stock_quantity || 0) === 0) {
-                    stockClass = 'out-stock';
-                    stockText = '❌ غير متوفر حالياً';
-                }
-
-                let thumbnailsHtml = '';
-                if (currentProduct.extra_images) {
-                    try {
-                        let extra = typeof currentProduct.extra_images === 'string' ? JSON.parse(currentProduct.extra_images) : currentProduct.extra_images;
-                        if (Array.isArray(extra) && extra.length > 0) {
-                            thumbnailsHtml = extra.map((url, i) => `
-                                <img src="${url}" onclick="changeMainImage('${url}', this)" ${i === 0 ? 'class="active"' : ''}>
-                            `).join('');
-                        }
-                    } catch(e) {}
-                }
 
                 document.getElementById('productDetail').innerHTML = `
                     <div class="product-gallery">
-                        <img id="mainImage" src="${currentProduct.image_url || '/static/css/logo.png.jpeg'}" class="main-img" onerror="this.src='/static/css/logo.png.jpeg'">
-                        <div class="thumbnails">
-                            <img src="${currentProduct.image_url || '/static/css/logo.png.jpeg'}" onclick="changeMainImage('${currentProduct.image_url || '/static/css/logo.png.jpeg'}', this)" class="active">
-                            ${thumbnailsHtml}
-                        </div>
+                        <img src="${currentProduct.image_url || 'https://via.placeholder.com/400x400/2c2c2c/d4af37?text=Product'}" class="main-img" onerror="this.src='https://via.placeholder.com/400x400/2c2c2c/d4af37?text=Product'">
                     </div>
                     <div class="product-info">
                         <h1 class="product-name">${currentProduct.name}</h1>
@@ -276,92 +298,17 @@
                             </button>
                         </div>
                         <div class="order-form">
-                            <h3><i class="fas fa-truck"></i> اطلب الآن - توصيل سريع</h3>
+                            <h3><i class="fas fa-truck"></i> اطلب الآن - الدفع عند الاستلام</h3>
                             <input type="text" id="customerName" placeholder="الاسم الكامل" required>
                             <input type="tel" id="customerPhone" placeholder="رقم الهاتف" required>
                             <input type="text" id="customerAddress" placeholder="العنوان بالتفصيل" required>
-                            <select id="paymentMethod">
-                                <option value="كاش">💰 الدفع عند الاستلام</option>
-                                <option value="تحويل">🏦 تحويل بنكي</option>
-                                <option value="vodafone">📱 فودافون كاش</option>
-                            </select>
                             <button onclick="submitDirectOrder()">✅ تأكيد الطلب</button>
                         </div>
                     </div>
                 `;
             } catch (e) {
+                console.error(e);
                 document.getElementById('productDetail').innerHTML = `<div style="text-align:center; padding:50px;">❌ خطأ في تحميل المنتج</div>`;
-            }
-        }
-
-        function changeMainImage(url, element) {
-            document.getElementById('mainImage').src = url;
-            document.querySelectorAll('.thumbnails img').forEach(img => img.classList.remove('active'));
-            element.classList.add('active');
-        }
-
-        function addToCart() {
-            let cart = JSON.parse(localStorage.getItem('sina_cart') || '[]');
-            const existing = cart.find(item => item.id === currentProduct.id);
-            if (existing) {
-                existing.qty++;
-            } else {
-                cart.push({
-                    id: currentProduct.id,
-                    name: currentProduct.name,
-                    price: currentProduct.selling_price,
-                    qty: 1,
-                    image: currentProduct.image_url
-                });
-            }
-            localStorage.setItem('sina_cart', JSON.stringify(cart));
-            showToast('✅ تم إضافة المنتج إلى السلة');
-        }
-
-        async function submitDirectOrder() {
-            const name = document.getElementById('customerName').value.trim();
-            const phone = document.getElementById('customerPhone').value.trim();
-            const address = document.getElementById('customerAddress').value.trim();
-            const payment = document.getElementById('paymentMethod').value;
-
-            if (!name || !phone || !address) {
-                showToast('❌ يرجى ملء جميع الحقول');
-                return;
-            }
-
-            const btn = document.querySelector('.order-form button');
-            btn.disabled = true;
-            btn.innerText = 'جاري الإرسال...';
-
-            try {
-                const res = await fetch('/api/orders', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        customer_name: name,
-                        customer_phone: phone,
-                        customer_address: address,
-                        total_price: currentProduct.selling_price,
-                        products: [{ id: currentProduct.id, name: currentProduct.name, price: currentProduct.selling_price, qty: 1 }],
-                        marketer_code: affiliateCode,
-                        payment_method: payment
-                    })
-                });
-
-                const data = await res.json();
-                if (data.success) {
-                    showToast('🎉 تم الطلب بنجاح! سيتم التواصل معك قريباً');
-                    document.getElementById('customerName').value = '';
-                    document.getElementById('customerPhone').value = '';
-                    document.getElementById('customerAddress').value = '';
-                } else {
-                    showToast('❌ فشل إرسال الطلب: ' + (data.error || 'خطأ غير معروف'));
-                }
-            } catch (err) {
-                showToast('❌ فشل الاتصال بالسيرفر');
-            } finally {
-                btn.disabled = false;
-                btn.innerText = '✅ تأكيد الطلب';
             }
         }
 
