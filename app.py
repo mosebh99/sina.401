@@ -2,18 +2,16 @@ import os
 import json
 import psycopg2
 from psycopg2.extras import RealDictCursor
-from flask import Flask, jsonify, request, render_template, redirect, session, send_from_directory
-from whitenoise import WhiteNoise
+from flask import Flask, jsonify, request, render_template, redirect, session
 from functools import wraps
 from werkzeug.security import generate_password_hash, check_password_hash
 
-# تحديد المسارات بدقة شديدة لإجبار السيرفر على رؤية المجلدات
+# تحديد مسارات المجلدات بدقة متناهية لبيئة Vercel
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
 STATIC_DIR = os.path.join(BASE_DIR, 'static')
 
 app = Flask(__name__, template_folder=TEMPLATE_DIR, static_folder=STATIC_DIR)
-app.wsgi_app = WhiteNoise(app.wsgi_app, root=STATIC_DIR, prefix='/static/')
 app.secret_key = os.environ.get('SECRET_KEY', 'sina-401-secret-key-2026')
 
 DATABASE_URL = os.environ.get('DATABASE_URL') or "postgresql://postgres:MoSebA01065653401@db.ellxxztpfpaqlbqsnyhb.supabase.co:5432/postgres"
@@ -106,39 +104,35 @@ def login_required(f):
     return decorated_function
 
 # ==========================================
-# 🛠️ دالة الفولدر الإجبارية لمنع الصفحة السوداء
+# مسارات الواجهات (Frontend Routes)
 # ==========================================
-def force_serve_page(filename):
-    """تقرأ الملف مباشرة من مجلد templates الرئيسي برة الـ static"""
-    return send_from_directory(TEMPLATE_DIR, filename)
-
 @app.route('/')
-def home(): return force_serve_page('index.html')
+def home(): return render_template('index.html')
 
 @app.route('/index.html')
-def index(): return force_serve_page('index.html')
+def index(): return render_template('index.html')
 
 @app.route('/product_detail.html')
-def detail(): return force_serve_page('product_detail.html')
+def detail(): return render_template('product_detail.html')
 
 @app.route('/marketer_login.html')
-def m_login(): return force_serve_page('marketer_login.html')
+def m_login(): return render_template('marketer_login.html')
 
 @app.route('/login.html')
-def login_admin_page(): return force_serve_page('login.html')
+def login_admin_page(): return render_template('login.html')
 
 @app.route('/marketer_dashboard.html')
 def m_dash():
     if 'marketer_code' not in session:
         return redirect('/marketer_login.html')
-    return force_serve_page('marketer_dashboard.html')
+    return render_template('marketer_dashboard.html')
 
 @app.route('/cashier.html')
 @login_required
-def cashier(): return force_serve_page('cashier.html')
+def cashier(): return render_template('cashier.html')
 
 # ==========================================
-# APIs السيستم الكاملة
+# APIs التحكم والتشغيل (Backend)
 # ==========================================
 @app.route('/api/products', methods=['GET'])
 def get_products():
@@ -150,8 +144,7 @@ def get_products():
         cur.close()
         conn.close()
         return jsonify(rows)
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+    except Exception as e: return jsonify({"error": str(e)}), 500
 
 @app.route('/api/products/<int:p_id>', methods=['GET'])
 def get_product(p_id):
@@ -163,8 +156,7 @@ def get_product(p_id):
         cur.close()
         conn.close()
         return jsonify(row) if row else (jsonify({"error": "المنتج غير موجود"}), 404)
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+    except Exception as e: return jsonify({"error": str(e)}), 500
 
 @app.route('/api/products', methods=['POST'])
 @login_required
@@ -182,8 +174,7 @@ def add_product():
         cur.close()
         conn.close()
         return jsonify(p), 201
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+    except Exception as e: return jsonify({"error": str(e)}), 500
 
 @app.route('/api/orders', methods=['POST'])
 def create_order():
@@ -200,8 +191,7 @@ def create_order():
         cur.close()
         conn.close()
         return jsonify({"success": True, "order_id": oid}), 201
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+    except Exception as e: return jsonify({"error": str(e)}), 500
 
 @app.route('/api/orders', methods=['GET'])
 @login_required
@@ -214,8 +204,7 @@ def get_orders():
         cur.close()
         conn.close()
         return jsonify(rows)
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+    except Exception as e: return jsonify({"error": str(e)}), 500
 
 @app.route('/api/orders/<int:o_id>', methods=['PUT'])
 @login_required
@@ -229,8 +218,7 @@ def update_order_status(o_id):
         cur.close()
         conn.close()
         return jsonify({"success": True})
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+    except Exception as e: return jsonify({"error": str(e)}), 500
 
 @app.route('/api/orders/track', methods=['GET'])
 def track_order():
@@ -244,8 +232,7 @@ def track_order():
         cur.close()
         conn.close()
         return jsonify(row) if row else (jsonify({"error": "الطلب غير مسجل"}), 404)
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+    except Exception as e: return jsonify({"error": str(e)}), 500
 
 @app.route('/api/marketers', methods=['GET'])
 @login_required
@@ -258,8 +245,7 @@ def get_all_marketers():
         cur.close()
         conn.close()
         return jsonify(rows)
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+    except Exception as e: return jsonify({"error": str(e)}), 500
 
 @app.route('/api/marketers/approve/<int:m_id>', methods=['POST'])
 @login_required
@@ -271,9 +257,8 @@ def approve_marketer(m_id):
         conn.commit()
         cur.close()
         conn.close()
-        return jsonify({"success": True, "message": "تم تفعيل حساب المسوق بنجاح"})
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"success": True})
+    except Exception as e: return jsonify({"error": str(e)}), 500
 
 @app.route('/api/marketer/register', methods=['POST'])
 def register_marketer():
@@ -291,9 +276,8 @@ def register_marketer():
         conn.commit()
         cursor.close()
         conn.close()
-        return jsonify({"success": True, "message": "تم تقديم طلبك بنجاح"})
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"success": True})
+    except Exception as e: return jsonify({"error": str(e)}), 500
 
 @app.route('/api/marketer/login', methods=['POST'])
 def affiliate_login():
@@ -307,14 +291,13 @@ def affiliate_login():
         conn.close()
         if m and m['password'] == data['password']:
             if not m['is_approved']:
-                return jsonify({"success": False, "message": "❌ حسابك لم يتم تفعيله"}), 403
+                return jsonify({"success": False, "message": "حسابك قيد الانتظار"}), 403
             session['marketer_id'] = m['id']
             session['marketer_code'] = m['code']
             session['marketer_name'] = m['name']
             return jsonify({"success": True})
         return jsonify({"success": False}), 401
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+    except Exception as e: return jsonify({"error": str(e)}), 500
 
 @app.route('/api/marketer/logout', methods=['POST'])
 def affiliate_logout():
