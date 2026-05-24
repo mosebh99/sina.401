@@ -2,25 +2,18 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>سينا ستور 401 | عالم الهواتف والأجهزة الذكية</title>
-    <link rel="icon" type="image/png" href="/static/css/logo.png.jpeg">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سينا ستور 401 | منصة الهواتف الذكية</title>
     <style>
         :root {
-            --bg-main: #0a0a0a;
+            --primary: #d4af37;
+            --primary-hover: #b8860b;
+            --bg-dark: #0a0a0a;
             --bg-card: #141414;
-            --bg-input: #1a1a1a;
-            --gold: #d4af37;
-            --gold-hover: #b8860b;
-            --gold-light: rgba(212, 175, 55, 0.08);
-            --text-white: #ffffff;
-            --text-muted: #999999;
-            --radius-lg: 16px;
-            --radius-md: 12px;
-            --shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --text-light: #ffffff;
+            --text-gray: #aaaaaa;
+            --border-gold: rgba(212, 175, 55, 0.3);
+            --success: #22c55e;
         }
 
         * {
@@ -28,433 +21,320 @@
             padding: 0;
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            background-color: var(--bg-main);
-            color: var(--text-white);
+            background-color: var(--bg-dark);
+            color: var(--text-light);
             min-height: 100vh;
             overflow-x: hidden;
         }
 
+        /* الهيدر العلوي للموقع */
         header {
-            background: rgba(20, 20, 20, 0.85);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            padding: 15px 25px;
+            background-color: #0d0d0d;
+            padding: 15px 5%;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+            border-bottom: 2px solid var(--primary);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
             position: sticky;
             top: 0;
             z-index: 1000;
-            box-shadow: var(--shadow);
         }
 
-        .brand-section {
+        .header-logo {
+            font-size: 26px;
+            font-weight: bold;
+            color: var(--primary);
+            text-decoration: none;
             display: flex;
             align-items: center;
-            gap: 12px;
-            cursor: pointer;
+            gap: 8px;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
         }
 
-        .brand-section img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: 1px solid var(--gold);
-        }
-
-        .brand-section h1 {
-            font-size: 20px;
-            font-weight: 900;
-            background: linear-gradient(135deg, #ffffff, var(--gold));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .portal-btn {
-            background: var(--gold-light);
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            color: var(--gold);
-            padding: 8px 16px;
-            border-radius: var(--radius-md);
-            font-size: 13px;
-            font-weight: 700;
-            text-decoration: none;
-            transition: var(--transition);
-        }
-
-        .portal-btn:hover {
-            background: var(--gold);
-            color: var(--bg-main);
-        }
-
-        .hero-banner {
-            max-width: 1300px;
-            margin: 30px auto;
-            padding: 40px 20px;
-            text-align: center;
-            background: radial-gradient(circle at center, #161616 0%, var(--bg-main) 100%);
-            border-radius: var(--radius-lg);
-        }
-
-        .hero-banner h2 {
-            font-size: 32px;
-            font-weight: 800;
-            margin-bottom: 12px;
-            color: #fff;
-        }
-
-        .hero-banner h2 span { color: var(--gold); }
-
-        .hero-banner p {
-            font-size: 14px;
-            color: var(--text-muted);
-            max-width: 600px;
-            margin: 0 auto 25px;
-        }
-
-        .search-track-container {
-            max-width: 700px;
-            margin: 0 auto;
+        .nav-links {
             display: flex;
-            flex-direction: column;
             gap: 15px;
+            align-items: center;
         }
 
-        .search-box { position: relative; width: 100%; }
-
-        .search-box input {
-            width: 100%;
-            background: var(--bg-card);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 14px 20px;
-            border-radius: var(--radius-md);
-            color: white;
+        .nav-btn {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--text-light);
+            padding: 8px 18px;
+            border-radius: 6px;
+            text-decoration: none;
             font-size: 14px;
-            transition: var(--transition);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background-color: var(--primary);
+            color: #000000;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+        }
+
+        .admin-link {
+            color: var(--text-gray);
+            border-color: #333333;
+        }
+
+        /* قسم الهيرو العلوي والبحث للتتبع والمنتجات */
+        .hero-section {
+            text-align: center;
+            padding: 50px 20px;
+            background: linear-gradient(180deg, #111111 0%, #0a0a0a 100%);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+        }
+
+        .hero-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .search-wrapper {
+            max-width: 650px;
+            margin: 0 auto 20px auto;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 15px 45px 15px 15px;
+            background-color: #161616;
+            border: 2px solid var(--border-gold);
+            border-radius: 8px;
+            color: var(--text-light);
+            font-size: 16px;
+            text-align: right;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+        }
+
+        .search-icon {
+            position: absolute;
+            top: 50%;
+            right: 15px;
+            transform: translateY(-50%);
+            color: var(--primary);
+            pointer-events: none;
+        }
+
+        /* صندوق التتبع الخاص بالزبائن */
+        .track-box {
+            max-width: 650px;
+            margin: 15px auto 0 auto;
+            display: flex;
+            background-color: #161616;
+            border: 1px solid var(--border-gold);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .track-input {
+            flex: 1;
+            padding: 12px;
+            background: transparent;
+            border: none;
+            color: var(--text-light);
+            font-size: 15px;
             text-align: center;
         }
 
-        .search-box input:focus {
+        .track-input:focus {
             outline: none;
-            border-color: var(--gold);
-            box-shadow: 0 0 15px rgba(212, 175, 55, 0.1);
         }
 
-        .tracking-widget {
-            background: rgba(20, 20, 20, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.03);
-            border-radius: var(--radius-md);
-            padding: 15px;
-        }
-
-        .track-form { display: flex; gap: 10px; }
-
-        .track-form input {
-            flex: 1;
-            background: var(--bg-input);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 10px 15px;
-            border-radius: 8px;
-            color: white;
-            font-size: 13px;
-        }
-
-        .track-form button {
-            background: var(--gold);
-            color: var(--bg-main);
+        .track-btn {
+            background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+            color: #000000;
             border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-weight: 700;
-            font-size: 13px;
+            padding: 0 25px;
+            font-weight: bold;
+            font-size: 15px;
             cursor: pointer;
-            transition: var(--transition);
+            transition: opacity 0.3s;
         }
 
-        #tracking-result { margin-top: 12px; text-align: right; font-size: 13px; }
+        .track-btn:hover {
+            opacity: 0.9;
+        }
 
-        .store-content { max-width: 1300px; margin: 40px auto; padding: 0 20px; }
+        /* شبكة المنتجات (الهواتف الذكية والأجهزة) */
+        .container {
+            max-width: 1250px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
 
-        .section-title {
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 25px;
+        .section-header {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            border-right: 4px solid var(--primary);
+            padding-right: 12px;
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
-        .section-title::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: rgba(255, 255, 255, 0.05);
-        }
-
         .products-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 25px;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
         }
 
         .product-card {
-            background: var(--bg-card);
-            border: 1px solid rgba(255, 255, 255, 0.02);
-            border-radius: var(--radius-lg);
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-gold);
+            border-radius: 12px;
             overflow: hidden;
-            box-shadow: var(--shadow);
-            transition: var(--transition);
+            position: relative;
             display: flex;
             flex-direction: column;
+            transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
         }
 
         .product-card:hover {
-            transform: translateY(-6px);
-            border-color: rgba(212, 175, 55, 0.2);
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.2);
         }
 
-        .card-img-wrapper {
+        /* شارة عمولة نشطة المطابقة للصورة المرفوعة */
+        .commission-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background-color: rgba(0, 0, 0, 0.75);
+            border: 1px solid var(--primary);
+            color: #ffffff;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            z-index: 10;
+        }
+
+        .badge-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--success);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--success);
+        }
+
+        .product-image-container {
             width: 100%;
-            height: 240px;
-            background: #0f0f0f;
+            height: 270px;
+            background-color: #1b1b1b;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 15px;
+            overflow: hidden;
         }
 
-        .card-img-wrapper img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-            transition: var(--transition);
+        .product-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
-        .card-details {
+        .product-details {
             padding: 20px;
             display: flex;
             flex-direction: column;
-            flex-grow: 1;
-            gap: 8px;
+            flex: 1;
         }
 
-        .card-cat {
-            font-size: 11px;
-            color: var(--gold);
-            font-weight: 600;
-        }
-
-        .card-title {
-            font-size: 15px;
-            font-weight: 700;
-            color: #fff;
-            line-height: 1.4;
-            height: 42px;
-            overflow: hidden;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-        }
-
-        .card-price {
-            font-size: 18px;
-            font-weight: 800;
-            color: #fff;
-            margin-top: 5px;
-        }
-
-        .buy-now-btn {
-            background: transparent;
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            color: var(--gold);
-            padding: 12px;
-            border-radius: var(--radius-md);
+        .product-category {
             font-size: 13px;
-            font-weight: 700;
-            text-align: center;
-            text-decoration: none;
+            color: var(--text-gray);
+            margin-bottom: 6px;
+        }
+
+        .product-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 12px;
+            color: var(--text-light);
+            line-height: 1.4;
+        }
+
+        .product-price-row {
             margin-top: auto;
-            transition: var(--transition);
+            margin-bottom: 18px;
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
-            gap: 8px;
         }
 
-        .buy-now-btn:hover {
-            background: var(--gold);
-            color: var(--bg-main);
+        .price-label {
+            font-size: 14px;
+            color: var(--text-gray);
         }
 
-        footer {
-            background: #111;
+        .price-value {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .action-btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+            color: #000000;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
             text-align: center;
-            padding: 20px;
-            font-size: 12px;
-            color: var(--text-muted);
-            border-top: 1px solid rgba(255, 255, 255, 0.02);
-            margin-top: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.3s;
         }
 
-        @media (max-width: 768px) {
-            .hero-banner { padding: 30px 15px; margin: 15px; }
-            .hero-banner h2 { font-size: 24px; }
-            .products-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-            .card-img-wrapper { height: 160px; padding: 10px; }
-            .card-title { font-size: 13px; height: 36px; }
-            .card-price { font-size: 15px; }
-            .buy-now-btn { padding: 8px; font-size: 11px; }
+        .action-btn:hover {
+            opacity: 0.95;
+        }
+
+        /* نافذة تتبع النتيجة سريعة */
+        #track-output-modal {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 6px;
+            background-color: #1a1a1a;
+            border: 1px solid #333;
+            display: none;
+            font-size: 15px;
         }
     </style>
 </head>
 <body>
 
     <header>
-        <div class="brand-section" onclick="window.location.href='/'">
-            <img src="/static/css/logo.png.jpeg" alt="سينا ستور" onerror="this.style.display='none'">
-            <h1>سينا ستور 401</h1>
-        </div>
-        <a href="/marketer_login.html" class="portal-btn"><i class="fa-solid fa-users-viewfinder"></i> بوابة المسوقين</a>
-    </header>
-
-    <main>
-        <section class="hero-banner">
-            <h2>منصة <span>سينا ستور</span> لبيع الهواتف الذكية</h2>
-            <p>اكتشف أقوى عروض الموبايلات والأجهزة مع ميزة فحص ومعاينة المنتج يداً بيد قبل الدفع والاستلام لضمان جودة المصنع.</p>
-            
-            <div class="search-track-container">
-                <div class="search-box">
-                    <input type="text" id="store-search-input" placeholder="ابحث عن هاتف، ماركة، أو قسم معين..." oninput="filterStoreProducts()">
-                </div>
-
-                <div class="tracking-widget">
-                    <form class="track-form" onsubmit="handleTrackCustomerOrder(event)">
-                        <input type="number" id="track-id-input" required placeholder="أدخل رقم طلبك لتتبع حالته فوراً...">
-                        <button type="submit"><i class="fa-solid fa-magnifying-glass"></i> تتبع</button>
-                    </form>
-                    <div id="tracking-result"></div>
-                </div>
-            </div>
-        </section>
-
-        <section class="store-content">
-            <h3 class="section-title"><i class="fa-solid fa-fire" style="color: var(--gold);"></i> أحدث الهواتف والأجهزة المتاحة حالياً</h3>
-            <div class="products-grid" id="main-products-grid">
-                <div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;">
-                    <i class="fa-solid fa-spinner fa-spin" style="font-size: 24px; color: var(--gold);"></i>
-                    <p>جاري مزامنة كتالوج الأجهزة الحية...</p>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <footer>
-        <p>© 2026 سينا ستور 401 - جميع الحقوق محفوظة لـ إبراهيم لتجارة الإلكترونيات والموبايل.</p>
-    </footer>
-
-    <script>
-        let allProducts = [];
-
-        function catchAffiliateUrlCode() {
-            const params = new URLSearchParams(window.location.search);
-            const code = params.get('m') || params.get('ref') || params.get('code');
-            if (code) {
-                localStorage.setItem('affiliate_code', code);
-                console.log("🔒 تم توثيق كود تتبع المسوق بنجاح:", code);
-            }
-        }
-
-        async function fetchStoreProducts() {
-            catchAffiliateUrlCode();
-            const grid = document.getElementById('main-products-grid');
-
-            try {
-                const res = await fetch('/api/products');
-                if (!res.ok) throw new Error("Fetch error");
-                allProducts = await res.json();
-                renderProducts(allProducts);
-            } catch (e) {
-                grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:var(--gold); padding:30px;">❌ حدث خطأ في الاتصال بالسيرفر.</div>`;
-            }
-        }
-
-        function renderProducts(list) {
-            const grid = document.getElementById('main-products-grid');
-            if (list.length === 0) {
-                grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:var(--text-muted); padding:30px;">لا توجد أجهزة متطابقة مع بحثك.</div>`;
-                return;
-            }
-
-            const fallbackImg = '/static/css/logo.png.jpeg';
-
-            grid.innerHTML = list.map(p => {
-                const img = p.image_url ? p.image_url : fallbackImg;
-                return `
-                    <div class="product-card">
-                        <div class="card-img-wrapper">
-                            <img src="${img}" alt="${p.name}" onerror="this.src='${fallbackImg}'">
-                        </div>
-                        <div class="card-details">
-                            <span class="card-cat">${p.category || 'أجهزة وهواتف'}</span>
-                            <h4 class="card-title">${p.name}</h4>
-                            <div class="card-price">${p.selling_price} ج.م</div>
-                            <a href="/product_detail.html?id=${p.id}" class="buy-now-btn">
-                                <i class="fa-solid fa-cart-plus"></i> عرض التفاصيل والشراء
-                            </a>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function filterStoreProducts() {
-            const text = document.getElementById('store-search-input').value.toLowerCase().trim();
-            const filtered = allProducts.filter(p => 
-                p.name.toLowerCase().includes(text) || 
-                (p.category && p.category.toLowerCase().includes(text))
-            );
-            renderProducts(filtered);
-        }
-
-        async function handleTrackCustomerOrder(e) {
-            e.preventDefault();
-            const orderId = document.getElementById('track-id-input').value.trim();
-            const resultBox = document.getElementById('tracking-result');
-
-            resultBox.innerHTML = `<span><i class="fa-solid fa-spinner fa-spin"></i> جاري البحث...</span>`;
-
-            try {
-                const res = await fetch(`/api/orders/track?id=${orderId}`);
-                if (!res.ok) {
-                    resultBox.innerHTML = `<span style="color:#ef4444;">❌ لم نجد طلب مسجل بهذا الرقم.</span>`;
-                    return;
-                }
-                const order = await res.json();
-
-                let badgeColor = '#f59e0b';
-                let statusIcon = '⏳';
-                if (order.status === 'جاري الشحن') { badgeColor = '#3b82f6'; statusIcon = '🚚'; }
-                else if (order.status === 'تم التسليم') { badgeColor = '#22c55e'; statusIcon = '✅'; }
-                else if (order.status === 'مرتجع') { badgeColor = '#ef4444'; statusIcon = '❌'; }
-
-                resultBox.innerHTML = `
-                    <div style="background:rgba(255,255,255,0.02); border-right:3px solid ${badgeColor}; padding:12px; border-radius:6px; margin-top:10px;">
-                        <span style="font-weight:700;">حالة الطلب #${order.id}:</span> 
-                        <span style="color:${badgeColor}; font-weight:bold;">${statusIcon} ${order.status}</span>
-                        <div style="font-size:11px; color:var(--text-muted); margin-top:5px;">إجمالي الحساب: ${order.total_price} ج.م</div>
-                    </div>
-                `;
-            } catch(err) {
-                resultBox.innerHTML = `<span style="color:#ef4444;">❌ خطأ في الاتصال.</span>`;
-            }
-        }
-
-        window.addEventListener('DOMContentLoaded', fetchStoreProducts);
-    </script>
-</body>
-</html>
