@@ -12,50 +12,17 @@ STATIC_DIR = os.path.join(BASE_DIR, 'static')
 
 app = Flask(__name__, template_folder=TEMPLATE_DIR, static_folder=STATIC_DIR)
 app.wsgi_app = WhiteNoise(app.wsgi_app, root=STATIC_DIR, prefix='/static/')
-app.secret_key = 'sina-401-secret-key-2026'
+app.secret_key = os.getenv('SECRET_KEY', 'change-this-secret-key')
 
-DATABASE_URL = "postgresql://postgres:MoSebA01065653401@db.ellxxztpfpaqlbqsnyhb.supabase.co:5432/postgres"
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 def get_db_connection():
     return psycopg2.connect(DATABASE_URL, sslmode='require', connect_timeout=10)
 
 # ==========================================
-# إعادة إنشاء جدول orders في كل مرة (مؤقت لحل المشكلة)
+# تم تعطيل حذف الطلبات التلقائي لحماية البيانات
 # ==========================================
 
-def reset_orders_table():
-    try:
-        conn = get_db_connection()
-        cur = conn.cursor()
-        
-        # حذف الجدول القديم
-        cur.execute("DROP TABLE IF EXISTS orders CASCADE;")
-        
-        # إنشاء الجدول الجديد
-        cur.execute("""
-            CREATE TABLE orders (
-                id SERIAL PRIMARY KEY,
-                customer_name TEXT,
-                customer_phone TEXT,
-                customer_address TEXT,
-                total_price REAL DEFAULT 0,
-                products_json TEXT,
-                status TEXT DEFAULT 'قيد المراجعة',
-                created_at TIMESTAMP DEFAULT NOW()
-            );
-        """)
-        
-        conn.commit()
-        cur.close()
-        conn.close()
-        print("✅ تم إعادة إنشاء جدول orders بنجاح!")
-        return True
-    except Exception as e:
-        print(f"❌ خطأ في إعادة إنشاء الجدول: {e}")
-        return False
-
-# تشغيل إعادة الإنشاء عند بدء التشغيل
-reset_orders_table()
 
 # ==========================================
 # إنشاء باقي الجداول
@@ -93,7 +60,7 @@ def init_database():
         conn.commit()
         
         # إضافة مستخدم admin
-        hashed = generate_password_hash('MoSebA01065653401')
+        hashed = generate_password_hash(os.getenv('ADMIN_PASSWORD', 'admin123'))
         cur.execute("""
             INSERT INTO users (username, password, role, name)
             SELECT 'admin', %s, 'manager', 'المدير'
